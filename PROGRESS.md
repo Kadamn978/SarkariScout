@@ -16,12 +16,12 @@ Single source of truth. Read this file first at the start of every session.
 | 4 | Crawler / Data Engine | Done |
 | 5 | Matching Engine | Done |
 | 6 | Email Notifications | Done |
-| 7 | Tracker & Change Detection | Pending |
-| 8 | Monetization | Pending |
+| 7 | Tracker & Change Detection | Done |
+| 8 | Monetization | Done |
 | 9 | Testing & QA | Pending |
 | 10 | Deployment | Pending |
 
-## API Routes (22 total)
+## API Routes (25 total)
 
 **Auth (5):** register, login, refresh, logout, forgot-password
 **Users (3):** getProfile, updateProfile, deleteAccount
@@ -29,6 +29,7 @@ Single source of truth. Read this file first at the start of every session.
 **Crawler (3):** crawlSource, crawlAll, status (ADMIN)
 **Matching (2):** myJobs, stats
 **Email (2):** sendDigest, testWelcome (ADMIN)
+**Changes (3):** jobChanges, recentChanges, unnotifiedChanges
 **Health (1):** healthCheck
 
 ## Security
