@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ChangeDetectorService } from '../changes/change-detector.service';
 import * as crypto from 'crypto';
 
 export interface CrawledJob {
@@ -21,7 +22,10 @@ export interface CrawledJob {
 @Injectable()
 export class CrawlerService {
   private readonly logger = new Logger(CrawlerService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private changeDetector: ChangeDetectorService,
+  ) {}
 
   async crawlSource(sourceId: string) {
     const source = await this.prisma.source.findUnique({ where: { id: sourceId } });
@@ -121,6 +125,11 @@ export class CrawlerService {
     };
 
     if (existing) {
+      const changes = await this.changeDetector.detectChanges(existing.id, data);
+      if (changes.length > 0) {
+        await this.changeDetector.recordChanges(changes);
+        await this.changeDetector.notifyTrackedUsers(existing.id, changes);
+      }
       await this.prisma.job.update({ where: { id: existing.id }, data });
       return 'updated';
     } else {

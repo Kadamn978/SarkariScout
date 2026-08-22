@@ -8,6 +8,7 @@ import { HealthModule } from './modules/health/health.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { MatchingModule } from './modules/matching/matching.module';
 import { EmailModule } from './modules/email/email.module';
+import { ChangesModule } from './modules/changes/changes.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 
@@ -24,6 +25,7 @@ import { RedisModule } from './common/redis/redis.module';
     CrawlerModule,
     MatchingModule,
     EmailModule,
+    ChangesModule,
   ],
 })
 export class AppModule {}
