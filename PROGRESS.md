@@ -1,95 +1,154 @@
-# [Your Project Name] — Progress Tracker
+# SarkariRadar — Progress Tracker
 
-Single source of truth. Read this file first at the start of every session — it says where we are, what's done, what's next, and every assumption made so far.
+Single source of truth. Read this file first at the start of every session.
 
-**Repo location:** `[your-repo-path]`
-
----
-
-## Resuming from a deleted/new session
-
-This file and `docs/11-implementation-improvements.md` are written to be self-sufficient: together they should let any session pick this project up cold with no other context.
-- **This file** = chronology: what's been done, in what order, every assumption and why, what's still open.
-- **`docs/11-implementation-improvements.md`** = improvement plan from reference project analysis
-- Read both before making changes.
+**Repo location:** `D:\Nilesh\laragon\www\New folder`
+**Branch strategy:** `main` (production) → `pre-dev` (staging) → `test` (development)
 
 ---
 
 ## Phase Map
 
-| # | Phase | Status | Doc |
+| # | Phase | Status | Branch |
 |---|---|---|---|
-| 0 | Planning | ✅ Complete | docs/00-10 |
-| 1 | Security Hardening | ⬜ Pending | SECURITY-CHECKLIST.md |
-| 2 | Agent System Setup | ⬜ Pending | agents/ |
-| 3 | QA Infrastructure | ⬜ Pending | docs/10-test-plan.md |
-| 4 | Core Features | ⬜ Pending | docs/02-feature-plan.md |
-| 5 | DevOps/CI | ⬜ Pending | infra/ |
-| 6 | Revenue Features | ⬜ Pending | docs/07-revenue-plan.md |
-| 7 | SEO/Growth | ⬜ Pending | docs/11-implementation-improvements.md |
-| 8 | UX Polish | ⬜ Pending | docs/11-implementation-improvements.md |
-
----
-
-## Environment Constraints
-
-- Dev machine: [your OS]
-- Docker: [available/not available]
-- Database: [your DB]
-- Email: [your email provider]
-- Hosting: [your hosting]
+| 0 | Documentation & Planning | ✅ Complete | main |
+| 1 | Backend Foundation | ✅ Built & typecheck clean | pre-dev |
+| 2 | Frontend Foundation | ⬜ Pending | pre-dev |
+| 3 | Crawler / Data Engine | ⬜ Pending | pre-dev |
+| 4 | Matching & Alerts | ⬜ Pending | pre-dev |
+| 5 | Tracker & Change Detection | ⬜ Pending | pre-dev |
+| 6 | Monetization (Ads/Affiliate) | ⬜ Pending | pre-dev |
+| 7 | SEO & Growth | ⬜ Pending | pre-dev |
+| 8 | Security Hardening | ⬜ Pending | pre-dev |
+| 9 | Testing & QA | ⬜ Pending | pre-dev |
+| 10 | Deployment & Launch | ⬜ Pending | main |
 
 ---
 
 ## Cycle Log
 
-### Cycle 1 — YYYY-MM-DD
-**Role worn:** Orchestrator → Dev → QA
+### Cycle 1 — 2026-08-22
+**Role worn:** Architect → Dev → DevOps
 **Did:**
-- [change 1]
-- [change 2]
+- Initialized git repo with branch strategy (main/pre-dev/test)
+- Created backend NestJS foundation:
+  - `backend/src/main.ts` — App bootstrap with Helmet, CORS, ValidationPipe
+  - `backend/src/app.module.ts` — Module composition
+  - `backend/src/prisma/schema.prisma` — Full data model (User, Profile, Source, Job, JobChange, UserJob, NotificationLog, Subscription)
+  - `backend/src/modules/auth/` — Register/login with argon2, JWT, rate limiting, account lockout
+  - `backend/src/modules/users/` — Profile CRUD, account deletion
+  - `backend/src/modules/jobs/` — Listing, detail, tracking
+  - `backend/src/modules/health/` — Health check endpoint
+  - `backend/src/common/redis/` — Redis service for caching
+  - `backend/src/prisma/seed.ts` — Demo user (Rohit profile)
+- Created `infra/docker-compose.yml` — PostgreSQL 16 + Redis 7
+- TypeScript compiles clean (0 errors)
 
 **Verified:**
-- [test 1: result]
-- [test 2: result]
+- `tsc --noEmit` passes
+- Prisma client generates successfully
+- All module imports resolve correctly
 
-**Not verified:** [what needs Docker/real DB]
+**Not verified (needs Docker):**
+- Database connection
+- Auth flow end-to-end
+- Redis connection
+- Seed script execution
+
 **Decisions:**
-1. [assumption 1]
-2. [assumption 2]
+1. Used NestJS 10.x (stable) instead of 11.x (latest but newer)
+2. Used Prisma 5.x instead of 6.x (more stable)
+3. Skipped strict TypeScript for now (class-validator types) — can tighten later
+4. Placed schema in both `src/prisma/` and `prisma/` for Prisma CLI compatibility
 
 ---
 
-## Implementation Schedule
+## What's Built (Backend)
 
-### Sprint 1 (Week 1-2): Security + Agent System
-- Security hardening (3-7 days)
-- Agent system setup (1 day)
-- QA infrastructure (2-4 days)
-
-### Sprint 2 (Week 3-4): Core Features
-- Core feature implementation
-- DevOps/CI pipeline
-
-### Sprint 3 (Week 5-6): Revenue + Growth
-- Revenue features
-- SEO/Offline
-
-### Sprint 4 (Week 7): UX Polish
-- Design improvements
-- Account management flows
+```
+backend/
+├── src/
+│   ├── main.ts                    ✅ Bootstrap
+│   ├── app.module.ts              ✅ Module composition
+│   ├── common/redis/              ✅ Redis service
+│   ├── modules/
+│   │   ├── auth/                  ✅ Register, Login, JWT, Guards
+│   │   ├── users/                 ✅ Profile CRUD, Delete
+│   │   ├── jobs/                  ✅ Listing, Detail, Tracking
+│   │   └── health/                ✅ Health check
+│   └── prisma/
+│       ├── schema.prisma          ✅ Full data model
+│       ├── prisma.service.ts      ✅ Prisma service
+│       ├── prisma.module.ts       ✅ Global Prisma module
+│       └── seed.ts                ✅ Demo data
+├── test/jest-e2e.json             ✅ E2E config
+├── package.json                   ✅ Dependencies
+├── tsconfig.json                  ✅ TypeScript config
+├── tsconfig.build.json            ✅ Build config
+├── nest-cli.json                  ✅ NestJS CLI config
+└── .env.example                   ✅ Environment template
+```
 
 ---
 
-## Open Questions
+## What's Next
 
-1. [ ] [Question 1]
-2. [ ] [Question 2]
-3. [ ] [Question 3]
+### Immediate (Cycle 2)
+- [ ] Set up frontend React + Vite + Tailwind
+- [ ] Create login/signup pages
+- [ ] Create profile builder page
+- [ ] Create job listing page
+- [ ] Connect frontend to backend API
+
+### After Frontend
+- [ ] Build crawler service
+- [ ] Implement matching engine
+- [ ] Set up email notifications
+- [ ] Add change detection
 
 ---
 
-## How Progress is Reported
+## Git Status
 
-- This file's status indicators updated after **every working session**
-- Weekly summary: work done, % progress per phase, blockers, risks, next week's plan
+```
+main        — documentation only
+pre-dev     — backend foundation (latest commit)
+test        — same as main (will be used for testing)
+```
+
+**To push to remote:**
+```bash
+git remote add origin <your-github-repo-url>
+git push -u origin pre-dev
+```
+
+---
+
+## How to Run Locally
+
+```bash
+# 1. Start database
+docker-compose -f infra/docker-compose.yml up -d
+
+# 2. Install backend dependencies
+cd backend && npm install
+
+# 3. Set up environment
+cp .env.example .env
+# Edit .env with your DATABASE_URL, REDIS_URL, JWT_SECRET
+
+# 4. Generate Prisma client
+npx prisma generate
+
+# 5. Run migrations
+npx prisma migrate dev
+
+# 6. Seed demo data
+npx prisma db seed
+
+# 7. Start backend
+npm run start:dev
+
+# Backend runs on http://localhost:3000
+# Health check: http://localhost:3000/health
+```
