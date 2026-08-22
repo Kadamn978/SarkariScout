@@ -55,11 +55,12 @@ Single source of truth. Read this file first at the start of every session.
 - Redis connection
 - Seed script execution
 
+- Added Ponytail-inspired lazy dev rules (`docs/LAZY-DEV-RULES.md`) and review checklist (`docs/REVIEW-CHECKLIST.md`)
+
 **Decisions:**
-1. Used NestJS 10.x (stable) instead of 11.x (latest but newer)
-2. Used Prisma 5.x instead of 6.x (more stable)
-3. Skipped strict TypeScript for now (class-validator types) — can tighten later
-4. Placed schema in both `src/prisma/` and `prisma/` for Prisma CLI compatibility
+1. NestJS 10.x (stable), Prisma 5.x (stable)
+2. Schema in both `src/prisma/` and `prisma/` for CLI compatibility
+3. Lazy dev rules from Ponytail for AI-assisted development
 
 ---
 
