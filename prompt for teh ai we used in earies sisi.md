@@ -58,9 +58,9 @@ Writing the core docs now — README, project overview, BRD, and feature
 
 # Wrote README.md
 
-# SarkariRadar 🛰️
+# SarkariScout 🛰️
 
-**Never miss a government job again.** SarkariRadar monitors every major Indian government job & exam notification source (all-India + Maharashtra), filters them against each user's eligibility profile (education, state, languages, age, category), and sends email alerts **only for jobs they can actually apply to** — before deadlines close.
+**Never miss a government job again.** SarkariScout monitors every major Indian government job & exam notification source (all-India + Maharashtra), filters them against each user's eligibility profile (education, state, languages, age, category), and sends email alerts **only for jobs they can actually apply to** — before deadlines close.
 
 ## 🎯 The Promise
 
@@ -97,7 +97,7 @@ Writing the core docs now — README, project overview, BRD, and feature
 ## 🚀 Quick Start (5 min)
 
 ```bash
-git clone <repo-url> sarkariradar && cd sarkariradar
+git clone <repo-url> SarkariScout && cd SarkariScout
 docker compose -f infra/docker-compose.yml up -d   # Postgres + Redis
 cp .env.example .env                               # fill secrets
 npm run dev                                       # frontend :5173, backend :3000
@@ -139,7 +139,7 @@ Full breakdown with numbers: **[docs/07-revenue-plan.md](docs/07-revenue-plan.md
 
 # 00 — Project Overview & Progress Tracker
 
-> **Codename:** SarkariRadar · **Status:** Planning complete, build pending approval · **Last updated:** Aug 20, 2026
+> **Codename:** SarkariScout · **Status:** Planning complete, build pending approval · **Last updated:** Aug 20, 2026
 > **Operating model:** One-man army (Developer / Architect / Tester / QA / Security Auditor / DevOps / Product Owner) — full end-to-end ownership.
 
 ---
@@ -253,7 +253,7 @@ When we cross the first revenue mark, we upgrade email (SES), add a paid worker 
 
 ## 1. Executive Summary
 
-SarkariRadar is a web application that aggregates **all Indian government job and exam notifications** (all-India + Maharashtra focus), filters them against a user's **eligibility profile**, and delivers **email notifications** only for jobs the user can genuinely apply to — before application deadlines and fee-payment windows close. Users additionally get an **application tracker** with automatic alerts on exam-date changes, admit cards, results, venue changes, and corrigenda.
+SarkariScout is a web application that aggregates **all Indian government job and exam notifications** (all-India + Maharashtra focus), filters them against a user's **eligibility profile**, and delivers **email notifications** only for jobs the user can genuinely apply to — before application deadlines and fee-payment windows close. Users additionally get an **application tracker** with automatic alerts on exam-date changes, admit cards, results, venue changes, and corrigenda.
 
 The product is **free for users** and monetized through non-intrusive display ads (fixed side/top/bottom banners only — no popups, no interstitials), affiliate links, and a premium tier. Total infrastructure cost until first revenue: **₹0** (free tiers only).
 
@@ -518,7 +518,7 @@ Everything else is post-launch. **F-16 (change detection) is the top P1** becaus
 ## 3. Folder layout (monorepo)
 
 ```
-sarkariradar/
+SarkariScout/
 ├── docs/                     # All documentation (this repo's source of truth)
 ├── frontend/
 │   ├── src/
@@ -1192,8 +1192,8 @@ Optional: Laragon (Windows users who prefer it — we only need its Node/Docker 
 
 ```bash
 # 1. Clone
-git clone <repo-url> sarkariradar
-cd sarkariradar
+git clone <repo-url> SarkariScout
+cd SarkariScout
 
 # 2. Install dependencies (workspaces installs frontend+backend+crawler+e2e)
 pnpm install
@@ -1272,9 +1272,9 @@ pnpm seed:reset     # wipe + reseed demo data
 ## 8. Data backup (local)
 
 ```bash
-docker compose exec postgres pg_dump -U sarkariradar sarkariradar > backup_$(date +%F).sql
+docker compose exec postgres pg_dump -U SarkariScout SarkariScout > backup_$(date +%F).sql
 # restore:
-docker compose exec -T postgres psql -U sarkariradar sarkariradar < backup_2026-08-20.sql
+docker compose exec -T postgres psql -U SarkariScout SarkariScout < backup_2026-08-20.sql
 ```
 
 ## 9. Production deployment (₹0) — checklist
@@ -1517,8 +1517,8 @@ Doc	Key decision
 The full plan is documented. Do you approve and should I start building Phase 1?
 Let me review docs first
 Project codename (easily changeable later)?
-SarkariRadar (Recommended)
-Understood — codename locked as SarkariRadar. Take your time reviewing the 12 docs (start with docs/00-project-overview.md and docs/01-brd.md, then 04-data-sources.md if you want to see the research).
+SarkariScout (Recommended)
+Understood — codename locked as SarkariScout. Take your time reviewing the 12 docs (start with docs/00-project-overview.md and docs/01-brd.md, then 04-data-sources.md if you want to see the research).
 Everything is frozen at v1.0 until you say go. When you're ready, just say "Approved, start Phase 1" and I'll begin building: monorepo scaffold, docker-compose, CI, auth, profile builder, and the 3D landing page.
 ▣  Build · deepseek-v4-flash-free · 19m 15s
 read the isnteucu i adde ito thje improvement in the project.md fro thsi poeject i feed we can imprve whe i rea youe fules you craet also red fiels full brefo runi to clinlsu or editig files

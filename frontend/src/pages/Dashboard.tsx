@@ -9,7 +9,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-          <Link to="/jobs" className="text-xl font-bold text-blue-600">SarkariRadar</Link>
+          <Link to="/jobs" className="text-xl font-bold text-blue-600">SarkariScout</Link>
           <div className="flex items-center gap-4">
             <span className="text-gray-600">{user?.name || user?.email}</span>
             <Link to="/profile" className="text-sm text-gray-600 hover:text-blue-600">Profile</Link>

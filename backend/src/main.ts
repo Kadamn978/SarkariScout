@@ -22,6 +22,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log(`SarkariRadar API running on http://localhost:${port}`);
+  console.log(`SarkariScout API running on http://localhost:${port}`);
 }
 bootstrap();

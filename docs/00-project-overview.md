@@ -1,6 +1,6 @@
 # 00 — Project Overview & Progress Tracker
 
-> **Codename:** SarkariRadar · **Status:** Planning complete, build pending approval · **Last updated:** Aug 20, 2026
+> **Codename:** SarkariScout · **Status:** Planning complete, build pending approval · **Last updated:** Aug 20, 2026
 > **Operating model:** One-man army (Developer / Architect / Tester / QA / Security Auditor / DevOps / Product Owner) — full end-to-end ownership.
 
 ---

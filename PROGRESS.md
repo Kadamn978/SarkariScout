@@ -1,4 +1,4 @@
-# SarkariRadar — Progress Tracker
+# SarkariScout — Progress Tracker
 
 Single source of truth. Read this file first at the start of every session.
 

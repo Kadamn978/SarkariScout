@@ -7,7 +7,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 text-white">
       <nav className="flex justify-between items-center max-w-6xl mx-auto px-6 py-4">
-        <span className="text-2xl font-bold">SarkariRadar</span>
+        <span className="text-2xl font-bold">SarkariScout</span>
         <div className="flex gap-4">
           {user ? (
             <Link to="/dashboard" className="px-4 py-2 bg-white text-blue-600 rounded-lg">Dashboard</Link>
