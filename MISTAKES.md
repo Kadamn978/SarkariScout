@@ -64,6 +64,27 @@
 - **Fix:** Use PowerShell `Get-ChildItem` or grep tool instead
 - **Rule:** On Windows, use `findstr` or the grep tool, not `rg`
 
+### M008 — NestJS JwtModule not global, caused DI errors
+- **Date:** 2026-08-22
+- **What:** JwtAuthGuard couldn't resolve JwtService in UsersModule and JobsModule
+- **Why:** JwtModule was only imported in AuthModule, not exported globally
+- **Fix:** Added `@Global()` to AuthModule, exported JwtModule
+- **Rule:** When a guard/decorator uses a service, make that module `@Global()` or import it in every consuming module
+
+### M009 — PostgreSQL schema used on MySQL system
+- **Date:** 2026-08-22
+- **What:** Original schema used PostgreSQL with array types, system has MySQL via Laragon
+- **Why:** Didn't check available DB before designing schema
+- **Fix:** Converted all `String[]` to `String @db.Text` with JSON serialization
+- **Rule:** Check available database engine first. MySQL = no arrays, use JSON or separate tables
+
+### M010 — Duplicate seed.ts in src/prisma/
+- **Date:** 2026-08-22
+- **What:** Two schema.prisma files (prisma/ and src/prisma/) caused type conflicts
+- **Why:** Old file not cleaned up when switching DB
+- **Fix:** Deleted src/prisma/seed.ts, synced schema files
+- **Rule:** When moving files, delete the old copy. Only one schema source of truth
+
 ---
 
 ## Pre-Session Checklist
