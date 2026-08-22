@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, UseGuards, Req, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { Request } from 'express';
 import { JobsService } from './jobs.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -12,8 +12,13 @@ export class JobsController {
     @Query('state') state?: string,
     @Query('examFamily') examFamily?: string,
     @Query('status') status?: string,
+    @Query('search') search?: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit?: number,
   ) {
-    return this.jobsService.findAll({ state, examFamily, status });
+    const safeLimit = Math.min(Math.max(limit, 1), 50);
+    const safePage = Math.max(page, 1);
+    return this.jobsService.findAll({ state, examFamily, status, search, page: safePage, limit: safeLimit });
   }
 
   @Get(':id')

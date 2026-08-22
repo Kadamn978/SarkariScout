@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -19,21 +19,21 @@ export class AuthService {
 
     const passwordHash = await argon2.hash(dto.password, { memoryCost: 65536, timeCost: 3 });
     const user = await this.prisma.user.create({
-      data: { email: dto.email, passwordHash, name: dto.name },
+      data: { email: dto.email.toLowerCase().trim(), passwordHash, name: dto.name.trim() },
     });
 
     return this.generateTokens(user.id, user.email, user.role);
   }
 
   async login(dto: LoginDto) {
-    const lockKey = `lock:${dto.email}`;
+    const lockKey = `lock:${dto.email.toLowerCase()}`;
     const attempts = await this.redis.get(lockKey);
 
     if (attempts && parseInt(attempts) >= 5) {
       throw new UnauthorizedException('Account locked. Try again in 15 minutes.');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const user = await this.prisma.user.findUnique({ where: { email: dto.email.toLowerCase().trim() } });
     if (!user) {
       await this.handleFailedLogin(dto.email);
       throw new UnauthorizedException('Invalid credentials');
@@ -49,19 +49,41 @@ export class AuthService {
     return this.generateTokens(user.id, user.email, user.role);
   }
 
-  private async handleFailedLogin(email: string) {
-    const lockKey = `lock:${email}`;
-    const attempts = await this.redis.incr(lockKey);
-    if (attempts === 1) {
-      await this.redis.expire(lockKey, 900); // 15 min lockout
+  async refreshTokens(refreshToken: string) {
+    try {
+      const payload = await this.jwt.verifyAsync(refreshToken);
+
+      const stored = await this.redis.get(`refresh:${payload.sub}`);
+      if (stored !== refreshToken) {
+        throw new ForbiddenException('Invalid refresh token');
+      }
+
+      return this.generateTokens(payload.sub, payload.email, payload.role);
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
     }
   }
 
-  private generateTokens(userId: string, email: string, role: string) {
+  async logout(userId: string) {
+    await this.redis.del(`refresh:${userId}`);
+  }
+
+  private async handleFailedLogin(email: string) {
+    const lockKey = `lock:${email.toLowerCase()}`;
+    const attempts = await this.redis.incr(lockKey);
+    if (attempts === 1) {
+      await this.redis.expire(lockKey, 900);
+    }
+  }
+
+  private async generateTokens(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role };
     const accessToken = this.jwt.sign(payload, { expiresIn: '15m' });
     const refreshToken = this.jwt.sign(payload, { expiresIn: '7d' });
-    return { accessToken, refreshToken, userId, email, role };
+
+    await this.redis.set(`refresh:${userId}`, refreshToken, 604800);
+
+    return { accessToken, refreshToken, user: { id: userId, email, role } };
   }
 
   async verifyToken(token: string) {

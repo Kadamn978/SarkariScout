@@ -1,30 +1,34 @@
-import { IsOptional, IsString, IsArray, IsDateString, IsBoolean } from 'class-validator';
+import { IsOptional, IsString, IsDateString, IsBoolean, MaxLength } from 'class-validator';
 
 export class UpdateProfileDto {
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   educationLevel?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  degrees?: string[];
+  @IsString()
+  @MaxLength(1000)
+  degrees?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   state?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(50)
   district?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  languages?: string[];
+  @IsString()
+  @MaxLength(1000)
+  languages?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(10)
   category?: string;
 
   @IsOptional()
@@ -33,17 +37,18 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(20)
   gender?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  examFamilies?: string[];
+  @IsString()
+  @MaxLength(1000)
+  examFamilies?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  keywords?: string[];
+  @IsString()
+  @MaxLength(1000)
+  keywords?: string;
 
   @IsOptional()
   @IsBoolean()
@@ -55,5 +60,6 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(5)
   digestTime?: string;
 }
