@@ -5,6 +5,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { HealthModule } from './modules/health/health.module';
+import { CrawlerModule } from './modules/crawler/crawler.module';
+import { MatchingModule } from './modules/matching/matching.module';
+import { EmailModule } from './modules/email/email.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 
@@ -18,6 +21,9 @@ import { RedisModule } from './common/redis/redis.module';
     UsersModule,
     JobsModule,
     HealthModule,
+    CrawlerModule,
+    MatchingModule,
+    EmailModule,
   ],
 })
 export class AppModule {}

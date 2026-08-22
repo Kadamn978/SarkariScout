@@ -4,14 +4,15 @@ import api from '../lib/api'
 interface User {
   id: string
   email: string
-  name: string
+  name?: string
+  role: string
 }
 
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<void>
   register: (email: string, password: string, name: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   loading: boolean
 }
 
@@ -25,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem('access_token')
     if (token) {
       api.get('/users/me')
-        .then((res) => setUser(res.data))
+        .then((res) => setUser(res.data.user || res.data))
         .catch(() => localStorage.removeItem('access_token'))
         .finally(() => setLoading(false))
     } else {
@@ -35,18 +36,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const res = await api.post('/auth/login', { email, password })
-    localStorage.setItem('access_token', res.data.access_token)
+    localStorage.setItem('access_token', res.data.accessToken)
+    localStorage.setItem('refresh_token', res.data.refreshToken)
     setUser(res.data.user)
   }
 
   const register = async (email: string, password: string, name: string) => {
     const res = await api.post('/auth/register', { email, password, name })
-    localStorage.setItem('access_token', res.data.access_token)
+    localStorage.setItem('access_token', res.data.accessToken)
+    localStorage.setItem('refresh_token', res.data.refreshToken)
     setUser(res.data.user)
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout')
+    } catch { /* ignore */ }
     localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     setUser(null)
   }
 
