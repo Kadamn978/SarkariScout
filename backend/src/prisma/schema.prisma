@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Category {
+  GEN
+  OBC
+  SC
+  ST
+  EWS
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  REVIEW
+}
+
+enum TrackerStage {
+  APPLIED
+  EXAM
+  ADMIT_CARD
+  RESULT
+  REJECTED
+  SELECTED
+}
+
+enum NotificationType {
+  DIGEST
+  INSTANT
+  WELCOME
+}
+
+enum ChangeType {
+  EXAM_DATE
+  VENUE
+  DEADLINE
+  CORRIGENDUM
+  RESULT
+  ADMIT_CARD
+}
+
+enum SourceType {
+  NCS_API
+  RSS
+  HTML
+  PDF
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  role          Role      @default(USER)
+  emailVerifiedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile       Profile?
+  trackers      UserJob[]
+  notifications NotificationLog[]
+  subscriptions Subscription[]
+
+  @@map("users")
+}
+
+model Profile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  educationLevel  String?
+  degrees         String[]
+  state           String?
+  district        String?
+  languages       String[]
+  category        Category?
+  dob             DateTime?
+  gender          String?
+  examFamilies    String[]
+  keywords        String[]
+  notifyInstant   Boolean  @default(true)
+  notifyDigest    Boolean  @default(true)
+  digestTime      String   @default("09:00")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model Source {
+  id              String     @id @default(uuid())
+  name            String
+  type            SourceType
+  baseUrl         String
+  schedule        String     @default("*/6 * * * *")
+  lastRunAt       DateTime?
+  lastRunStatus   String?
+  itemsPerRun     Int        @default(0)
+  enabled         Boolean    @default(true)
+  configJson      String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  jobs            Job[]
+
+  @@map("sources")
+}
+
+model Job {
+  id                    String     @id @default(uuid())
+  fingerprint           String     @unique
+  sourceId              String?
+  source                Source?    @relation(fields: [sourceId], references: [id])
+  sourceUrl             String?
+  org                   String
+  advtNo                String?
+  title                 String
+  postNames             String[]
+  totalVacancies        Int?
+  state                 String     @default("ALL_IN")
+  examFamily            String?
+  qualificationText     String?
+  qualificationLevels   String[]
+  ageMin                Int?
+  ageMax                Int?
+  categoryFeesJson      String?
+  applyStart            DateTime?
+  applyEnd              DateTime?
+  feeEnd                DateTime?
+  examDate              DateTime?
+  admitCardDate         DateTime?
+  resultDate            DateTime?
+  status                JobStatus  @default(OPEN)
+  notificationPdfUrl    String?
+  applyUrl              String?
+  officialUrls          String[]
+  rawHash               String?
+  firstSeenAt           DateTime   @default(now())
+  lastSeenAt            DateTime   @default(now())
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  changes               JobChange[]
+  trackers              UserJob[]
+  notifications         NotificationLog[]
+
+  @@map("jobs")
+}
+
+model JobChange {
+  id          String     @id @default(uuid())
+  jobId       String
+  job         Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  type        ChangeType
+  field       String
+  before      String?
+  after       String?
+  detectedAt  DateTime   @default(now())
+  notified    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+
+  @@map("job_changes")
+}
+
+model UserJob {
+  id          String        @id @default(uuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId       String
+  job         Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  applied     Boolean       @default(false)
+  appliedAt   DateTime?
+  notes       String?
+  stage       TrackerStage?
+  examCity    String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([userId, jobId])
+  @@map("user_jobs")
+}
+
+model NotificationLog {
+  id          String           @id @default(uuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId       String?
+  job         Job?             @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  changeId    String?
+  type        NotificationType
+  sentAt      DateTime         @default(now())
+  status      String           @default("sent")
+
+  @@map("notification_logs")
+}
+
+model Subscription {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            String    @default("FREE")
+  status          String    @default("active")
+  razorpayOrderId String?
+  startsAt        DateTime  @default(now())
+  endsAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("subscriptions")
+}
