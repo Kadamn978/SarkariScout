@@ -13,7 +13,7 @@ Single source of truth. Read this file first at the start of every session.
 |---|---|---|---|
 | 0 | Documentation & Planning | ✅ Complete | main |
 | 1 | Backend Foundation | ✅ Built & typecheck clean | pre-dev |
-| 2 | Frontend Foundation | ⬜ Pending | pre-dev |
+| 2 | Frontend Foundation | ✅ Built & typecheck clean | pre-dev |
 | 3 | Crawler / Data Engine | ⬜ Pending | pre-dev |
 | 4 | Matching & Alerts | ⬜ Pending | pre-dev |
 | 5 | Tracker & Change Detection | ⬜ Pending | pre-dev |
@@ -61,6 +61,38 @@ Single source of truth. Read this file first at the start of every session.
 1. NestJS 10.x (stable), Prisma 5.x (stable)
 2. Schema in both `src/prisma/` and `prisma/` for CLI compatibility
 3. Lazy dev rules from Ponytail for AI-assisted development
+
+### Cycle 2 — 2026-08-22
+**Role worn:** Dev
+**Did:**
+- Created React + Vite + Tailwind frontend
+- 7 pages: Landing, Login, Register, Profile, Dashboard, Jobs, JobDetail
+- Auth context with JWT token management
+- API client with interceptors (auto-redirect on 401)
+- Tailwind v4 styling
+- Vite proxy to backend `/api`
+
+**Verified:**
+- `tsc --noEmit` passes (0 errors)
+- `vite build` succeeds (228KB JS bundle)
+
+**Files:**
+```
+frontend/src/
+├── App.tsx              ✅ Router + protected routes
+├── main.tsx             ✅ Entry point
+├── index.css            ✅ Tailwind imports
+├── lib/api.ts           ✅ Axios client with interceptors
+├── contexts/AuthContext.tsx  ✅ Auth state + login/register/logout
+└── pages/
+    ├── Landing.tsx      ✅ Hero + CTA
+    ├── Login.tsx        ✅ Email/password login
+    ├── Register.tsx     ✅ Registration form
+    ├── Profile.tsx      ✅ Education/state/category/languages
+    ├── Dashboard.tsx    ✅ Stats cards
+    ├── Jobs.tsx         ✅ Job listing with search
+    └── JobDetail.tsx    ✅ Full job view
+```
 
 ---
 
