@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import AdBanner from '../components/AdBanner'
 
 export default function Landing() {
   const { user } = useAuth()
@@ -34,6 +35,8 @@ export default function Landing() {
           <Link to="/jobs" className="px-6 sm:px-8 py-3 border border-white rounded-lg text-base sm:text-lg hover:bg-white hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-white">Browse Jobs</Link>
         </div>
       </header>
+
+      <AdBanner slot="XXXXXXXXXX" format="horizontal" className="max-w-4xl mx-auto px-4 mb-8" />
 
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24" aria-label="Features">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { JobCardSkeleton } from '../components/Skeleton'
+import AdBanner from '../components/AdBanner'
+import AffiliateCard from '../components/AffiliateCard'
 
 interface Job {
   id: string
@@ -74,7 +76,7 @@ export default function Jobs() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="max-w-4xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
+      <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
         <h1 className="text-2xl sm:text-3xl font-bold mb-4">Latest Government Jobs</h1>
         <div className="relative mb-6">
           <label htmlFor="job-search" className="sr-only">Search jobs</label>
@@ -89,6 +91,11 @@ export default function Jobs() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
+
+        <AdBanner slot="XXXXXXXXXX" format="horizontal" className="mb-6" />
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1">
 
         {error && <div role="alert" className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">{error}</div>}
 
@@ -124,6 +131,24 @@ export default function Jobs() {
             {loadingMore && <div className="text-center py-4 text-sm text-gray-500">Loading more...</div>}
           </>
         )}
+          </div>
+
+          <aside className="w-full lg:w-72 space-y-4">
+            <AdBanner slot="XXXXXXXXXX" format="vertical" className="sticky top-20" />
+            <AffiliateCard
+              title="Best Books for Govt Exams"
+              description="Top-rated study material for SSC, UPSC, Banking exams"
+              url="https://example.com/affiliate/books"
+              cta="Shop Now"
+            />
+            <AffiliateCard
+              title="Online Coaching"
+              description="Live classes by top educators for government exam preparation"
+              url="https://example.com/affiliate/coaching"
+              cta="Enroll Now"
+            />
+          </aside>
+        </div>
       </main>
     </div>
   )

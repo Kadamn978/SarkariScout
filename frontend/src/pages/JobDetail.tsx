@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { Skeleton } from '../components/Skeleton'
+import AdBanner from '../components/AdBanner'
 
 interface Job {
   id: string
@@ -70,6 +71,8 @@ export default function JobDetail() {
             </a>
           </article>
         ) : null}
+
+        <AdBanner slot="XXXXXXXXXX" format="horizontal" className="mt-8" />
       </main>
     </div>
   )
