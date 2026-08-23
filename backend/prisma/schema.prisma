@@ -219,3 +219,43 @@ model Subscription {
 
   @@map("subscriptions")
 }
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  userId    String?
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  method    String?  @db.VarChar(10)
+  url       String?  @db.Text
+  status    Int?
+  duration  Int?
+  meta      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+model ErrorLog {
+  id        String   @id @default(uuid())
+  level     String   @default("error")
+  message   String   @db.Text
+  stack     String?  @db.Text
+  method    String?  @db.VarChar(10)
+  url       String?  @db.VarChar(500)
+  status    Int?
+  userId    String?
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  causedBy  String?  @db.Text
+  meta      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("error_logs")
+}
