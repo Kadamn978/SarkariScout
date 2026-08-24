@@ -26,13 +26,14 @@ interface JobsResponse {
 }
 
 const INDIAN_STATES = [
-  'ALL_IN', 'ANDHRA_PRADESH', 'BIHAR', 'DELHI', 'GOA', 'GUJARAT', 'HARYANA',
-  'HIMACHAL_PRADESH', 'JHARKHAND', 'KARNATAKA', 'KERALA', 'MADHYA_PRADESH',
-  'MAHARASHTRA', 'ODISHA', 'PUNJAB', 'RAJASTHAN', 'TAMIL_NADU', 'TELANGANA',
-  'UTTAR_PRADESH', 'WEST_BENGAL',
+  'Maharashtra', 'Uttar Pradesh', 'Bihar', 'Delhi', 'Karnataka',
+  'Tamil Nadu', 'Gujarat', 'Rajasthan', 'Madhya Pradesh', 'West Bengal',
+  'Andhra Pradesh', 'Telangana', 'Kerala', 'Punjab', 'Haryana',
 ]
 
-const QUALIFICATIONS = ['10th', '12th', 'Graduate', 'Post Graduate', 'Engineering', 'Diploma', 'ITI']
+const CATEGORIES = ['GOVERNMENT', 'BANKING', 'RAILWAY', 'ENGINEERING', 'DEFENCE', 'PSU', 'POLICE', 'IT', 'TEACHING', 'MEDICAL', 'INTERNSHIP']
+
+const QUALIFICATIONS = ['10th Pass', '12th Pass', 'Graduate', 'Engineering', 'Diploma', 'ITI', 'Post Graduate']
 
 const PAGE_SIZE = 20
 
@@ -42,6 +43,7 @@ export default function Jobs() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [search, setSearch] = useState('')
   const [state, setState] = useState('')
+  const [category, setCategory] = useState('')
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState('')
@@ -49,7 +51,7 @@ export default function Jobs() {
   const observerRef = useRef<HTMLDivElement>(null)
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
-  const fetchJobs = useCallback(async (p: number, q: string, st: string, append = false) => {
+  const fetchJobs = useCallback(async (p: number, q: string, st: string, cat: string, append = false) => {
     if (append) setLoadingMore(true)
     else setLoading(true)
     setError('')
@@ -57,6 +59,7 @@ export default function Jobs() {
       const params: Record<string, any> = { page: p, limit: PAGE_SIZE }
       if (q) params.search = q
       if (st) params.state = st
+      if (cat) params.category = cat
       const res = await api.get('/jobs', { params })
       const data: JobsResponse = res.data
       setJobs((prev) => append ? [...prev, ...data.jobs] : data.jobs)
@@ -70,9 +73,9 @@ export default function Jobs() {
   }, [])
 
   useEffect(() => {
-    fetchJobs(1, search, state)
+    fetchJobs(1, search, state, category)
     setPage(1)
-  }, [search, state, fetchJobs])
+  }, [search, state, category, fetchJobs])
 
   useEffect(() => {
     const el = observerRef.current
@@ -82,7 +85,7 @@ export default function Jobs() {
         if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
           const next = page + 1
           setPage(next)
-          fetchJobs(next, search, state, true)
+          fetchJobs(next, search, state, category, true)
         }
       },
       { threshold: 0.1 }
@@ -133,14 +136,18 @@ export default function Jobs() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <select
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
-          >
+          <select value={state} onChange={(e) => setState(e.target.value)}
+            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
             <option value="">All States</option>
             {INDIAN_STATES.map((s) => (
-              <option key={s} value={s}>{s === 'ALL_IN' ? 'All India' : s.replace(/_/g, ' ')}</option>
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+          <select value={category} onChange={(e) => setCategory(e.target.value)}
+            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
+            <option value="">All Categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
@@ -186,7 +193,7 @@ export default function Jobs() {
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500">
-                    <span>{job.state?.replace(/_/g, ' ')}</span>
+                    <span>{job.state === 'ALL_IN' ? 'All India' : job.state}</span>
                     {job.totalVacancies && <span>{job.totalVacancies} vacancies</span>}
                     {job.applyEnd && <span>Deadline: {new Date(job.applyEnd).toLocaleDateString()}</span>}
                   </div>

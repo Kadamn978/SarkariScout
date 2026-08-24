@@ -1,102 +1,211 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link, Navigate } from 'react-router-dom'
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
-import { Skeleton } from '../components/Skeleton'
-import AdBanner from '../components/AdBanner'
-import AffiliateCard from '../components/AffiliateCard'
+import { useAuth } from '../contexts/AuthContext'
 
 interface Job {
-  id: string
-  title: string
-  organization: string
-  location: string
-  educationRequired: string
-  lastDateToApply: string
-  salaryRange: string
-  description: string
-  source: { name: string; url: string }
+  id: string; title: string; org: string; state: string; district: string | null;
+  category: string; totalVacancies: number | null; qualificationText: string | null;
+  qualificationLevels: string | null; ageMin: number | null; ageMax: number | null;
+  generalFee: number | null; obcFee: number | null; scStFee: number | null;
+  applyStart: string | null; applyEnd: string | null; feePaymentEnd: string | null;
+  examDate: string | null; admitCardDate: string | null; resultDate: string | null;
+  status: string; applyUrl: string | null; officialNotificationUrl: string | null;
+  notificationPdfUrl: string | null; eligibilityCriteria: string | null;
+  howToApply: string | null; selectionProcess: string | null;
+  source: { name: string } | null; sourceUrl: string | null;
+  postNames: string | null; examFamily: string | null;
+  changes: { id: string; type: string; field: string; before: string | null; after: string; detectedAt: string }[];
 }
 
 export default function JobDetail() {
   const { id } = useParams()
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [tracked, setTracked] = useState(false)
+  const [tracking, setTracking] = useState(false)
+  const [shareMsg, setShareMsg] = useState('')
 
   useEffect(() => {
-    if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
-      setLoading(false)
-      return
-    }
+    if (!id) { setLoading(false); return }
     setLoading(true)
     api.get(`/jobs/${id}`)
-      .then((res) => setJob(res.data))
-      .catch(() => setError('Failed to load job'))
+      .then((res) => {
+        setJob(res.data)
+        if (user) checkTracking(id)
+      })
+      .catch(() => setError('Failed to load job details'))
       .finally(() => setLoading(false))
-  }, [id])
+  }, [id, user])
 
-  if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
-    return <Navigate to="/jobs" replace />
+  async function checkTracking(jobId: string) {
+    try {
+      const res = await api.get('/jobs/user/tracked')
+      setTracked(res.data.some((t: any) => t.jobId === jobId))
+    } catch { /* ignore */ }
   }
+
+  async function toggleTrack() {
+    if (!user) { navigate('/login'); return }
+    setTracking(true)
+    try {
+      if (tracked) {
+        await api.delete(`/jobs/${id}/track`)
+        setTracked(false)
+      } else {
+        await api.post(`/jobs/${id}/track`, { stage: 'INTERESTED' })
+        setTracked(true)
+      }
+    } catch { /* ignore */ }
+    finally { setTracking(false) }
+  }
+
+  async function shareJob() {
+    const url = window.location.href
+    const text = `${job?.title} — ${job?.org} | Apply at ${url}`
+    if (navigator.share) {
+      try { await navigator.share({ title: job?.title, text, url }) } catch { /* ignore */ }
+    } else {
+      try {
+        await navigator.clipboard.writeText(url)
+        setShareMsg('Link copied!')
+        setTimeout(() => setShareMsg(''), 3000)
+      } catch { setShareMsg('Copy this URL: ' + url) }
+    }
+  }
+
+  function formatDate(d: string | null) {
+    if (!d) return '—'
+    return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
+
+  function daysUntil(d: string | null) {
+    if (!d) return null
+    return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000)
+  }
+
+  if (!id) return <Navigate to="/jobs" replace />
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="max-w-3xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
-        <Link to="/jobs" className="inline-flex items-center text-blue-600 hover:underline text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-          <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-          Back to jobs
+      <main className="max-w-4xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
+        <Link to="/jobs" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm mb-4">
+          ← Back to jobs
         </Link>
 
         {loading ? (
-          <div className="bg-white p-6 sm:p-8 rounded-lg shadow-sm space-y-4">
-            <Skeleton className="h-7 w-3/4" />
-            <Skeleton className="h-5 w-1/2" />
-            <div className="grid grid-cols-2 gap-4"><Skeleton className="h-4" /><Skeleton className="h-4" /><Skeleton className="h-4" /><Skeleton className="h-4" /></div>
-            <Skeleton className="h-24" />
+          <div className="bg-white p-8 rounded-2xl shadow-sm space-y-4 animate-pulse">
+            <div className="h-7 bg-gray-200 rounded w-3/4" />
+            <div className="h-5 bg-gray-200 rounded w-1/2" />
+            <div className="grid grid-cols-2 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-4 bg-gray-100 rounded" />)}</div>
           </div>
         ) : error ? (
-          <div role="alert" className="p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">{error}</div>
+          <div className="p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">{error}</div>
         ) : job ? (
-          <article className="bg-white p-6 sm:p-8 rounded-lg shadow-sm border border-gray-100">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{job.title}</h1>
-            <p className="text-lg text-gray-600 mb-4">{job.organization}</p>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 text-sm">
-              <div><dt className="font-medium text-gray-500">Location</dt><dd className="text-gray-900">{job.location}</dd></div>
-              <div><dt className="font-medium text-gray-500">Education</dt><dd className="text-gray-900">{job.educationRequired}</dd></div>
-              <div><dt className="font-medium text-gray-500">Salary</dt><dd className="text-gray-900">{job.salaryRange || 'Not specified'}</dd></div>
-              <div><dt className="font-medium text-gray-500">Last Date</dt><dd className="text-gray-900">{job.lastDateToApply}</dd></div>
-            </dl>
-            {job.description && <div className="prose prose-sm max-w-none text-gray-700 mb-6"><p>{job.description}</p></div>}
-            <a
-              href={job.source.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-            >
-              Apply on {job.source.name}
-              <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-            </a>
-          </article>
+          <>
+            <article className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">{job.category}</span>
+                    {job.examFamily && <span className="px-2.5 py-0.5 bg-purple-50 text-purple-700 text-xs font-medium rounded-full">{job.examFamily}</span>}
+                    <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${job.status === 'OPEN' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{job.status}</span>
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{job.title}</h1>
+                  <p className="text-lg text-gray-600 mt-1">{job.org}</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={shareJob} className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition" title="Share">
+                    <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                  </button>
+                  {user && (
+                    <button onClick={toggleTrack} disabled={tracking}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition ${tracked ? 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
+                      {tracking ? '...' : tracked ? '✓ Tracked' : '+ Track'}
+                    </button>
+                  )}
+                </div>
+              </div>
+              {shareMsg && <p className="text-sm text-green-600 mb-2">{shareMsg}</p>}
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
+                <div><p className="text-xs text-gray-500">Vacancies</p><p className="font-semibold text-gray-900">{job.totalVacancies || '—'}</p></div>
+                <div><p className="text-xs text-gray-500">Location</p><p className="font-semibold text-gray-900">{job.state === 'ALL_IN' ? 'All India' : job.state}</p></div>
+                <div><p className="text-xs text-gray-500">Fee (Gen/OBC/SC-ST)</p><p className="font-semibold text-gray-900">₹{job.generalFee ?? '—'} / ₹{job.obcFee ?? '—'} / ₹{job.scStFee ?? '—'}</p></div>
+                <div><p className="text-xs text-gray-500">Age Limit</p><p className="font-semibold text-gray-900">{job.ageMin || 18}–{job.ageMax || '—'} yrs</p></div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                <div className="p-3 bg-blue-50 rounded-lg"><p className="text-xs text-blue-600 font-medium">Apply Start</p><p className="text-sm font-semibold">{formatDate(job.applyStart)}</p></div>
+                <div className={`p-3 rounded-lg ${(daysUntil(job.applyEnd) ?? 99) <= 7 ? 'bg-red-50' : 'bg-orange-50'}`}>
+                  <p className={`text-xs font-medium ${(daysUntil(job.applyEnd) ?? 99) <= 7 ? 'text-red-600' : 'text-orange-600'}`}>Last Date to Apply</p>
+                  <p className="text-sm font-semibold">{formatDate(job.applyEnd)}</p>
+                  {daysUntil(job.applyEnd) !== null && daysUntil(job.applyEnd)! > 0 && (
+                    <p className="text-xs text-gray-500">{daysUntil(job.applyEnd)} days left</p>
+                  )}
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg"><p className="text-xs text-purple-600 font-medium">Exam Date</p><p className="text-sm font-semibold">{formatDate(job.examDate)}</p></div>
+              </div>
+
+              {job.eligibilityCriteria && (
+                <div className="mb-6"><h3 className="font-semibold text-gray-900 mb-2">Eligibility Criteria</h3><p className="text-sm text-gray-700 leading-relaxed">{job.eligibilityCriteria}</p></div>
+              )}
+              {job.howToApply && (
+                <div className="mb-6"><h3 className="font-semibold text-gray-900 mb-2">How to Apply</h3><p className="text-sm text-gray-700 leading-relaxed">{job.howToApply}</p></div>
+              )}
+              {job.selectionProcess && (
+                <div className="mb-6"><h3 className="font-semibold text-gray-900 mb-2">Selection Process</h3><p className="text-sm text-gray-700 leading-relaxed">{job.selectionProcess}</p></div>
+              )}
+
+              <div className="flex flex-wrap gap-3 mt-6">
+                {job.applyUrl && (
+                  <a href={job.applyUrl} target="_blank" rel="noopener noreferrer"
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-sm">
+                    Apply Now →
+                  </a>
+                )}
+                {job.officialNotificationUrl && (
+                  <a href={job.officialNotificationUrl} target="_blank" rel="noopener noreferrer"
+                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm">
+                    Official Notification
+                  </a>
+                )}
+                {job.sourceUrl && (
+                  <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer"
+                    className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm">
+                    View on {job.source?.name || 'Source'}
+                  </a>
+                )}
+              </div>
+            </article>
+
+            {job.changes && job.changes.length > 0 && (
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <h2 className="font-semibold text-gray-900 mb-3">Recent Changes</h2>
+                <div className="space-y-2">
+                  {job.changes.map((c) => (
+                    <div key={c.id} className="flex items-start gap-3 text-sm">
+                      <span className="px-2 py-0.5 bg-yellow-50 text-yellow-700 text-xs font-medium rounded-full shrink-0">{c.type}</span>
+                      <div>
+                        <span className="text-gray-600">{c.field}:</span>
+                        {c.before && <span className="text-gray-400 line-through ml-1">{c.before}</span>}
+                        <span className="text-gray-900 font-medium ml-1">→ {c.after}</span>
+                        <span className="text-gray-400 ml-2">{new Date(c.detectedAt).toLocaleDateString('en-IN')}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         ) : null}
-
-        <AdBanner slot="XXXXXXXXXX" format="horizontal" className="mt-8" />
-
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AffiliateCard
-            title="Prepare for This Exam"
-            description="Get mock tests, previous papers, and study material for this exam"
-            url="https://example.com/affiliate/prepare"
-            cta="Start Preparing"
-          />
-          <AffiliateCard
-            title="Best Books for Govt Exams"
-            description="Top-rated study material recommended by toppers"
-            url="https://example.com/affiliate/books"
-            cta="Shop Now"
-          />
-        </div>
       </main>
     </div>
   )
