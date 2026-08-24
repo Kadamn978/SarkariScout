@@ -38,3 +38,22 @@ export class ForgotPasswordDto {
   @IsEmail()
   email: string;
 }
+
+export class VerifyEmailDto {
+  @IsString()
+  token: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  token: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(128)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/,
+    { message: 'Password must contain uppercase, lowercase, number, and special character' },
+  )
+  newPassword: string;
+}

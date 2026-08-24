@@ -1,12 +1,14 @@
-import { Injectable, UnauthorizedException, ConflictException, ForbiddenException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, ForbiddenException, NotFoundException, GoneException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { randomBytes, timingSafeEqual } from 'crypto';
+import { randomBytes, timingSafeEqual, randomUUID } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
+import { EmailService } from '../email/email.service';
 import { RegisterDto, LoginDto } from './auth.dto';
 
 const DUMMY_HASH = '$argon2id$v=19$m=65536,t=3,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+const FRONTEND_URL = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private redis: RedisService,
+    private emailService: EmailService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -24,6 +27,9 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: { email: dto.email.toLowerCase().trim(), passwordHash, name: dto.name.trim() },
     });
+
+    // Send verification email (non-blocking)
+    this.sendVerificationEmail(user.id, user.email).catch(() => {});
 
     return this.generateTokens(user.id, user.email, user.role);
   }
@@ -76,6 +82,83 @@ export class AuthService {
 
   async logout(userId: string) {
     await this.redis.del(`refresh:${userId}`);
+  }
+
+  // --- Email Verification ---
+
+  async sendVerificationEmail(userId: string, email: string) {
+    const token = randomUUID();
+    await this.redis.set(`verify:${token}`, userId, 86400); // 24 hours
+
+    const verifyUrl = `${FRONTEND_URL}/verify-email?token=${token}`;
+    await this.emailService.sendEmail({
+      to: email,
+      subject: 'SarkariScout - Verify your email',
+      html: `
+        <h2>Welcome to SarkariScout!</h2>
+        <p>Click the link below to verify your email address:</p>
+        <p><a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px">Verify Email</a></p>
+        <p>This link expires in 24 hours.</p>
+        <p>If you didn't register, ignore this email.</p>
+      `,
+    });
+  }
+
+  async verifyEmail(token: string) {
+    const userId = await this.redis.get(`verify:${token}`);
+    if (!userId) throw new GoneException('Invalid or expired verification token');
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { emailVerifiedAt: new Date() },
+    });
+
+    await this.redis.del(`verify:${token}`);
+    return { message: 'Email verified successfully' };
+  }
+
+  // --- Password Reset ---
+
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+
+    // Always return same message to prevent email enumeration
+    if (!user) return { message: 'If email exists, reset link sent' };
+
+    const token = randomUUID();
+    await this.redis.set(`reset:${token}`, user.id, 900); // 15 minutes
+
+    const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`;
+    await this.emailService.sendEmail({
+      to: user.email,
+      subject: 'SarkariScout - Password Reset',
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Click the link below to reset your password:</p>
+        <p><a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#dc2626;color:#fff;text-decoration:none;border-radius:6px">Reset Password</a></p>
+        <p>This link expires in 15 minutes.</p>
+        <p>If you didn't request this, ignore this email.</p>
+      `,
+    });
+
+    return { message: 'If email exists, reset link sent' };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const userId = await this.redis.get(`reset:${token}`);
+    if (!userId) throw new GoneException('Invalid or expired reset token');
+
+    const passwordHash = await argon2.hash(newPassword, { memoryCost: 65536, timeCost: 3 });
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+
+    // Invalidate all refresh tokens for this user
+    await this.redis.del(`refresh:${userId}`);
+    await this.redis.del(`reset:${token}`);
+
+    return { message: 'Password reset successful' };
   }
 
   private async handleFailedLogin(email: string) {

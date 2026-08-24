@@ -69,6 +69,9 @@ export default function Login() {
               autoComplete="current-password"
             />
             {fieldErrors.password && <p id="login-password-error" className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>}
+            <div className="mt-1 text-right">
+              <Link to="/forgot-password" className="text-xs text-blue-600 hover:underline">Forgot password?</Link>
+            </div>
           </div>
           <button
             type="submit"

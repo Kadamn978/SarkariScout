@@ -84,7 +84,7 @@ export class EmailService {
     });
   }
 
-  private async sendEmail(opts: { to: string; subject: string; html: string }) {
+  async sendEmail(opts: { to: string; subject: string; html: string }) {
     this.logger.log(`Email to ${opts.to}: ${opts.subject}`);
 
     if (process.env.SMTP_HOST) {

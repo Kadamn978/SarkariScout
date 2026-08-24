@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { EmailModule } from '../email/email.module';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
@@ -17,6 +18,7 @@ if (!jwtSecret) {
       secret: jwtSecret,
       signOptions: { expiresIn: '15m' },
     }),
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],
