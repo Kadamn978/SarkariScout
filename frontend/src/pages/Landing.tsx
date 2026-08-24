@@ -9,13 +9,19 @@ export default function Landing() {
     { title: 'Personalized Alerts', desc: 'Get notified only for jobs you can apply to based on your education, state, and category.' },
     { title: '20+ Sources', desc: 'We monitor SSC, UPSC, Railways, IBPS, State PSCs and more — all in one place.' },
     { title: 'Never Miss Deadlines', desc: 'Email alerts before application deadlines close. Track exam dates, admit cards, results.' },
+    { title: 'Mock Tests', desc: 'Practice with subject-specific mock tests. Score yourself and track improvement over time.' },
+    { title: 'Previous Year Papers', desc: 'Download previous year question papers for SSC, UPSC, IBPS, RRB and more.' },
+    { title: 'Application Tracker', desc: 'Track your job applications from interest to selection. Never lose track of where you applied.' },
   ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 text-white">
       <nav className="flex justify-between items-center max-w-6xl mx-auto px-4 sm:px-6 py-4" role="navigation" aria-label="Main">
-        <span className="text-xl sm:text-2xl font-bold">SarkariScout</span>
-        <div className="flex gap-3">
+        <Link to="/" className="text-xl sm:text-2xl font-bold">SarkariScout</Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link to="/jobs" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Jobs</Link>
+          <Link to="/mock-tests" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Mock Tests</Link>
+          <Link to="/papers" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Papers</Link>
           {user ? (
             <Link to="/dashboard" className="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-white">Dashboard</Link>
           ) : (
@@ -39,7 +45,7 @@ export default function Landing() {
       <AdBanner slot="XXXXXXXXXX" format="horizontal" className="max-w-4xl mx-auto px-4 mb-8" />
 
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24" aria-label="Features">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f) => (
             <div key={f.title} className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
               <h2 className="text-lg font-semibold mb-2">{f.title}</h2>

@@ -16,6 +16,9 @@ import GoogleAuth from './pages/GoogleAuth'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import MockTests from './pages/MockTests'
+import MockTestPlay from './pages/MockTestPlay'
+import Papers from './pages/Papers'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -41,6 +44,9 @@ export default function App() {
             <Route path="/jobs/:id" element={<JobDetail />} />
             <Route path="/state/:state" element={<StateJobs />} />
             <Route path="/qualifications/:qual" element={<QualJobs />} />
+            <Route path="/mock-tests" element={<MockTests />} />
+            <Route path="/mock-tests/:id" element={<ProtectedRoute><MockTestPlay /></ProtectedRoute>} />
+            <Route path="/papers" element={<Papers />} />
             <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
             <Route path="/bug-report" element={<BugReport />} />
             <Route path="/auth/google" element={<GoogleAuth />} />

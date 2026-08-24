@@ -7,19 +7,19 @@ Single source of truth. Read this file first at the start of every session.
 
 ## Phase Map
 
-| # | Phase | Status |
-|---|---|---|
-| 0 | Documentation | Done |
-| 1 | Backend Foundation | Done |
-| 2 | Frontend Foundation | Done |
-| 3 | Security Hardening | Done |
-| 4 | Crawler / Data Engine | Done |
-| 5 | Matching Engine | Done |
-| 6 | Email Notifications | Done |
-| 7 | Tracker & Change Detection | Done |
-| 8 | Monetization | Done |
-| 9 | Testing & QA | Done |
-| 10 | Deployment | Done |
+| #  | Phase                      | Status |
+| -- | -------------------------- | ------ |
+| 0  | Documentation              | Done   |
+| 1  | Backend Foundation         | Done   |
+| 2  | Frontend Foundation        | Done   |
+| 3  | Security Hardening         | Done   |
+| 4  | Crawler / Data Engine      | Done   |
+| 5  | Matching Engine            | Done   |
+| 6  | Email Notifications        | Done   |
+| 7  | Tracker & Change Detection | Done   |
+| 8  | Monetization               | Done   |
+| 9  | Testing & QA               | Done   |
+| 10 | Deployment                 | Done   |
 
 ## API Routes (50+ total)
 
@@ -75,13 +75,13 @@ Single source of truth. Read this file first at the start of every session.
 
 ## Sprints (5/5 Complete)
 
-| Sprint | Focus | Status |
-|---|---|---|
-| Sprint 1 | Schema alignment — BRD fields, EmailPreference, CrawlLog, 51 seeded jobs | Done |
-| Sprint 2 | Crawler upgrade — source-specific parsers, crawl logging, retry, stats API | Done |
-| Sprint 3 | Eligibility matching — 6-factor scoring (edu/state/category/age/gender/qual) | Done |
-| Sprint 4 | Email service — digest, instant alerts, unsubscribe, preferences, notification log | Done |
-| Sprint 5 | Application tracker — track/untrack, stage management, tracker stats, upcoming deadlines | Done |
+| Sprint   | Focus                                                                                     | Status |
+| -------- | ----------------------------------------------------------------------------------------- | ------ |
+| Sprint 1 | Schema alignment — BRD fields, EmailPreference, CrawlLog, 51 seeded jobs                 | Done   |
+| Sprint 2 | Crawler upgrade — source-specific parsers, crawl logging, retry, stats API               | Done   |
+| Sprint 3 | Eligibility matching — 6-factor scoring (edu/state/category/age/gender/qual)             | Done   |
+| Sprint 4 | Email service — digest, instant alerts, unsubscribe, preferences, notification log       | Done   |
+| Sprint 5 | Application tracker — track/untrack, stage management, tracker stats, upcoming deadlines | Done   |
 
 ## Testing
 
@@ -103,6 +103,7 @@ Single source of truth. Read this file first at the start of every session.
 ## crewAI Agents (Full SDLC)
 
 10 specialized agents in `crewai/`:
+
 1. Product Manager — PRDs, backlog, feature prioritization
 2. Solution Architect — system design, API contracts, patterns
 3. Senior Developer — production TypeScript code

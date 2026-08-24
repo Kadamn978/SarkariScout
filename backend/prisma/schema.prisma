@@ -114,6 +114,7 @@ model User {
   documents       UserDocument[]
   bugReports      BugReport[]
   emailPreference EmailPreference?
+  mockAttempts    MockTestAttempt[]
 
   @@map("users")
 }
@@ -476,6 +477,7 @@ model MockTestAttempt {
   testId        String
   test          MockTest  @relation(fields: [testId], references: [id], onDelete: Cascade)
   userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   score         Int?
   totalAnswered Int?
   correctCount  Int?
