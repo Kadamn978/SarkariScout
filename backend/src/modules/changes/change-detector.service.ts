@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 
 export interface JobChangeDetection {
   jobId: string;
@@ -12,7 +13,10 @@ export interface JobChangeDetection {
 @Injectable()
 export class ChangeDetectorService {
   private readonly logger = new Logger(ChangeDetectorService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async detectChanges(jobId: string, newData: Record<string, any>): Promise<JobChangeDetection[]> {
     const existing = await this.prisma.job.findUnique({ where: { id: jobId } });
@@ -82,8 +86,17 @@ export class ChangeDetectorService {
       if (!profile?.notifyInstant) continue;
 
       const changeTypes = [...new Set(changes.map((c) => c.type))];
-      this.logger.log(`Would notify ${tracker.user.email} about job changes: ${changeTypes.join(', ')}`);
-      notified++;
+      try {
+        await this.emailService.sendInstantAlert(
+          tracker.userId,
+          jobId,
+          changeTypes.join(', '),
+        );
+        notified++;
+        this.logger.log(`Notified ${tracker.user.email} about job changes: ${changeTypes.join(', ')}`);
+      } catch (err) {
+        this.logger.error(`Failed to notify ${tracker.user.email}: ${(err as Error).message}`);
+      }
     }
     return notified;
   }

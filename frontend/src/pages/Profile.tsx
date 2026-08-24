@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/api'
@@ -20,9 +20,29 @@ export default function Profile() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     education: '', state: '', category: 'General', languages: [] as string[], dateOfBirth: '',
+    notifyInstant: true, notifyDigest: true,
   })
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    api.get('/users/me')
+      .then((res) => {
+        const p = res.data
+        setForm({
+          education: p.educationLevel || '',
+          state: p.state || '',
+          category: p.category || 'General',
+          languages: p.languages ? p.languages.split(',').map((l: string) => l.trim()) : [],
+          dateOfBirth: p.dob ? p.dob.split('T')[0] : '',
+          notifyInstant: p.notifyInstant ?? true,
+          notifyDigest: p.notifyDigest ?? true,
+        })
+      })
+      .catch(() => {})
+      .finally(() => setFetching(false))
+  }, [])
 
   const toggleLang = (lang: string) => {
     setForm((prev) => ({
@@ -39,8 +59,16 @@ export default function Profile() {
     setError('')
     setLoading(true)
     try {
-      await api.post('/users/profile', form)
-      navigate('/jobs')
+      await api.put('/users/me', {
+        educationLevel: form.education,
+        state: form.state,
+        category: form.category,
+        languages: form.languages.join(', '),
+        dob: form.dateOfBirth || undefined,
+        notifyInstant: form.notifyInstant,
+        notifyDigest: form.notifyDigest,
+      })
+      navigate('/dashboard')
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to save profile')
     } finally {
@@ -48,13 +76,30 @@ export default function Profile() {
     }
   }
 
+  if (fetching) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-2xl mx-auto py-12 px-4">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-48 bg-gray-200 rounded" />
+            <div className="h-4 w-64 bg-gray-100 rounded" />
+            <div className="space-y-3 mt-6">
+              {[1,2,3].map((i) => <div key={i} className="h-10 bg-gray-100 rounded" />)}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-2xl mx-auto py-6 sm:py-8 px-4">
         <div className="bg-white p-6 sm:p-8 rounded-lg shadow-sm border border-gray-100">
-          <h1 className="text-2xl font-bold mb-1">Complete Your Profile</h1>
-          <p className="text-gray-500 text-sm mb-6">Tell us about yourself to get personalized job alerts.</p>
+          <h1 className="text-2xl font-bold mb-1">Your Profile</h1>
+          <p className="text-gray-500 text-sm mb-6">Update your details to get personalized job alerts.</p>
           {error && <div role="alert" className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -101,12 +146,43 @@ export default function Profile() {
                 ))}
               </div>
             </fieldset>
+
+            <fieldset className="border border-gray-200 rounded-lg p-4">
+              <legend className="text-sm font-medium text-gray-700 px-2">Notification Preferences</legend>
+              <div className="space-y-3 mt-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.notifyInstant}
+                    onChange={(e) => setForm({ ...form, notifyInstant: e.target.checked })}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Instant Alerts</span>
+                    <p className="text-xs text-gray-500">Get notified immediately when a job changes or a new match is found</p>
+                  </div>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.notifyDigest}
+                    onChange={(e) => setForm({ ...form, notifyDigest: e.target.checked })}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Daily Digest</span>
+                    <p className="text-xs text-gray-500">Receive a daily email with all matching jobs</p>
+                  </div>
+                </label>
+              </div>
+            </fieldset>
+
             <button
               type="submit"
               disabled={loading}
               className="w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
             >
-              {loading ? 'Saving...' : 'Save Profile & Find Jobs'}
+              {loading ? 'Saving...' : 'Save Profile'}
             </button>
           </form>
         </div>

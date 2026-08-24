@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChangeDetectorService } from './change-detector.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 
 describe('ChangeDetectorService', () => {
   let service: ChangeDetectorService;
   let prisma: any;
+
+  const mockEmail = { sendInstantAlert: jest.fn().mockResolvedValue(true) };
 
   beforeEach(async () => {
     prisma = {
@@ -21,6 +24,7 @@ describe('ChangeDetectorService', () => {
       providers: [
         ChangeDetectorService,
         { provide: PrismaService, useValue: prisma },
+        { provide: EmailService, useValue: mockEmail },
       ],
     }).compile();
 

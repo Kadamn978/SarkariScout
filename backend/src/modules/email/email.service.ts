@@ -1,10 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
+import * as nodemailer from 'nodemailer';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  constructor(private prisma: PrismaService) {}
+  private transporter: nodemailer.Transporter | null = null;
+
+  constructor(private prisma: PrismaService) {
+    if (process.env.SMTP_HOST) {
+      this.transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+      this.logger.log('SMTP transporter configured');
+    } else {
+      this.logger.warn('No SMTP configured — emails will be logged only');
+    }
+  }
 
   async sendDailyDigest() {
     const profiles = await this.prisma.profile.findMany({
@@ -72,6 +90,26 @@ export class EmailService {
     });
   }
 
+  async sendEmail(opts: { to: string; subject: string; html: string }) {
+    this.logger.log(`Email to ${opts.to}: ${opts.subject}`);
+
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({
+          from: process.env.SMTP_FROM || 'SarkariScout <noreply@sarkariscout.in>',
+          to: opts.to,
+          subject: opts.subject,
+          html: opts.html,
+        });
+        this.logger.log(`Email sent to ${opts.to}`);
+      } catch (err) {
+        this.logger.error(`Email send failed: ${(err as Error).message}`);
+      }
+    } else {
+      this.logger.log(`[DRY RUN] Email to ${opts.to}: ${opts.subject}`);
+    }
+  }
+
   private async getMatchingJobs(profile: any) {
     const jobs = await this.prisma.job.findMany({
       where: { status: 'OPEN', applyEnd: { gte: new Date() } },
@@ -82,18 +120,6 @@ export class EmailService {
       if (job.state !== 'ALL_IN' && profile.state && job.state !== profile.state) return false;
       return true;
     });
-  }
-
-  async sendEmail(opts: { to: string; subject: string; html: string }) {
-    this.logger.log(`Email to ${opts.to}: ${opts.subject}`);
-
-    if (process.env.SMTP_HOST) {
-      // Production: use SMTP/Brevo
-      // TODO: integrate with Brevo API or nodemailer
-      this.logger.log('SMTP configured, would send email');
-    } else {
-      this.logger.log('No SMTP configured, email logged only');
-    }
   }
 
   private buildDigestHtml(jobs: any[], profile: any): string {
