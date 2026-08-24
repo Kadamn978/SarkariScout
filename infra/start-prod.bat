@@ -10,13 +10,25 @@ REM Start Redis if not running
 tasklist /FI "IMAGENAME eq redis-server.exe" 2>NUL | find /I "redis-server.exe" >NUL
 if %ERRORLEVEL% NEQ 0 (
     echo Starting Redis...
-    start "" "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"
+    where redis-server.exe >NUL 2>&1
+    if %ERRORLEVEL% NEQ 0 (
+        echo ERROR: redis-server.exe not found in PATH. Install Redis or add to PATH.
+        pause
+        exit /b 1
+    )
+    start "" redis-server.exe
     timeout /t 2
 )
 
 REM Check MySQL
 echo Checking MySQL...
-"D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe" -u root -e "SELECT 1" >NUL 2>&1
+where mysql.exe >NUL 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo ERROR: mysql.exe not found in PATH. Start MySQL via Laragon or add to PATH.
+    pause
+    exit /b 1
+)
+mysql.exe -u root -e "SELECT 1" >NUL 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo ERROR: MySQL not running. Start via Laragon.
     pause

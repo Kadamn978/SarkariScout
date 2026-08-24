@@ -8,7 +8,7 @@ import { LogCleanupService } from '../../common/logger/log-cleanup.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
-@Controller('admin/logs')
+@Controller('system/logs')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
 export class LogsController {

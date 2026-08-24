@@ -69,7 +69,7 @@ pnpm seed:reset     # wipe + reseed demo data
 ## 5. First-time smoke test (5 min, real browser)
 
 1. Open http://localhost:5173 → see landing with 3D hero
-2. Register `rohit@demo.com` / password → verify email arrives (Mailtrap inbox)
+2. Register `demo1@example.com` / password → verify email arrives (Mailtrap inbox)
 3. Build profile: BE Computer Science, Maharashtra, Hindi+Marathi+English, Open, 24
 4. Dashboard → see "5 applicable jobs this week" (seed data)
 5. Open a job detail → check deadline countdown + official links + affiliate slot

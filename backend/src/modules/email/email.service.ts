@@ -96,7 +96,7 @@ export class EmailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from: process.env.SMTP_FROM || 'SarkariScout <noreply@sarkariscout.in>',
+          from: process.env.SMTP_FROM || `SarkariScout <${process.env.SMTP_USER || 'noreply@example.com'}>`,
           to: opts.to,
           subject: opts.subject,
           html: opts.html,

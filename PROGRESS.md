@@ -2,7 +2,7 @@
 
 Single source of truth. Read this file first at the start of every session.
 
-**Repo:** `D:\Nilesh\laragon\www\New folder`
+**Repo:** project root directory
 **Branch:** `main` (prod) → `pre-dev` (staging) → `test` (dev)
 
 ## Phase Map

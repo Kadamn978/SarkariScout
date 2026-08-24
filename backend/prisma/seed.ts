@@ -4,8 +4,11 @@ import * as argon2 from 'argon2';
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminHash = await argon2.hash('Admin123!', { memoryCost: 65536, timeCost: 3 });
-  const userHash = await argon2.hash('Demo1234!', { memoryCost: 65536, timeCost: 3 });
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'ChangeMe!123';
+  const userPassword = process.env.SEED_USER_PASSWORD || 'ChangeMe!456';
+
+  const adminHash = await argon2.hash(adminPassword, { memoryCost: 65536, timeCost: 3 });
+  const userHash = await argon2.hash(userPassword, { memoryCost: 65536, timeCost: 3 });
 
   // Admin user
   const admin = await prisma.user.upsert({
@@ -14,7 +17,7 @@ async function main() {
     create: {
       email: 'admin@sarkariscout.in',
       passwordHash: adminHash,
-      name: 'Admin',
+      name: 'System Administrator',
       role: 'ADMIN',
       emailVerifiedAt: new Date(),
       profile: {
@@ -26,16 +29,16 @@ async function main() {
       },
     },
   });
-  console.log('Admin:', admin.email);
+  console.log('Admin seeded:', admin.email);
 
-  // Demo user - Rohit
-  const rohit = await prisma.user.upsert({
-    where: { email: 'rohit@example.com' },
+  // Demo user 1
+  const demo1 = await prisma.user.upsert({
+    where: { email: 'demo1@example.com' },
     update: {},
     create: {
-      email: 'rohit@example.com',
+      email: 'demo1@example.com',
       passwordHash: userHash,
-      name: 'Rohit Kumar',
+      name: 'Demo User One',
       role: 'USER',
       emailVerifiedAt: new Date(),
       profile: {
@@ -44,26 +47,26 @@ async function main() {
           degrees: JSON.stringify(['B.E. Computer Science']),
           state: 'Maharashtra',
           district: 'Pune',
-          languages: JSON.stringify(['Hindi', 'Marathi', 'English']),
+          languages: JSON.stringify(['Hindi', 'English']),
           category: 'GEN',
-          dob: new Date('2002-05-15'),
+          dob: new Date('2000-01-01'),
           gender: 'Male',
-          examFamilies: JSON.stringify(['SSC', 'IBPS', 'RRB', 'MPSC']),
+          examFamilies: JSON.stringify(['SSC', 'IBPS', 'RRB']),
           keywords: JSON.stringify(['engineering', 'computer science']),
         },
       },
     },
   });
-  console.log('Demo user:', rohit.email);
+  console.log('Demo user 1 seeded:', demo1.email);
 
-  // Test user - Priya
-  const priya = await prisma.user.upsert({
-    where: { email: 'priya@example.com' },
+  // Demo user 2
+  const demo2 = await prisma.user.upsert({
+    where: { email: 'demo2@example.com' },
     update: {},
     create: {
-      email: 'priya@example.com',
+      email: 'demo2@example.com',
       passwordHash: userHash,
-      name: 'Priya Singh',
+      name: 'Demo User Two',
       role: 'USER',
       emailVerifiedAt: new Date(),
       profile: {
@@ -73,14 +76,14 @@ async function main() {
           district: 'Lucknow',
           languages: JSON.stringify(['Hindi', 'English']),
           category: 'OBC',
-          dob: new Date('2000-08-20'),
+          dob: new Date('2000-06-15'),
           gender: 'Female',
-          examFamilies: JSON.stringify(['SSC CHSL', 'SSC MTS', 'UP Police']),
+          examFamilies: JSON.stringify(['SSC CHSL', 'SSC MTS']),
         },
       },
     },
   });
-  console.log('Test user:', priya.email);
+  console.log('Demo user 2 seeded:', demo2.email);
 
   // Job sources
   const sources = [
@@ -197,11 +200,7 @@ async function main() {
     });
   }
   console.log('Jobs seeded:', sampleJobs.length);
-
-  console.log('\n--- Login Credentials ---');
-  console.log('Admin:  admin@sarkariscout.in / Admin123!');
-  console.log('Rohit:  rohit@example.com / Demo1234!');
-  console.log('Priya:  priya@example.com / Demo1234!');
+  console.log('Seed complete. Use SEED_ADMIN_PASSWORD and SEED_USER_PASSWORD env vars to set passwords.');
 }
 
 main()
