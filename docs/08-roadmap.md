@@ -1,160 +1,211 @@
 # 08 — Roadmap & Progress Tracker
 
-**Version:** 1.0 · **Started:** Aug 20, 2026 · **Model:** one-man army, full ownership of every phase
+**Version:** 2.0 · **Started:** Aug 20, 2026 · **Updated:** Aug 24, 2026
+**Model:** one-man army + crewAI 10-agent system
 
 ---
 
-## Phase 0 — Planning ✅ COMPLETE (Aug 20, 2026)
+## Current State (Aug 24, 2026)
 
-| Deliverable | Status |
-|---|---|
-| Market & data-source research (NCS, UPSC, SSC, IBPS, MPSC, Employment News, aggregators) | ✅ |
-| BRD (docs/01) | ✅ |
-| Feature plan w/ priority+severity (docs/02) | ✅ |
-| Architecture & ERD (docs/03) | ✅ |
-| Data sources doc (docs/04) | ✅ |
-| Risk analysis (docs/05) | ✅ |
-| Security analysis (docs/06) | ✅ |
-| Revenue plan (docs/07) | ✅ |
-| Runbook (docs/09) | ✅ |
-| Test plan (docs/10) | ✅ |
-| **Client sign-off on scope** | ⏳ **NEXT** |
+**What's built:** Full-stack job portal with auth, jobs, matching, email, logging, security, document wallet, bug reporting, Google OAuth, crewAI agents.
 
-## Phase 0.5 — Implementation Improvements (Aug 21, 2026) ✅ COMPLETE
-
-| Deliverable | Status |
-|---|---|
-| Reference project analysis (TrailSync, Hawkeye, AI Venture Engine) | ✅ |
-| 47 implementable improvements documented (docs/11) | ✅ |
-| Security checklist created (SECURITY-CHECKLIST.md) | ✅ |
-| Agent system role charters (agents/) | ✅ |
-| PROGRESS.md tracker created | ✅ |
-
-## Phase 1 — Foundation + Security Hardening (weeks 1–2)
-
-| Task | Status |
-|---|---|
-| Monorepo scaffold: frontend/ backend/ crawler/ e2e/ infra/ | ⬜ |
-| docker-compose (postgres+redis), .env.example, README wiring | ⬜ |
-| CI pipeline (lint, typecheck, unit, integration, E2E) | ⬜ |
-| Auth module (register, verify, login, refresh, forgot, rate limits) | ⬜ |
-| Profile + eligibility schema & builder UI | ⬜ |
-| Landing page w/ 3D hero (three.js) + dark/light theme | ⬜ |
-| **Security hardening** (IDOR, rate limiting, headers, encryption) | ⬜ |
-| **Agent system** (orchestrator, role charters, PROGRESS.md) | ⬜ |
-| **QA infrastructure** (95% coverage, JUnit reports, browser matrix) | ⬜ |
-| **Exit gate:** register → build profile → polished landing ✅ | ⬜ |
-| **Exit gate:** security checklist 100% pass | ⬜ |
-
-## Phase 2 — Data Engine (weeks 3–5)
-
-| Task | Status |
-|---|---|
-| Source registry + scheduler + health dashboard | ⬜ |
-| NCS API connector (NAPIX/API-Setu creds) | ⬜ |
-| RSS connectors (UPSC, SSC regions, RRB) | ⬜ |
-| HTML scrapers (IBPS, SBI, MPSC, Employment News) | ⬜ |
-| Normalizer: field extraction (dates, fees, quals, age, vacancies) + multilingual dates | ⬜ |
-| Dedup engine + fingerprint + verification (2-source rule) | ⬜ |
-| 2-week historical backfill + weekly deadline audit job | ⬜ |
-| **Exit gate:** 20+ sources live, dedup ≥99%, admin sees health | ⬜ |
-
-## Phase 2.5 — Daily Digest Enhancement (weeks 5–6)
-
-| Task | Status |
-|---|---|
-| Three-section digest format (closing today/week/3 days) | ⬜ |
-| Enhanced job card content (fees, docs needed, syllabus) | ⬜ |
-| Profile-based filtering improvements | ⬜ |
-| Stage tracking prompts | ⬜ |
-| Change alert format | ⬜ |
-| **Exit gate:** digest matches improvement.md requirements | ⬜ |
-
-## Phase 3 — Matching & Alerts (weeks 6–7)
-
-| Task | Status |
-|---|---|
-| Eligibility engine (hard rules + scoring) + taxonomy | ⬜ |
-| Deadline guard (applyEnd & feeEnd > today 23:59:59 IST) | ⬜ |
-| Daily digest 9 AM IST (build, send, bounce handling, unsubscribe) | ⬜ |
-| Instant alerts (toggle) | ⬜ |
-| Job listing/detail pages + official links | ⬜ |
-| **Exit gate:** Rohit-profile receives ONLY applicable jobs; emails verified E2E | ⬜ |
-
-## Phase 4 — Tracker & Change Detection (weeks 8–9)
-
-| Task | Status |
-|---|---|
-| Application tracker (applied → exam → admit card → result) | ⬜ |
-| Change detection worker (venue/date/corrigendum/deadline diffing) | ⬜ |
-| Dashboard (stats, upcoming exams, weekly alert summary) | ⬜ |
-| Search + advanced filters | ⬜ |
-| **Exit gate:** tracker + change alerts proven on real monitored pages | ⬜ |
-
-## Phase 5 — Monetize (weeks 10–12)
-
-| Task | Status |
-|---|---|
-| Ad engine (LHS/RHS/TOP/BOTTOM slots, rotation, no-overlay contract) | ⬜ |
-| Affiliate manager + click tracking | ⬜ |
-| Premium: Razorpay checkout, webhooks, plans, entitlement gates | ⬜ |
-| Admin panel (source health, ingest logs, job override, feature flags) | ⬜ |
-| **Ad-blocker detection + support prompt** | ⬜ |
-| **Visitor counter (social proof)** | ⬜ |
-| **Copyright verification** | ⬜ |
-| **Exit gate:** ads live (clean), affiliate tracking live, premium checkout OK | ⬜ |
-
-## Phase 5.5 — DevOps + Deployment (weeks 12–13)
-
-| Task | Status |
-|---|---|
-| Docker deployment script (one-line install) | ⬜ |
-| Environment isolation (dev/staging/prod) | ⬜ |
-| Branch strategy (main/develop/feature/bugfix/hotfix) | ⬜ |
-| Production guardrails | ⬜ |
-| **Exit gate:** deployment script works, environments isolated | ⬜ |
-
-## Phase 6 — Growth (quarter 2+)
-
-| Task | Status |
-|---|---|
-| SEO public pages + sitemap + schema.org | ⬜ |
-| PWA + referral program | ⬜ |
-| Telegram/WhatsApp channel (users requested often) | ⬜ |
-| Mobile app (React Native wrapper) | ⬜ |
-| **Offline page caching (PWA)** | ⬜ |
-| **Bounce/SPAM email feedback loop** | ⬜ |
-| **Encrypted communication (TLS 1.2+)** | ⬜ |
-| **Exit gate:** organic traffic growing, referral loop live | ⬜ |
-
-## Phase 6.5 — UX Polish (quarter 2+)
-
-| Task | Status |
-|---|---|
-| Clean ad placement rules | ⬜ |
-| Skeleton loaders (TrailSync pattern) | ⬜ |
-| Glass morphism design system | ⬜ |
-| Account deletion flow (DPDP compliant) | ⬜ |
-| One-click unsubscribe (RFC 8058) | ⬜ |
-| **Exit gate:** clean UX, no intrusive ads, fast load times | ⬜ |
-
-## Post-₹10L (scale)
-
-- Reliability upgrades (paid workers, SES, SLA), content team, paid acquisition experiments.
+**What's next:** Mock tests, previous papers, premium subscriptions, crawler deployment, VPS setup.
 
 ---
 
-## Weekly cadence (how we run)
+## Phase 0 — Documentation ✅ COMPLETE
+
+| Deliverable | Status |
+|---|---|
+| BRD, architecture, feature plan, data sources | ✅ |
+| Risk analysis, security analysis, revenue plan | ✅ |
+| Runbook, test plan, competitive analysis | ✅ |
+| Agent system (10 crewAI agents) | ✅ |
+| PROGRESS.md, SECURITY-CHECKLIST.md | ✅ |
+
+## Phase 1 — Backend Foundation ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| NestJS 10 + Prisma 5 + MySQL 8.4 + Redis 5.0 | ✅ |
+| Auth module (register, login, refresh, logout) | ✅ |
+| Google OAuth SSO (Passport.js) | ✅ |
+| JWT 15min access + 7d refresh in Redis | ✅ |
+| Token rotation + reuse detection | ✅ |
+| Account lockout (5 fails = 15min) | ✅ |
+| Email verification + password reset | ✅ |
+| Users module (profile, update, delete) | ✅ |
+| Jobs module (list, detail, track, tracked) | ✅ |
+| Crawler module (source, crawlAll, status) | ✅ |
+| Matching module (myJobs, stats) | ✅ |
+| Email module (digest, testWelcome) | ✅ |
+| Changes module (jobChanges, recent, unnotified) | ✅ |
+| Documents module (upload, list, setDefault, delete) | ✅ |
+| Feedback module (bugs, admin status updates) | ✅ |
+| Health module (healthCheck) | ✅ |
+| Admin Logs module (7 endpoints) | ✅ |
+| 40+ API routes total | ✅ |
+| Custom logger + audit/error separation | ✅ |
+| HTTP interceptor + global exception filter | ✅ |
+
+## Phase 2 — Frontend Foundation ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| React 18 + Vite 6 + Tailwind v4 | ✅ |
+| 16 pages (Landing, Login, Register, Profile, Dashboard, Jobs, JobDetail, etc.) | ✅ |
+| Google OAuth SSO button (Login + Register) | ✅ |
+| Auth context with JWT management | ✅ |
+| Protected routes + role-based access | ✅ |
+| State-wise jobs page (/state/:state) | ✅ |
+| Qualification-wise jobs page (/qualifications/:qual) | ✅ |
+| Document Wallet page (/documents) | ✅ |
+| Bug Report page (/bug-report) | ✅ |
+| Google Auth callback page (/auth/google) | ✅ |
+| PasswordInput component (show/hide) | ✅ |
+| ErrorBoundary component | ✅ |
+| Navbar component | ✅ |
+| Affiliate cards on JobDetail | ✅ |
+| Sidebar with state/qualification links | ✅ |
+
+## Phase 3 — Security Hardening ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| Argon2 hashing (memoryCost: 65536) | ✅ |
+| Timing-safe login (padded buffer comparison) | ✅ |
+| Token rotation + reuse detection | ✅ |
+| Helmet CSP (11 directives) | ✅ |
+| CORS production validation | ✅ |
+| Rate limiting per route | ✅ |
+| Input validation (whitelist, max length) | ✅ |
+| Error messages hidden in production | ✅ |
+| Generic login errors (no user enumeration) | ✅ |
+| .env files blocked by pre-commit hook | ✅ |
+| Git hooks enforce author identity | ✅ |
+| PII removed from codebase | ✅ |
+| SECURITY-CHECKLIST.md maintained | ✅ |
+
+## Phase 4 — Data Engine ✅ COMPLETE (seed data)
+
+| Task | Status |
+|---|---|
+| 10 job sources registered (SSC, UPSC, IBPS, RRB, NCS, MPSC, DRDO, ISRO, Employment News) | ✅ |
+| 14 diverse jobs seeded across 8 categories | ✅ |
+| Job categories: GOVERNMENT, PSU, BANKING, RAILWAY, DEFENCE, POLICE, IT, INTERNSHIP | ✅ |
+| Fingerprint deduplication | ✅ |
+| Crawler module with scheduler | ✅ |
+| Real crawlers (production) | ⬜ needs deployment |
+| NCS API integration | ⬜ needs API keys |
+| RSS connectors | ⬜ needs implementation |
+
+## Phase 5 — Matching Engine ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| Eligibility engine (hard rules + scoring) | ✅ |
+| Deadline guard (applyEnd > today) | ✅ |
+| Profile-based filtering | ✅ |
+| State-wise job listing | ✅ |
+| Qualification-wise job listing | ✅ |
+
+## Phase 6 — Email Notifications ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| Daily digest (9:05 AM IST) | ✅ |
+| CronService (every 6h crawl + digest) | ✅ |
+| SMTP integration (Mailtrap dev / Brevo prod) | ✅ |
+| Email verification flow | ✅ |
+| Password reset email | ✅ |
+
+## Phase 7 — Tracker & Change Detection ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| Application tracker (applied → exam → result) | ✅ |
+| Change detection worker | ✅ |
+| Dashboard (stats, upcoming exams) | ✅ |
+
+## Phase 8 — Monetization ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| Affiliate cards on job detail (Amazon, coaching) | ✅ |
+| Ad slot placeholders | ✅ |
+| Premium subscription | ⬜ Phase 5 |
+| Admin panel | ✅ (logs API) |
+
+## Phase 9 — Testing & QA ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| 50 unit tests, 8 suites, all passing | ✅ |
+| Auth: 22 tests (timing-safe, rotation, reuse) | ✅ |
+| Users: 3 tests, Jobs: 7 tests, Health: 4 tests | ✅ |
+| TypeScript clean (both frontend + backend) | ✅ |
+
+## Phase 10 — Deployment ⬜ IN PROGRESS
+
+| Task | Status |
+|---|---|
+| Docker multi-stage build | ✅ |
+| docker-compose.prod.yml | ✅ |
+| Nginx reverse proxy | ✅ |
+| deploy.bat / start-prod.bat | ✅ |
+| Google OAuth setup (Cloud Console) | ⬜ needs credentials |
+| VPS deployment | ⬜ needs hosting |
+| SSL certificate | ⬜ needs domain |
+| DNS configuration | ⬜ needs domain |
+
+---
+
+## Phase 11 — crewAI Agent System ✅ COMPLETE
+
+| Task | Status |
+|---|---|
+| 10 specialized agents defined | ✅ |
+| 5 crew formations (full_sdlc, feature, security, data, research) | ✅ |
+| CLI runner (research, security, feature, data, sprint) | ✅ |
+| Python deps installed on Windows | ✅ |
+| LLM API keys configured | ⬜ needs OPENAI_API_KEY |
+
+## Phase 12 — Next Features ⬜ UPCOMING
+
+| Task | Priority |
+|---|---|
+| Mock Test engine (questions, attempts, scoring) | High |
+| Previous Year Papers section | High |
+| Premium subscription (Razorpay) | High |
+| Telegram/WhatsApp job alerts | Medium |
+| PWA + offline support | Medium |
+| SEO optimization + sitemap | Medium |
+| Mobile app (React Native) | Low |
+
+---
+
+## Git History (all Nilesh Kadam)
+
+```
+b0f6e79 docs: update PROGRESS.md
+970e4ff feat: Google OAuth SSO + crewAI full SDLC + clean seed data
+e8f4995 feat: document wallet + bug reports + job categories
+abe0cc0 feat: revenue pages — state/qualification jobs, affiliate cards
+86b385c docs: competitive analysis — 7 competitors
+95786cf test: add users, jobs, health tests + harden Helmet CSP
+4d38da5 fix(security): remove PII, generic names, no hardcoded secrets
+b858010 fix: agent audit compliance — Docker, Redis, CSP, CORS
+...30+ more commits
+```
+
+---
+
+## Weekly cadence
 
 | Day | Activity |
 |---|---|
-| Mon | Plan week, sync progress tracker, review risk log |
-| Tue–Thu | Build + test (feature-branch → CI → E2E → merge) |
-| Fri | Source health review, deadline audit, security checks, update docs |
-| Sat | Marketing ops (social posts from data, SEO tweaks), revenue dashboard |
+| Mon | Plan week, run `python crewai/run.py research`, sync PROGRESS.md |
+| Tue–Thu | Build + test (feature-branch → CI → merge) |
+| Fri | Run `python crewai/run.py security`, update docs |
+| Sat | Marketing ops, revenue dashboard |
 | Sun | Off / backlog grooming |
-
-## How progress is reported to you
-
-- This file's ✅/⬜ is updated after **every working session**
-- Weekly summary message: work done, % progress per phase, blockers, risks changed, next week's plan

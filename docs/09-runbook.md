@@ -1,6 +1,6 @@
 # 09 — Runbook (run on ANY local system)
 
-**Version:** 1.0 · **Tested on:** Windows 11 (Laragon), macOS, Ubuntu · **Goal:** fresh machine → working full stack in < 30 minutes
+**Version:** 2.0 · **Tested on:** Windows 11 (Laragon) · **Goal:** fresh machine → working full stack in < 30 minutes
 
 ---
 
@@ -8,127 +8,249 @@
 
 | Tool | Version | Why |
 |---|---|---|
-| Node.js | ≥ 20 LTS | all services |
-| pnpm | ≥ 9 | workspaces + speed (npm fallback documented) |
-| Docker Desktop | latest | postgres + redis locally |
-| Git | latest | clone |
-| Browser | Chrome/Edge/Firefox | dev + E2E |
+| Node.js | ≥ 20 LTS (v22.11.0 tested) | all services |
+| npm | ≥ 9 | package management |
+| MySQL 8.4 | via Laragon | primary database |
+| Redis 5.0 | via Laragon | session cache + JWT storage |
+| Git | latest | version control |
+| Python | ≥ 3.12 | crewAI agents |
+| Browser | Chrome/Edge/Firefox | dev |
 
-Optional: Laragon (Windows users who prefer it — we only need its Node/Docker coexistence; our stack is Docker-native so Laragon isn't required).
+**Laragon path:** `D:\Nilesh\laragon`
+**MySQL binary:** `D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe` (root, no password)
+
+---
 
 ## 2. One-time setup
 
 ```bash
 # 1. Clone
-git clone <repo-url> sarkariradar
-cd sarkariradar
+git clone <repo-url> "New folder"
+cd "New folder"
 
-# 2. Install dependencies (workspaces installs frontend+backend+crawler+e2e)
-pnpm install
+# 2. Install backend dependencies
+cd backend
+npm install
 
-# 3. Start infra (Postgres + Redis)
-docker compose -f infra/docker-compose.yml up -d
-# verify: docker compose -f infra/docker-compose.yml ps   → both "healthy"
+# 3. Install frontend dependencies
+cd ../frontend
+npm install
 
-# 4. Configure environment
-cp infra/.env.example .env          # root env consumed by all services
-#  .env needs: DATABASE_URL, REDIS_URL, JWT_SECRET, MAILTRAP_* (dev email),
-#              BREVO_API_KEY (optional until prod), RAZORPAY_KEY_* (Phase 5)
+# 4. Start infrastructure (Laragon)
+#    - Start MySQL and Redis from Laragon tray
 
-# 5. Database schema + seed
-pnpm --filter backend prisma migrate dev
-pnpm --filter backend db:seed       # demo user, 5 sources, ~40 sample jobs, 1 tracked job
+# 5. Start Redis manually (if not in Laragon)
+Start-Process "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"
 
-# 6. Start everything
-pnpm dev                            # runs: backend:3000, frontend:5173, crawler worker
+# 6. Create database
+& "D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe" -u root -e "CREATE DATABASE IF NOT EXISTS sarkariscout;"
+
+# 7. Configure environment
+cd backend
+cp .env.example .env
+# Edit .env with your settings (at minimum: JWT_SECRET, DATABASE_URL)
+
+# 8. Run Prisma migration
+npx prisma migrate dev
+
+# 9. Seed database
+npx prisma db seed
+
+# 10. Start backend
+cd backend
+npx ts-node src/main.ts
+# OR for dev with watch:
+npx nest start --watch
+
+# 11. Start frontend (new terminal)
+cd frontend
+npm run dev
 ```
+
+---
 
 ## 3. What should be running
 
 | Service | URL | Health check |
 |---|---|---|
 | API | http://localhost:3000/api/health | `{"status":"ok","db":"up","redis":"up"}` |
-| Frontend | http://localhost:5173 | landing page with 3D hero |
-| Postgres | localhost:5432 | `docker compose ps` |
-| Redis | localhost:6379 | `docker compose ps` |
-| Crawler worker | console log | "worker ready, N queues listening" |
+| Frontend | http://localhost:5173 | landing page |
+| MySQL | localhost:3306 | `mysql -u root -e "SELECT 1"` |
+| Redis | localhost:6379 | `redis-cli ping` → PONG |
+
+---
 
 ## 4. Everyday commands
 
 ```bash
-pnpm dev            # all services, watch mode
-pnpm lint           # eslint all packages
-pnpm typecheck      # tsc all packages
-pnpm test           # unit + integration (Jest)
-pnpm test:e2e       # Playwright: Chromium (full) + Firefox/WebKit (smoke)
-pnpm crawl:once     # run one full source sweep manually (dev data refresh)
-pnpm digest:now     # force-run the 9 AM digest immediately (test alert)
-pnpm seed:reset     # wipe + reseed demo data
+# Backend
+cd backend
+npx nest start --watch          # dev with hot reload
+npx ts-node src/main.ts        # single run
+npx jest --forceExit            # run all 50 tests
+npx prisma migrate dev          # create migration
+npx prisma db seed              # reseed database
+
+# Frontend
+cd frontend
+npm run dev                     # dev server with HMR
+npx tsc --noEmit                # typecheck
+npm run build                   # production build
+
+# crewAI agents
+cd crewai
+python run.py research          # competitive research
+python run.py security          # security audit
+python run.py feature "add mock tests"  # new feature
+python run.py data              # data pipeline
+python run.py sprint "full sprint goal"  # all 10 agents
 ```
 
-## 5. First-time smoke test (5 min, real browser)
+---
 
-1. Open http://localhost:5173 → see landing with 3D hero
-2. Register `demo1@example.com` / password → verify email arrives (Mailtrap inbox)
-3. Build profile: BE Computer Science, Maharashtra, Hindi+Marathi+English, Open, 24
-4. Dashboard → see "5 applicable jobs this week" (seed data)
-5. Open a job detail → check deadline countdown + official links + affiliate slot
-6. Track a job → tracker shows stages
-7. Run `pnpm digest:now` → email arrives in Mailtrap listing only eligible jobs
-8. Run `pnpm test:e2e` → all green
+## 5. crewAI Agent System
 
-## 6. Windows-specific notes
+### Setup
+```bash
+# Install Python deps (Windows)
+python -m pip install crewai crewai-core json-repair json5 pydantic pydantic_settings litellm aiofiles aiosqlite chromadb appdirs regex imageio Pillow img2pdf
 
-- **Docker Desktop on Windows:** use WSL2 backend; if Hyper-V conflicts with Laragon's Apache, run Laragon services on a different port (8000+) or stop Laragon during docker compose up.
-- **Long paths:** enable `git config --global core.longpaths true` before clone.
-- **Ports:** if 3000/5173 are busy, override with `PORT` / `VITE_PORT` env vars.
-- **PowerShell:** run pnpm via `pnpm.cmd` if aliases fail; avoid `&&` chaining (use `;`).
-- **Firewall:** allow node.exe on private networks for local E2E browser launch.
+# Set API keys in crewai/.env
+OPENAI_API_KEY=sk-...          # for GPT-4o agents
+ANTHROPIC_API_KEY=sk-ant-...   # for Claude agents
+```
 
-## 7. Troubleshooting
+### 10 Agents
+| # | Agent | Role | Model |
+|---|---|---|---|
+| 1 | Product Manager | PRDs, backlog, prioritization | GPT-4o |
+| 2 | Solution Architect | System design, API contracts | GPT-4o |
+| 3 | Senior Developer | Production TypeScript code | Claude |
+| 4 | QA Engineer | Tests, validation, bug reports | GPT-4o |
+| 5 | DevOps Engineer | Docker, CI/CD, monitoring | GPT-4o |
+| 6 | Security Engineer | OWASP audits, vulnerabilities | Claude |
+| 7 | Data Engineer | Crawlers, scraping, normalization | GPT-4o |
+| 8 | UX Designer | UI/UX, accessibility, responsive | GPT-4o |
+| 9 | Competitive Intel | Competitor monitoring | GPT-4o |
+| 10 | Scrum Master | Sprint planning, progress tracking | GPT-4o |
+
+### Run commands
+```bash
+# Quick tasks
+python crewai/run.py research           # weekly competitive analysis
+python crewai/run.py security           # security audit of codebase
+python crewai/run.py data               # data pipeline health check
+
+# Feature development (full SDLC)
+python crewai/run.py feature "document wallet upload limit increase"
+
+# Full sprint (all 10 agents)
+python crewai/run.py sprint "implement mock test engine with 100 questions"
+```
+
+### 5 Crew Formations
+- **full_sdlc_crew** — all 10 agents, sequential
+- **feature_crew** — PM → Architect → Dev → QA
+- **security_crew** — Security → Dev → DevOps
+- **data_crew** — Data → Architect → Dev
+- **research_crew** — Competitive Intel → PM → UX
+
+---
+
+## 6. First-time smoke test
+
+1. Open http://localhost:5173 → see landing page
+2. Click "Sign in with Google" or "Register" → create account
+3. Build profile: Graduate, Maharashtra, GEN
+4. Dashboard → see applicable jobs from seed data (14 jobs)
+5. Browse /jobs → filter by category, state, qualification
+6. Open /documents → upload a test document
+7. Open /bug-report → submit a test bug report
+8. Run `npx jest --forceExit` → 50/50 tests passing
+
+---
+
+## 7. Git workflow
+
+```bash
+# Branches
+main          # production
+pre-dev       # staging
+test          # development
+
+# Hooks (automatic)
+pre-commit    # blocks .env files, warns on hardcoded secrets
+commit-msg    # enforces Nilesh Kadam author identity
+
+# Commit format
+git add <files>
+git commit -m "feat: description"
+git commit -m "fix: description"
+git commit -m "docs: description"
+git commit -m "test: description"
+```
+
+---
+
+## 8. Windows-specific notes
+
+- **PowerShell:** use `;` not `&&` for chaining commands
+- **MySQL:** use full path: `& "D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe" -u root`
+- **Redis:** start manually: `Start-Process "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"`
+- **npm install:** may fail with caniuse-lite issue in npm 11.12.1; use `npm pack` workaround for individual packages
+- **nest build:** fails (missing lodash in CLI); use `npx ts-node src/main.ts` directly
+- **Python crewAI:** uvloop not supported on Windows; install deps individually
+
+---
+
+## 9. Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `DATABASE_URL` connect fail | docker compose up; check port 5432 free; `docker compose logs postgres` |
-| Prisma migrate fails on Windows | ensure Node ≥20, delete `node_modules/.prisma` then `pnpm --filter backend prisma generate` |
-| E2E browsers not found | `pnpm --filter e2e exec playwright install chromium firefox webkit` |
-| Emails not arriving | dev = Mailtrap only (check inbox + integration tab); prod = Brevo, check SPF/DKIM via mail-tester |
-| Crawler returns 403 | source rate-limited → backoff active; check logs; switch source to mirror (config flag) |
-| Worker not consuming | Redis URL wrong or container down; `docker compose logs redis` |
-| HMR slow on Windows | set `VITE_USE_NATIVE_HMR=1`; keep node_modules on NTFS (not network drive) |
+| `DATABASE_URL` connect fail | Start MySQL in Laragon; check port 3306 free |
+| Prisma migrate fails | `npx prisma generate` then `npx prisma migrate dev` |
+| Redis connection refused | Start Redis: `Start-Process "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"` |
+| `nest build` fails | Use `npx ts-node src/main.ts` instead |
+| npm install fails | Try `npm install --legacy-peer-deps` or `npm pack` workaround |
+| crewAI import errors | Install missing deps: `python -m pip install <module>` |
+| Google OAuth callback fails | Check GOOGLE_CLIENT_ID/SECRET in .env, verify callback URL |
+| 50/50 tests failing | Run `npx jest --forceExit` from backend/ directory |
 
-## 8. Data backup (local)
+---
 
-```bash
-docker compose exec postgres pg_dump -U sarkariradar sarkariradar > backup_$(date +%F).sql
-# restore:
-docker compose exec -T postgres psql -U sarkariradar sarkariradar < backup_2026-08-20.sql
+## 10. Key file locations
+
+```
+New folder/
+├── backend/
+│   ├── src/main.ts              # NestJS bootstrap
+│   ├── src/app.module.ts        # 16 modules
+│   ├── prisma/schema.prisma     # 18 tables, 6 enums
+│   ├── prisma/seed.ts           # 14 jobs, 10 sources
+│   ├── .env                     # secrets (gitignored)
+│   └── .env.example             # template
+├── frontend/
+│   ├── src/App.tsx              # 17 routes
+│   ├── src/pages/               # 16 pages
+│   └── src/components/          # reusable UI
+├── crewai/
+│   ├── agents.py                # 10 specialized agents
+│   ├── run.py                   # CLI runner
+│   └── requirements.txt         # Python deps
+├── infra/
+│   ├── docker-compose.yml       # MySQL + Redis
+│   └── docker-compose.prod.yml  # production stack
+├── docs/                        # 19 documentation files
+├── agents/                      # 6 role charters
+├── PROGRESS.md                  # single source of truth
+├── SECURITY-CHECKLIST.md        # OWASP compliance
+└── MISTAKES.md                  # self-learning loop
 ```
 
-## 9. Production deployment (₹0) — checklist
+---
 
-1. **Neon:** create project → copy pooled DATABASE_URL → `prisma migrate deploy`
-2. **Upstash:** create Redis → REDIS_URL
-3. **Brevo:** verify domain, set SPF/DKIM/DMARC → API key (dev keeps Mailtrap)
-4. **Render:** create web service (backend, `pnpm start:prod`) + background worker (crawler, `pnpm start:worker`) via `infra/render.yaml`; attach env vars
-5. **Vercel:** import frontend repo folder, env vars, deploy
-6. **cron-job.org:** 9 AM IST digest trigger → `POST https://api.yourdomain.com/cron/digest` (signed secret header), hourly source sweeps
-7. **UptimeRobot:** monitor `/api/health` + homepage
-8. **DNS:** CNAME www → Vercel; A record → Render (or Cloudflare proxy, free)
-9. **Security pass:** run pre-launch checklist (docs/06 §8)
-
-## 10. Rollback
-
-- Backend/worker: Render deploy previous version (one-click)
-- Frontend: Vercel instant rollback
-- DB: restore nightly pg_dump (Neon PITR on paid later; nightly dumps free via cron)
-- Feature flags in admin panel disable risky features without redeploy
-
-## 11. Who does what (support matrix)
-
-| Problem | Action |
+### Change log
+| Date | Change |
 |---|---|
-| Any runtime issue | Check logs (Render/console), health endpoint, then runbook §7 |
-| Source parse failure | Source dashboard → quarantine → fix selector → replay queue |
-| Email bounce spike | Pause affected segment → verify domain auth → warm-up plan |
-| Security incident | Execute incident plan docs/06 §7 |
+| Aug 24, 2026 | v2.0 — Updated for crewAI, Google OAuth, MySQL, current stack |
+| Aug 20, 2026 | v1.0 — Initial runbook |
