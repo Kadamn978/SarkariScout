@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
+}
+
+.dark {
+  color-scheme: dark;
 }

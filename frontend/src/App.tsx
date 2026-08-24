@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import Footer from './components/Footer'
 import Landing from './pages/Landing'
@@ -60,6 +61,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ErrorBoundary>
+      <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -89,6 +91,7 @@ export default function App() {
           </Routes>
         </AuthProvider>
       </BrowserRouter>
+      </ThemeProvider>
     </ErrorBoundary>
   )
 }

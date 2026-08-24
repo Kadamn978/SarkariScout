@@ -2,114 +2,222 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/api'
-import Navbar from '../components/Navbar'
 
 interface TrackedJob {
-  id: string
-  jobId: string
-  stage: string | null
-  applied: boolean
-  createdAt: string
-  job: {
-    id: string
-    title: string
-    org: string
-    state: string
-    applyEnd: string | null
-    status: string
-  }
+  id: string; jobId: string; stage: string | null;
+  job: { id: string; title: string; org: string; state: string; applyEnd: string | null; status: string; totalVacancies: number | null; };
+  createdAt: string;
+}
+
+interface DeadlineJob {
+  id: string; title: string; org: string; applyEnd: string; totalVacancies: number | null; state: string;
 }
 
 export default function Dashboard() {
   const { user } = useAuth()
   const [trackedJobs, setTrackedJobs] = useState<TrackedJob[]>([])
+  const [deadlines, setDeadlines] = useState<DeadlineJob[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/jobs/user/tracked')
-      .then((res) => setTrackedJobs(res.data))
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    Promise.all([
+      api.get('/jobs/user/tracked').catch(() => ({ data: [] })),
+      api.get('/jobs/upcoming?days=14').catch(() => ({ data: [] })),
+    ]).then(([tracked, upcoming]) => {
+      setTrackedJobs(tracked.data)
+      setDeadlines(upcoming.data)
+    }).finally(() => setLoading(false))
   }, [])
 
-  const appliedCount = trackedJobs.filter((t) => t.applied).length
+  function daysUntil(dateStr: string) {
+    const diff = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000)
+    return diff
+  }
+
+  const appliedJobs = trackedJobs.filter((t) => t.stage === 'APPLIED' || t.stage === 'EXAM_PREP' || t.stage === 'EXAM_DONE' || t.stage === 'SELECTED')
+  const interestedJobs = trackedJobs.filter((t) => !t.stage || t.stage === 'INTERESTED')
+
+  const stageColors: Record<string, string> = {
+    INTERESTED: 'bg-gray-100 text-gray-700',
+    APPLIED: 'bg-blue-100 text-blue-700',
+    EXAM_PREP: 'bg-purple-100 text-purple-700',
+    EXAM_DONE: 'bg-orange-100 text-orange-700',
+    SELECTED: 'bg-green-100 text-green-700',
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-gray-600 mb-6">Welcome back, {user?.name || user?.email}</p>
+      <div className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+            <p className="text-gray-600 mt-1">Welcome back, {user?.name || user?.email}</p>
+          </div>
+          {user?.role === 'ADMIN' && (
+            <Link to="/admin" className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition">
+              Admin Panel
+            </Link>
+          )}
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-            <p className="text-sm text-gray-500 mb-1">Tracked Jobs</p>
-            <p className="text-2xl sm:text-3xl font-bold text-blue-600">{trackedJobs.length}</p>
-          </div>
-          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-            <p className="text-sm text-gray-500 mb-1">Applied</p>
-            <p className="text-2xl sm:text-3xl font-bold text-green-600">{appliedCount}</p>
-          </div>
-          <div className="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-            <p className="text-sm text-gray-500 mb-1">Pending</p>
-            <p className="text-2xl sm:text-3xl font-bold text-orange-600">{trackedJobs.length - appliedCount}</p>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          <Link to="/jobs" className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition">
+            <p className="text-2xl font-bold text-blue-600">{trackedJobs.length}</p>
+            <p className="text-sm text-gray-500">Tracked Jobs</p>
+          </Link>
+          <Link to="/mock-tests" className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-200 transition">
+            <p className="text-2xl font-bold text-purple-600">11</p>
+            <p className="text-sm text-gray-500">Mock Tests</p>
+          </Link>
+          <Link to="/papers" className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition">
+            <p className="text-2xl font-bold text-green-600">20</p>
+            <p className="text-sm text-gray-500">Papers</p>
+          </Link>
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+            <p className="text-2xl font-bold text-orange-600">{deadlines.length}</p>
+            <p className="text-sm text-gray-500">Expiring Soon</p>
           </div>
         </div>
 
-        <div className="flex gap-3 mb-8">
-          <Link to="/jobs" className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          <Link to="/jobs" className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
             Browse Jobs
           </Link>
-          <Link to="/profile" className="inline-block px-6 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+          <Link to="/profile" className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
             Edit Profile
+          </Link>
+          <Link to="/email-preferences" className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+            Email Settings
+          </Link>
+          <Link to="/documents" className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+            My Documents
           </Link>
         </div>
 
-        <h2 className="text-lg font-semibold mb-4">Your Tracked Jobs</h2>
-        {loading ? (
-          <div className="space-y-3">{[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 animate-pulse">
-              <div className="h-5 w-3/4 bg-gray-200 rounded mb-2" />
-              <div className="h-4 w-1/2 bg-gray-100 rounded" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Tracked Jobs */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Your Tracked Jobs</h2>
+              <Link to="/jobs" className="text-sm text-blue-600 hover:text-blue-700">Find More →</Link>
             </div>
-          ))}</div>
-        ) : trackedJobs.length === 0 ? (
-          <div className="bg-white p-8 rounded-lg shadow-sm text-center">
-            <p className="text-gray-500 mb-2">No tracked jobs yet</p>
-            <p className="text-gray-400 text-sm">Browse jobs and click "Track" to save them here</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {trackedJobs.map((t) => (
-              <Link
-                key={t.id}
-                to={`/jobs/${t.job.id}`}
-                className="block bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{t.job.title}</h3>
-                    <p className="text-sm text-gray-600">{t.job.org} &middot; {t.job.state}</p>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 animate-pulse">
+                    <div className="h-5 w-3/4 bg-gray-200 rounded mb-2" />
+                    <div className="h-4 w-1/2 bg-gray-100 rounded" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    {t.applied && (
-                      <span className="px-2 py-0.5 text-xs bg-green-50 text-green-700 rounded-full">Applied</span>
+                ))}
+              </div>
+            ) : trackedJobs.length === 0 ? (
+              <div className="bg-white p-10 rounded-xl text-center border border-gray-100">
+                <p className="text-4xl mb-3">📋</p>
+                <p className="text-gray-900 font-medium mb-1">No tracked jobs yet</p>
+                <p className="text-gray-400 text-sm mb-4">Browse jobs and click Track to save them here</p>
+                <Link to="/jobs" className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                  Browse Jobs
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {trackedJobs.slice(0, 10).map((t) => (
+                  <Link key={t.id} to={`/jobs/${t.job.id}`}
+                    className="block bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md hover:border-blue-200 transition">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-gray-900 truncate">{t.job.title}</h3>
+                        <p className="text-sm text-gray-500">{t.job.org} · {t.job.state === 'ALL_IN' ? 'All India' : t.job.state}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {t.stage && (
+                          <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${stageColors[t.stage] || 'bg-gray-100 text-gray-700'}`}>
+                            {t.stage.replace('_', ' ')}
+                          </span>
+                        )}
+                        <span className={`px-2 py-0.5 text-xs rounded-full ${t.job.status === 'OPEN' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {t.job.status}
+                        </span>
+                      </div>
+                    </div>
+                    {t.job.applyEnd && (
+                      <p className="text-xs text-gray-400 mt-2">
+                        Deadline: {new Date(t.job.applyEnd).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {daysUntil(t.job.applyEnd) <= 7 && (
+                          <span className={`ml-2 font-medium ${daysUntil(t.job.applyEnd) <= 3 ? 'text-red-600' : 'text-orange-500'}`}>
+                            ({daysUntil(t.job.applyEnd)} days left)
+                          </span>
+                        )}
+                      </p>
                     )}
-                    <span className={`px-2 py-0.5 text-xs rounded-full ${
-                      t.job.status === 'OPEN' ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {t.job.status}
-                    </span>
-                  </div>
-                </div>
-                {t.job.applyEnd && (
-                  <p className="text-xs text-gray-500 mt-1">Deadline: {new Date(t.job.applyEnd).toLocaleDateString()}</p>
+                  </Link>
+                ))}
+                {trackedJobs.length > 10 && (
+                  <p className="text-center text-sm text-gray-400 py-2">+ {trackedJobs.length - 10} more tracked jobs</p>
                 )}
-              </Link>
-            ))}
+              </div>
+            )}
           </div>
-        )}
-      </main>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Expiring Deadlines */}
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Expiring Deadlines</h2>
+              {deadlines.length === 0 ? (
+                <div className="bg-white p-4 rounded-xl text-center border border-gray-100">
+                  <p className="text-sm text-gray-400">No upcoming deadlines</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {deadlines.slice(0, 6).map((job) => (
+                    <Link key={job.id} to={`/jobs/${job.id}`}
+                      className="block bg-white p-3 rounded-lg border border-gray-100 hover:shadow-sm transition">
+                      <h3 className="text-sm font-medium text-gray-900 truncate">{job.title}</h3>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-gray-500">{job.org}</span>
+                        <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${daysUntil(job.applyEnd) <= 3 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}`}>
+                          {daysUntil(job.applyEnd)}d
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Profile Completion */}
+            <div className="bg-white p-5 rounded-xl border border-gray-100">
+              <h3 className="font-semibold text-gray-900 mb-3">Quick Links</h3>
+              <div className="space-y-2">
+                <Link to="/mock-tests" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
+                  <span className="text-lg">📝</span>
+                  <div>
+                    <p className="font-medium text-gray-900">Take a Mock Test</p>
+                    <p className="text-xs text-gray-500">11 tests available</p>
+                  </div>
+                </Link>
+                <Link to="/papers" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
+                  <span className="text-lg">📄</span>
+                  <div>
+                    <p className="font-medium text-gray-900">Practice Papers</p>
+                    <p className="text-xs text-gray-500">20 previous year papers</p>
+                  </div>
+                </Link>
+                <Link to="/profile" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
+                  <span className="text-lg">👤</span>
+                  <div>
+                    <p className="font-medium text-gray-900">Complete Your Profile</p>
+                    <p className="text-xs text-gray-500">Get better job matches</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
