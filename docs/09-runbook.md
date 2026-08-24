@@ -113,26 +113,25 @@ python run.py sprint "full sprint goal"  # all 10 agents
 ### Setup
 ```bash
 # Install Python deps (Windows)
-python -m pip install crewai crewai-core json-repair json5 pydantic pydantic_settings litellm aiofiles aiosqlite chromadb appdirs regex imageio Pillow img2pdf
+python -m pip install crewai crewai-core json-repair json5 pydantic pydantic_settings litellm aiofiles aiosqlite chromadb appdirs regex imageio Pillow img2pdf python-dotenv
 
-# Set API keys in crewai/.env
-OPENAI_API_KEY=sk-...          # for GPT-4o agents
-ANTHROPIC_API_KEY=sk-ant-...   # for Claude agents
+# API keys are in crewai/.env (10 free tier keys, never committed to git)
+# Providers: OpenRouter, Groq, Gemini, Cohere, Mistral, Cerebras, HuggingFace, Z.ai, NVIDIA, Kimi
 ```
 
-### 10 Agents
-| # | Agent | Role | Model |
+### 10 Agents (FREE TIER models)
+| # | Agent | Role | Model (Free) |
 |---|---|---|---|
-| 1 | Product Manager | PRDs, backlog, prioritization | GPT-4o |
-| 2 | Solution Architect | System design, API contracts | GPT-4o |
-| 3 | Senior Developer | Production TypeScript code | Claude |
-| 4 | QA Engineer | Tests, validation, bug reports | GPT-4o |
-| 5 | DevOps Engineer | Docker, CI/CD, monitoring | GPT-4o |
-| 6 | Security Engineer | OWASP audits, vulnerabilities | Claude |
-| 7 | Data Engineer | Crawlers, scraping, normalization | GPT-4o |
-| 8 | UX Designer | UI/UX, accessibility, responsive | GPT-4o |
-| 9 | Competitive Intel | Competitor monitoring | GPT-4o |
-| 10 | Scrum Master | Sprint planning, progress tracking | GPT-4o |
+| 1 | Product Manager | PRDs, backlog, prioritization | Gemini 2.0 Flash (via OpenRouter) |
+| 2 | Solution Architect | System design, API contracts | Llama 3.3 70B (via OpenRouter) |
+| 3 | Senior Developer | Production TypeScript code | Claude 3.5 Sonnet (via OpenRouter) |
+| 4 | QA Engineer | Tests, validation, bug reports | Llama 3.3 70B (via OpenRouter) |
+| 5 | DevOps Engineer | Docker, CI/CD, monitoring | Gemini 2.0 Flash (via OpenRouter) |
+| 6 | Security Engineer | OWASP audits, vulnerabilities | Claude 3.5 Sonnet (via OpenRouter) |
+| 7 | Data Engineer | Crawlers, scraping, normalization | Llama 3.3 70B (via OpenRouter) |
+| 8 | UX Designer | UI/UX, accessibility, responsive | Gemini 2.0 Flash (via OpenRouter) |
+| 9 | Competitive Intel | Competitor monitoring | Gemini 2.0 Flash (via OpenRouter) |
+| 10 | Scrum Master | Sprint planning, progress tracking | Llama 3.3 70B (via OpenRouter) |
 
 ### Run commands
 ```bash
@@ -218,7 +217,142 @@ git commit -m "test: description"
 
 ---
 
-## 10. Key file locations
+## 10. Free SSL Certificate (Let's Encrypt)
+
+**Cost: ₹0 forever** — no credit card, no registration needed.
+
+### Setup on VPS (Ubuntu 22.04)
+```bash
+# 1. Install certbot
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+
+# 2. Get SSL certificate (auto-configures nginx)
+sudo certbot --nginx -d sarkariscout.in -d www.sarkariscout.in
+
+# 3. Auto-renewal (certbot sets this up automatically)
+sudo certbot renew --dry-run
+
+# 4. Verify
+sudo certbot certificates
+```
+
+### How it works
+- Certbot queries Let's Encrypt (free CA) via HTTP-01 challenge
+- Nginx serves a temporary file to prove domain ownership
+- Certificate issued instantly, valid for 90 days
+- Auto-renewal cron job installed by certbot
+- **No payment, no registration, no API keys needed**
+
+### Alternative: ZeroSSL
+```bash
+# If Let's Encrypt is blocked in your region
+sudo apt install snapd
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+sudo certbot --nginx -d sarkariscout.in
+```
+
+---
+
+## 11. VPS Deployment (FREE / ₹0)
+
+### Free VPS Options
+| Provider | Spec | Duration | Card Required |
+|---|---|---|---|
+| Oracle Cloud Free Tier | 4 cores ARM, 24GB RAM | Forever | No |
+| Google Cloud Free Trial | 1 e2-micro | 90 days | Yes (no charge) |
+| AWS Lightsail | 1 core, 1GB | 3 months free | Yes |
+| Railway.app | 500 hours/month | Monthly reset | Yes |
+| Render.com | 512MB RAM | Free tier | No |
+| Cyclic.sh | Serverless | Free tier | No |
+
+**Recommended: Oracle Cloud Free Tier** (always free, no card)
+
+### VPS Setup (Ubuntu 22.04 on Oracle Cloud)
+```bash
+# 1. SSH into VPS
+ssh -i ~/.ssh/id_rsa ubuntu@<vps-ip>
+
+# 2. Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# 3. Install Python 3.12 + crewAI
+sudo apt install -y python3.12 python3-pip
+pip3 install crewai crewai-core litellm
+
+# 4. Install Docker
+sudo apt install -y docker.io docker-compose
+sudo usermod -aG docker $USER
+
+# 5. Install MySQL 8.4
+sudo apt install -y mysql-server
+sudo mysql_secure_installation
+
+# 6. Install Redis
+sudo apt install -y redis-server
+sudo systemctl enable redis-server
+
+# 7. Clone project
+git clone <repo-url> /var/www/sarkariscout
+cd /var/www/sarkariscout
+
+# 8. Configure environment
+cp backend/.env.example backend/.env
+# Edit .env with production values
+
+# 9. Run Prisma migration
+cd backend
+npx prisma migrate deploy
+npx prisma db seed
+
+# 10. Build and start
+npx nest build
+node dist/main.js
+
+# 11. Setup nginx
+sudo apt install -y nginx
+sudo cp infra/nginx.conf /etc/nginx/sites-available/sarkariscout
+sudo ln -s /etc/nginx/sites-available/sarkariscout /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 12. SSL (free)
+sudo certbot --nginx -d sarkariscout.in
+
+# 13. Setup PM2 (process manager)
+npm install -g pm2
+pm2 start dist/main.js --name sarkariscout-api
+pm2 save
+pm2 startup
+```
+
+### Docker Deployment (Alternative)
+```bash
+# On VPS
+cd /var/www/sarkariscout
+docker compose -f infra/docker-compose.prod.yml up -d
+```
+
+### crewAI on VPS (24/7 agents)
+```bash
+# Setup cron for daily agent runs
+crontab -e
+
+# Daily competitive research at 6 AM IST
+0 0 * * * cd /var/www/sarkariscout/crewai && python3 run.py research >> /var/log/crewai-research.log 2>&1
+
+# Weekly security audit on Mondays
+0 1 * * 1 cd /var/www/sarkariscout/crewai && python3 run.py security >> /var/log/crewai-security.log 2>&1
+
+# Data pipeline every 6 hours
+0 */6 * * * cd /var/www/sarkariscout/crewai && python3 run.py data >> /var/log/crewai-data.log 2>&1
+```
+
+---
+
+## 12. Key file locations
 
 ```
 New folder/

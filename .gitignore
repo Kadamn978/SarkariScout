@@ -56,6 +56,7 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 crewai/.env
+.env.local
 
 # Misc
 *.tgz
@@ -68,3 +69,4 @@ backend/nodemailer/
 *.docx
 prompt for teh ai we used in earies sisi.md
 improvement in the project.md
+API Key Free Tire Nilesh.txt

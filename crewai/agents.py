@@ -1,19 +1,30 @@
 """
 SarkariScout — crewAI Full SDLC Agents
-All agents for the complete software development lifecycle.
+Uses FREE TIER API keys via litellm (OpenRouter, Groq, Gemini, etc.)
 """
-from crewai import Agent, Task, Crew, Process
-from crewai_tools import DirectoryReadTool, FileReadTool, SerperDevTool
-from langchain_openai import ChatOpenAI
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 
-# ── Models ──────────────────────────────────────────────────────────────
-gpt4o = ChatOpenAI(model="gpt-4o", temperature=0)
-claude = ChatOpenAI(model="claude-sonnet-4-20250514", temperature=0)
+# Load API keys from crewai/.env
+env_path = Path(__file__).parent / ".env"
+load_dotenv(env_path)
+
+from crewai import Agent, Task, Crew, Process
+from crewai_tools import DirectoryReadTool, FileReadTool
+
+# ── Model Configuration (FREE TIER) ────────────────────────────────────
+# Using litellm which supports 100+ LLM providers
+# OpenRouter proxies to GPT-4o, Claude, Llama, Mixtral, etc.
+# All free tier — no credit card needed
+
+# Primary: OpenRouter (access to many models for free)
+os.environ["OPENAI_API_BASE"] = "https://openrouter.ai/api/v1"
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENROUTER_API_KEY", "")
 
 # ── TOOLS ───────────────────────────────────────────────────────────────
 dir_tool = DirectoryReadTool(directory=".")
 file_tool = FileReadTool()
-search_tool = SerperDevTool()
 
 # ── AGENTS ──────────────────────────────────────────────────────────────
 
@@ -25,8 +36,8 @@ product_manager = Agent(
 You understand the competitive landscape (Testbook, Adda247, Sarkari Result, FreeJobAlert).
 You prioritize features that drive: (1) user acquisition (free job alerts), (2) retention (personalized recommendations, document wallet), (3) revenue (premium subscriptions, affiliate).
 You write clear PRDs with acceptance criteria, wireframe descriptions, and success metrics.""",
-    tools=[dir_tool, file_tool, search_tool],
-    llm=gpt4o,
+    tools=[dir_tool, file_tool],
+    llm="openrouter/google/gemini-2.0-flash-001",
     verbose=True,
     allow_delegation=False,
 )
@@ -38,10 +49,9 @@ solution_architect = Agent(
     backstory="""You are a senior solution architect for SarkariScout.
 Tech stack: React 18 + Vite 6 + Tailwind v4 (frontend), NestJS 10 + Prisma 5 + ioredis (backend), MySQL 8.4 + Redis 5.0.
 You design for: horizontal scaling, security (OWASP), performance (lighthouse 95+), and cost efficiency.
-You define API contracts, database schemas, caching strategies, and deployment architecture.
-You review all code changes for architectural consistency.""",
+You define API contracts, database schemas, caching strategies, and deployment architecture.""",
     tools=[dir_tool, file_tool],
-    llm=gpt4o,
+    llm="openrouter/meta-llama/llama-3.3-70b-instruct",
     verbose=True,
     allow_delegation=True,
 )
@@ -57,7 +67,7 @@ Security: never hardcode secrets, use argon2 for passwords, validate all input, 
 Code style: no comments unless asked, prefer editing existing files, run lint/typecheck before committing.
 You understand: Prisma ORM, JWT auth (access+refresh), Redis caching, nodemailer, Helmet CSP.""",
     tools=[dir_tool, file_tool],
-    llm=claude,
+    llm="openrouter/anthropic/claude-3.5-sonnet",
     verbose=True,
     allow_delegation=False,
 )
@@ -70,10 +80,10 @@ qa_engineer = Agent(
 You write unit tests (Jest + Supertest for backend, Vitest for frontend).
 You test: auth flows (register, login, refresh, logout), API endpoints, UI components, edge cases.
 You validate: security (SQL injection, XSS, CSRF), performance (response times), accessibility (WCAG 2.1).
-You report bugs with: title, steps to reproduce, expected vs actual, severity, screenshots.
+You report bugs with: title, steps to reproduce, expected vs actual, severity.
 Current test count: 50/50 passing. Never let tests break.""",
     tools=[dir_tool, file_tool],
-    llm=gpt4o,
+    llm="openrouter/meta-llama/llama-3.3-70b-instruct",
     verbose=True,
     allow_delegation=False,
 )
@@ -85,11 +95,12 @@ devops_engineer = Agent(
     backstory="""You are a DevOps engineer for SarkariScout.
 Infrastructure: Docker multi-stage builds, nginx reverse proxy, MySQL 8.4, Redis 5.0.
 You manage: docker-compose.prod.yml, Dockerfiles, nginx configs, health checks, logging.
-You set up: CI/CD (GitHub Actions), monitoring (Grafana + Prometheus), alerting (email + Telegram).
+You set up: CI/CD (GitHub Actions), monitoring (Grafana + Prometheus), alerting.
 You ensure: zero-downtime deploys, rollback capability, secret management (never commit .env).
-Production server: VPS running Ubuntu 22.04.""",
+Free SSL: Let's Encrypt with certbot auto-renewal.
+VPS: Ubuntu 22.04 on free/cheap tier (Oracle Cloud, Google Cloud, AWS Lightsail).""",
     tools=[dir_tool, file_tool],
-    llm=gpt4o,
+    llm="openrouter/google/gemini-2.0-flash-001",
     verbose=True,
     allow_delegation=False,
 )
@@ -101,11 +112,11 @@ security_engineer = Agent(
     backstory="""You are a security engineer for SarkariScout.
 You audit: auth flows, input validation, SQL injection, XSS, CSRF, rate limiting, CORS, CSP.
 You review: JWT implementation (rotation, reuse detection), password hashing (argon2), token storage.
-You ensure: OWASP Top 10 compliance, GDPR data handling, secure headers (Helmet), HTTPS enforcement.
+You ensure: OWASP Top 10 compliance, DPDP Act compliance, secure headers (Helmet), HTTPS enforcement.
 You run: security scans, dependency audits, secret detection in git history.
 You maintain: SECURITY-CHECKLIST.md, threat models, incident response plans.""",
-    tools=[dir_tool, file_tool, search_tool],
-    llm=claude,
+    tools=[dir_tool, file_tool],
+    llm="openrouter/anthropic/claude-3.5-sonnet",
     verbose=True,
     allow_delegation=False,
 )
@@ -118,10 +129,9 @@ data_engineer = Agent(
 You build crawlers for 20+ Indian government job sources (SSC, UPSC, IBPS, RRB, NCS, MPSC, DRDO, ISRO, etc.).
 You handle: HTML scraping (Cheerio/Puppeteer), RSS parsing, API integration, PDF extraction.
 You normalize: job titles, vacancy counts, eligibility criteria, salary data, exam dates.
-You ensure: deduplication (fingerprint hashing), data freshness (every 6h), error handling.
-You store: structured job data in MySQL via Prisma ORM.""",
-    tools=[dir_tool, file_tool, search_tool],
-    llm=gpt4o,
+You ensure: deduplication (fingerprint hashing), data freshness (every 6h), error handling.""",
+    tools=[dir_tool, file_tool],
+    llm="openrouter/meta-llama/llama-3.3-70b-instruct",
     verbose=True,
     allow_delegation=False,
 )
@@ -137,7 +147,7 @@ You validate: Tailwind v4 usage, consistent design system, loading states, error
 You optimize: page load speed (Lighthouse 95+), bundle size, image optimization.
 You understand Indian government job seekers: mobile-first, low bandwidth, regional language needs.""",
     tools=[dir_tool, file_tool],
-    llm=gpt4o,
+    llm="openrouter/google/gemini-2.0-flash-001",
     verbose=True,
     allow_delegation=False,
 )
@@ -150,10 +160,9 @@ competitive_intel = Agent(
 You monitor: Testbook, Adda247, Sarkari Result, FreeJobAlert, Gradeup, Oliveboard, PracticeMock.
 You analyze: pricing changes, new features, SEO strategies, user reviews, social media presence.
 You identify: feature gaps, market opportunities, threats, pricing benchmarks.
-You produce: weekly competitive reports, feature comparison matrices, market sizing estimates.
-You track: Indian edtech funding, government job market trends, exam calendar updates.""",
-    tools=[search_tool, dir_tool, file_tool],
-    llm=gpt4o,
+You produce: weekly competitive reports, feature comparison matrices, market sizing estimates.""",
+    tools=[dir_tool, file_tool],
+    llm="openrouter/google/gemini-2.0-flash-001",
     verbose=True,
     allow_delegation=False,
 )
@@ -169,26 +178,10 @@ You facilitate: cross-agent communication, dependency resolution, priority confl
 You maintain: PROGRESS.md as single source of truth, MISTAKES.md for learning.
 You ensure: all agents follow git conventions, commit message format, code review process.""",
     tools=[dir_tool, file_tool],
-    llm=gpt4o,
+    llm="openrouter/meta-llama/llama-3.3-70b-instruct",
     verbose=True,
     allow_delegation=True,
 )
-
-
-# ── TASK DEFINITIONS ────────────────────────────────────────────────────
-
-def create_sprint_tasks(sprint_goal: str, tasks_list: list[dict]) -> list[Task]:
-    """Create tasks for a sprint."""
-    tasks = []
-    for t in tasks_list:
-        task = Task(
-            description=t["description"],
-            expected_output=t.get("expected_output", "Completed implementation with tests"),
-            agent=t["agent"],
-            context=t.get("context", []),
-        )
-        tasks.append(task)
-    return tasks
 
 
 # ── CREW FORMATIONS ────────────────────────────────────────────────────
@@ -242,4 +235,5 @@ research_crew = Crew(
 
 if __name__ == "__main__":
     print("SarkariScout crewAI agents ready.")
+    print("API keys loaded from crewai/.env")
     print("Available crews: full_sdlc, feature, security, data, research")
