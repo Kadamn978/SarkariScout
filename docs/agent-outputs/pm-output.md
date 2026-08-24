@@ -1,0 +1,3 @@
+# Product Manager — writes PRDs, prioritizes features, defines user stories Output
+
+The biggest gap in SarkariScout v1 is the absence of automated, scalable data ingestion—currently only 14 manually seeded jobs and no crawlers for the 20+ government sources needed to keep listings fresh and comprehensive. Consequently, core user‑value features such as eligibility matching, daily digests, an application tracker, and change‑detection alerts are missing, limiting the platform’s usefulness compared with competitors.
