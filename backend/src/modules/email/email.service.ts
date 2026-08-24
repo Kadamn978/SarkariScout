@@ -1,11 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { PrismaService } from '../../prisma/prisma.service';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter | null = null;
+  private baseUrl: string;
 
   constructor(private prisma: PrismaService) {
     if (process.env.SMTP_HOST) {
@@ -22,39 +24,60 @@ export class EmailService {
     } else {
       this.logger.warn('No SMTP configured — emails will be logged only');
     }
+    this.baseUrl = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173';
   }
 
   async sendDailyDigest() {
-    const profiles = await this.prisma.profile.findMany({
-      where: { notifyDigest: true },
-      include: { user: true },
+    const prefs = await this.prisma.emailPreference.findMany({
+      where: { digestEnabled: true, unsubscribedAt: null },
+      include: { user: { include: { profile: true } } },
     });
 
-    let sent = 0;
-    for (const profile of profiles) {
+    let sent = 0, failed = 0;
+    for (const pref of prefs) {
       try {
+        const profile = (pref as any).user?.profile;
+        if (!profile) continue;
+
         const matchingJobs = await this.getMatchingJobs(profile);
         if (matchingJobs.length === 0) continue;
 
-        const userEmail = (profile as any).user?.email;
+        const userEmail = (pref as any).user?.email;
         if (!userEmail) continue;
 
-        await this.sendEmail({
+        const result = await this.sendEmail({
           to: userEmail,
-          subject: `SarkariScout: ${matchingJobs.length} new jobs match your profile`,
-          html: this.buildDigestHtml(matchingJobs, profile),
+          subject: `SarkariScout Daily Digest: ${matchingJobs.length} new jobs for you`,
+          html: this.buildDigestHtml(matchingJobs, profile, pref.unsubscribeToken),
         });
-        sent++;
+
+        if (result) {
+          sent++;
+          await this.prisma.notificationLog.create({
+            data: {
+              userId: pref.userId,
+              type: 'DIGEST',
+              subject: `Daily Digest: ${matchingJobs.length} jobs`,
+            },
+          });
+        } else {
+          failed++;
+        }
       } catch (e) {
-        this.logger.error(`Digest failed: ${(e as Error).message}`);
+        this.logger.error(`Digest failed for user ${pref.userId}: ${(e as Error).message}`);
+        failed++;
       }
     }
-    return { sent, total: profiles.length };
+
+    return { sent, failed, total: prefs.length };
   }
 
   async sendInstantAlert(userId: string, jobId: string, changeType?: string) {
+    const pref = await this.prisma.emailPreference.findUnique({ where: { userId } });
+    if (pref?.unsubscribedAt) return false;
+
     const profile = await this.prisma.profile.findUnique({ where: { userId } });
-    if (!profile?.notifyInstant) return false;
+    if (!profile?.notifyInstant && !pref?.instantEnabled) return false;
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) return false;
@@ -64,33 +87,76 @@ export class EmailService {
 
     const subject = changeType
       ? `SarkariScout Alert: ${job.title} - ${changeType}`
-      : `SarkariScout: New job matching your profile - ${job.title}`;
+      : `SarkariScout: New match - ${job.title}`;
 
-    await this.sendEmail({
+    const unsubToken = pref?.unsubscribeToken || '';
+
+    const result = await this.sendEmail({
       to: user.email,
       subject,
-      html: this.buildAlertHtml(job, changeType),
+      html: this.buildAlertHtml(job, changeType, unsubToken),
     });
 
-    await this.prisma.notificationLog.create({
-      data: { userId, jobId, type: changeType ? 'INSTANT' : 'DIGEST' },
-    });
+    if (result) {
+        await this.prisma.notificationLog.create({
+          data: {
+            userId, jobId,
+            type: (changeType ? 'CHANGE_ALERT' : 'INSTANT') as any,
+            subject,
+          },
+        });
+    }
 
-    return true;
+    return result;
   }
 
   async sendWelcomeEmail(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) return;
 
+    const token = crypto.randomUUID();
+    await this.prisma.emailPreference.upsert({
+      where: { userId },
+      update: {},
+      create: { userId, unsubscribeToken: token },
+    });
+
     await this.sendEmail({
       to: user.email,
       subject: 'Welcome to SarkariScout!',
-      html: `<h1>Welcome ${user.name || 'there'}!</h1><p>Start browsing jobs at <a href="${process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173'}/jobs">SarkariScout Jobs</a></p>`,
+      html: this.buildWelcomeHtml(user.name || 'there', token),
     });
   }
 
-  async sendEmail(opts: { to: string; subject: string; html: string }) {
+  async sendVerificationEmail(userId: string, email: string, token: string) {
+    await this.sendEmail({
+      to: email,
+      subject: 'Verify your SarkariScout email',
+      html: `
+        <h2>Verify Your Email</h2>
+        <p>Click the link below to verify your email address:</p>
+        <p><a href="${this.baseUrl}/verify-email?token=${token}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px">Verify Email</a></p>
+        <p>This link expires in 24 hours.</p>
+        <p>If you didn't create this account, ignore this email.</p>
+      `,
+    });
+  }
+
+  async sendPasswordResetEmail(email: string, token: string) {
+    await this.sendEmail({
+      to: email,
+      subject: 'Reset your SarkariScout password',
+      html: `
+        <h2>Password Reset</h2>
+        <p>Click the link below to reset your password:</p>
+        <p><a href="${this.baseUrl}/reset-password?token=${token}" style="display:inline-block;padding:12px 24px;background:#dc2626;color:#fff;text-decoration:none;border-radius:6px">Reset Password</a></p>
+        <p>This link expires in 1 hour.</p>
+        <p>If you didn't request this, ignore this email.</p>
+      `,
+    });
+  }
+
+  async sendEmail(opts: { to: string; subject: string; html: string }): Promise<boolean> {
     this.logger.log(`Email to ${opts.to}: ${opts.subject}`);
 
     if (this.transporter) {
@@ -102,51 +168,177 @@ export class EmailService {
           html: opts.html,
         });
         this.logger.log(`Email sent to ${opts.to}`);
+        return true;
       } catch (err) {
         this.logger.error(`Email send failed: ${(err as Error).message}`);
+        return false;
       }
     } else {
       this.logger.log(`[DRY RUN] Email to ${opts.to}: ${opts.subject}`);
+      return true;
     }
+  }
+
+  async unsubscribe(token: string): Promise<{ success: boolean; message: string }> {
+    const pref = await this.prisma.emailPreference.findUnique({
+      where: { unsubscribeToken: token },
+    });
+    if (!pref) return { success: false, message: 'Invalid unsubscribe link' };
+
+    await this.prisma.emailPreference.update({
+      where: { id: pref.id },
+      data: {
+        digestEnabled: false,
+        instantEnabled: false,
+        weeklyEnabled: false,
+        unsubscribedAt: new Date(),
+      },
+    });
+
+    return { success: true, message: 'You have been unsubscribed from all emails.' };
+  }
+
+  async updatePreferences(userId: string, prefs: {
+    digestEnabled?: boolean;
+    instantEnabled?: boolean;
+    weeklyEnabled?: boolean;
+    digestTime?: string;
+  }) {
+    return this.prisma.emailPreference.upsert({
+      where: { userId },
+      update: prefs,
+      create: { userId, ...prefs },
+    });
+  }
+
+  async getPreferences(userId: string) {
+    return this.prisma.emailPreference.findUnique({ where: { userId } });
+  }
+
+  async getNotificationLog(userId: string, limit = 50) {
+    return this.prisma.notificationLog.findMany({
+      where: { userId },
+      orderBy: { sentAt: 'desc' },
+      take: limit,
+      include: { job: { select: { title: true, org: true } } },
+    });
   }
 
   private async getMatchingJobs(profile: any) {
     const jobs = await this.prisma.job.findMany({
       where: { status: 'OPEN', applyEnd: { gte: new Date() } },
       orderBy: { applyEnd: 'asc' },
-      take: 20,
+      take: 30,
     });
+
     return jobs.filter((job) => {
       if (job.state !== 'ALL_IN' && profile.state && job.state !== profile.state) return false;
       return true;
     });
   }
 
-  private buildDigestHtml(jobs: any[], profile: any): string {
-    const jobList = jobs.map((j) => `
-      <tr><td style="padding:8px;border-bottom:1px solid #eee">
-        <strong>${j.title}</strong><br/>
-        <small>${j.org} | ${j.state} | Deadline: ${j.applyEnd?.toLocaleDateString() || 'N/A'}</small>
-      </td></tr>
+  private buildDigestHtml(jobs: any[], profile: any, unsubToken: string): string {
+    const jobRows = jobs.slice(0, 20).map((j) => `
+      <tr>
+        <td style="padding:12px;border-bottom:1px solid #e5e7eb">
+          <a href="${this.baseUrl}/jobs/${j.id}" style="color:#1d4ed8;font-weight:600;text-decoration:none;font-size:15px">${j.title}</a>
+          <br/>
+          <span style="color:#6b7280;font-size:13px">${j.org}</span>
+          <br/>
+          <span style="color:#6b7280;font-size:12px">
+            ${j.state === 'ALL_IN' ? 'All India' : j.state}
+            ${j.totalVacancies ? ` | ${j.totalVacancies} vacancies` : ''}
+            ${j.applyEnd ? ` | Deadline: ${new Date(j.applyEnd).toLocaleDateString('en-IN')}` : ''}
+          </span>
+        </td>
+      </tr>
     `).join('');
 
     return `
-      <h2>Your Daily Job Digest</h2>
-      <p>Hi ${(profile as any).user?.name || 'there'}, here are ${jobs.length} jobs matching your profile:</p>
-      <table style="width:100%;border-collapse:collapse">${jobList}</table>
-      <p><a href="${process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173'}/jobs">View all on SarkariScout</a></p>
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"></head>
+      <body style="font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#f9fafb">
+        <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
+          <div style="background:linear-gradient(135deg,#2563eb,#1e40af);padding:24px;text-align:center">
+            <h1 style="color:#fff;margin:0;font-size:22px">SarkariScout Daily Digest</h1>
+            <p style="color:#bfdbfe;margin:8px 0 0;font-size:14px">${jobs.length} jobs match your profile</p>
+          </div>
+          <div style="padding:20px">
+            <table style="width:100%;border-collapse:collapse">${jobRows}</table>
+          </div>
+          <div style="padding:16px 20px;background:#f9fafb;text-align:center;border-top:1px solid #e5e7eb">
+            <a href="${this.baseUrl}/jobs" style="color:#2563eb;text-decoration:none;font-weight:600">View All Jobs →</a>
+          </div>
+          <div style="padding:12px 20px;background:#f3f4f6;text-align:center">
+            <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe</a>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
   }
 
-  private buildAlertHtml(job: any, changeType?: string): string {
+  private buildAlertHtml(job: any, changeType?: string, unsubToken?: string): string {
     return `
-      <h2>${changeType ? 'Job Update' : 'New Job Alert'}</h2>
-      <h3>${job.title}</h3>
-      <p><strong>Organization:</strong> ${job.org}</p>
-      <p><strong>State:</strong> ${job.state}</p>
-      <p><strong>Deadline:</strong> ${job.applyEnd?.toLocaleDateString() || 'N/A'}</p>
-      ${changeType ? `<p><strong>Change:</strong> ${changeType}</p>` : ''}
-      ${job.applyUrl ? `<p><a href="${job.applyUrl}">Apply Now</a></p>` : ''}
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"></head>
+      <body style="font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#f9fafb">
+        <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
+          <div style="background:${changeType ? '#dc2626' : '#2563eb'};padding:24px;text-align:center">
+            <h1 style="color:#fff;margin:0;font-size:20px">${changeType ? 'Job Update Alert' : 'New Job Match'}</h1>
+          </div>
+          <div style="padding:24px">
+            <h2 style="margin:0 0 8px;font-size:18px;color:#111827">${job.title}</h2>
+            <p style="color:#6b7280;margin:0 0 16px">${job.org}</p>
+            <table style="width:100%;font-size:14px;border-collapse:collapse">
+              <tr><td style="padding:8px 0;color:#6b7280;width:120px">State</td><td>${job.state === 'ALL_IN' ? 'All India' : job.state}</td></tr>
+              ${job.totalVacancies ? `<tr><td style="padding:8px 0;color:#6b7280">Vacancies</td><td>${job.totalVacancies}</td></tr>` : ''}
+              ${job.applyEnd ? `<tr><td style="padding:8px 0;color:#6b7280">Deadline</td><td>${new Date(job.applyEnd).toLocaleDateString('en-IN')}</td></tr>` : ''}
+              ${changeType ? `<tr><td style="padding:8px 0;color:#6b7280">Change</td><td style="color:#dc2626;font-weight:600">${changeType}</td></tr>` : ''}
+            </table>
+            ${job.applyUrl ? `<p style="margin-top:20px"><a href="${job.applyUrl}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px;font-weight:600">Apply Now</a></p>` : ''}
+            <p style="margin-top:16px"><a href="${this.baseUrl}/jobs/${job.id}" style="color:#2563eb;text-decoration:none">View Details →</a></p>
+          </div>
+          ${unsubToken ? `<div style="padding:12px 20px;background:#f3f4f6;text-align:center">
+            <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe</a>
+          </div>` : ''}
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private buildWelcomeHtml(name: string, unsubToken: string): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"></head>
+      <body style="font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#f9fafb">
+        <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
+          <div style="background:linear-gradient(135deg,#2563eb,#1e40af);padding:32px;text-align:center">
+            <h1 style="color:#fff;margin:0;font-size:24px">Welcome to SarkariScout!</h1>
+          </div>
+          <div style="padding:32px">
+            <p style="font-size:16px;color:#374151">Hi ${name},</p>
+            <p style="color:#6b7280;line-height:1.6">You're all set! SarkariScout will help you find the latest government job notifications, track deadlines, and get alerts for jobs that match your profile.</p>
+            <div style="text-align:center;margin:24px 0">
+              <a href="${this.baseUrl}/jobs" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Browse Jobs</a>
+            </div>
+            <p style="color:#6b7280;font-size:14px;line-height:1.6">
+              <strong>Quick Links:</strong><br/>
+              • <a href="${this.baseUrl}/profile" style="color:#2563eb">Complete your profile</a> for better job matches<br/>
+              • <a href="${this.baseUrl}/documents" style="color:#2563eb">Upload documents</a> for easy access<br/>
+              • <a href="${this.baseUrl}/bug-report" style="color:#2563eb">Report a bug</a> if something's wrong
+            </p>
+          </div>
+          <div style="padding:12px 20px;background:#f3f4f6;text-align:center">
+            <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe from emails</a>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Param, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Param, UseGuards, Get, Query } from '@nestjs/common';
 import { CrawlerService } from './crawler.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -21,13 +21,15 @@ export class CrawlerController {
     return this.crawlerService.crawlAll();
   }
 
-  @Get('status')
+  @Get('stats')
   @Roles('ADMIN')
-  async getStatus() {
-    const sources = await this.crawlerService['prisma'].source.findMany();
-    return sources.map((s: any) => ({
-      id: s.id, name: s.name, type: s.type, enabled: s.enabled,
-      lastRunAt: s.lastRunAt, lastRunStatus: s.lastRunStatus, itemsPerRun: s.itemsPerRun,
-    }));
+  async getStats() {
+    return this.crawlerService.getSourceStats();
+  }
+
+  @Get('history/:sourceId')
+  @Roles('ADMIN')
+  async getHistory(@Param('sourceId') sourceId: string, @Query('limit') limit?: string) {
+    return this.crawlerService.getCrawlHistory(sourceId, limit ? parseInt(limit) : 20);
   }
 }

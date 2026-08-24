@@ -1,9 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { CrawlerService } from '../crawler/crawler.service';
 import { EmailService } from '../email/email.service';
 
 @Injectable()
-export class CronService implements OnModuleInit {
+export class CronService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CronService.name);
   private intervals: NodeJS.Timeout[] = [];
 
@@ -13,16 +13,12 @@ export class CronService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    // Run crawlers every 6 hours
     this.intervals.push(
       setInterval(() => this.runCrawler(), 6 * 60 * 60 * 1000),
     );
-
-    // Run daily digest at 9:00 AM (check every minute)
     this.intervals.push(
       setInterval(() => this.checkDigestTime(), 60 * 1000),
     );
-
     this.logger.log('CronService initialized — crawler every 6h, digest check every minute');
   }
 
@@ -31,23 +27,23 @@ export class CronService implements OnModuleInit {
   }
 
   private async runCrawler() {
-    this.logger.log('Scheduled crawler run starting');
+    const istNow = this.getIST();
+    this.logger.log(`Scheduled crawler run starting at IST ${istNow.toISOString()}`);
     try {
       const result = await this.crawler.crawlAll();
-      this.logger.log(`Crawler completed: ${JSON.stringify(result)}`);
+      const summary = Object.entries(result).map(([id, r]: [string, any]) =>
+        `${id}: +${r.added}/~${r.updated} (${r.errors?.length || 0} errors)`
+      ).join(', ');
+      this.logger.log(`Crawler completed: ${summary}`);
     } catch (err) {
       this.logger.error(`Crawler failed: ${(err as Error).message}`);
     }
   }
 
   private async checkDigestTime() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-
-    // Send digest at 9:00 AM IST (check for 9:05 AM to avoid duplicate runs)
-    if (hours === 9 && minutes === 5) {
-      this.logger.log('Triggering daily digest');
+    const ist = this.getIST();
+    if (ist.getHours() === 9 && ist.getMinutes() === 5) {
+      this.logger.log('Triggering daily digest (IST 9:05 AM)');
       try {
         const result = await this.email.sendDailyDigest();
         this.logger.log(`Daily digest sent: ${result.sent}/${result.total}`);
@@ -55,5 +51,11 @@ export class CronService implements OnModuleInit {
         this.logger.error(`Daily digest failed: ${(err as Error).message}`);
       }
     }
+  }
+
+  private getIST(): Date {
+    const now = new Date();
+    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utcMs + 5.5 * 60 * 60 * 1000);
   }
 }

@@ -21,14 +21,14 @@ Single source of truth. Read this file first at the start of every session.
 | 9 | Testing & QA | Done |
 | 10 | Deployment | Done |
 
-## API Routes (40+ total)
+## API Routes (50+ total)
 
 **Auth (6):** register, login, refresh, logout, forgot-password, google-oauth
 **Users (3):** getProfile, updateProfile, deleteAccount
-**Jobs (4):** list, detail, track, trackedJobs
-**Crawler (3):** crawlSource, crawlAll, status (ADMIN)
-**Matching (2):** myJobs, stats
-**Email (2):** sendDigest, testWelcome (ADMIN)
+**Jobs (8):** list, detail, upcoming, recent, track, untrack, trackedJobs, trackerStats
+**Crawler (4):** crawlSource, crawlAll, stats, crawlHistory (ADMIN)
+**Matching (4):** myJobs, search, score, stats
+**Email (5):** sendDigest, getPreferences, updatePreferences, notifications, unsubscribe
 **Changes (3):** jobChanges, recentChanges, unnotifiedChanges
 **Documents (4):** upload, list, setDefault, delete
 **Feedback (3):** createBug, listBugs, updateBugStatus (ADMIN)
@@ -64,6 +64,24 @@ Single source of truth. Read this file first at the start of every session.
 - deploy.bat / start-prod.bat scripts
 - .dockerignore for clean builds
 - Production .env.example with all vars documented
+
+## Database Schema (19 tables, 8 enums)
+
+**Core:** users, profiles, jobs, sources
+**Tracking:** user_jobs, job_changes, notification_logs, email_preferences
+**Content:** user_documents, bug_reports, subscriptions, mock_tests, mock_questions, mock_test_attempts, previous_papers
+**Logs:** audit_logs, error_logs, crawl_logs
+**Enums:** Role, Category, JobStatus, TrackerStage, NotificationType, ChangeType, SourceType, JobCategory
+
+## Sprints (5/5 Complete)
+
+| Sprint | Focus | Status |
+|---|---|---|
+| Sprint 1 | Schema alignment — BRD fields, EmailPreference, CrawlLog, 51 seeded jobs | Done |
+| Sprint 2 | Crawler upgrade — source-specific parsers, crawl logging, retry, stats API | Done |
+| Sprint 3 | Eligibility matching — 6-factor scoring (edu/state/category/age/gender/qual) | Done |
+| Sprint 4 | Email service — digest, instant alerts, unsubscribe, preferences, notification log | Done |
+| Sprint 5 | Application tracker — track/untrack, stage management, tracker stats, upcoming deadlines | Done |
 
 ## Testing
 
