@@ -32,6 +32,8 @@ const INDIAN_STATES = [
   'UTTAR_PRADESH', 'WEST_BENGAL',
 ]
 
+const QUALIFICATIONS = ['10th', '12th', 'Graduate', 'Post Graduate', 'Engineering', 'Diploma', 'ITI']
+
 const PAGE_SIZE = 20
 
 export default function Jobs() {
@@ -199,6 +201,23 @@ export default function Jobs() {
           </div>
 
           <aside className="w-full lg:w-72 space-y-4">
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+              <h3 className="font-semibold text-gray-900 mb-3 text-sm">Jobs by State</h3>
+              <div className="space-y-1">
+                {INDIAN_STATES.filter(s => s !== 'ALL_IN').slice(0, 8).map((s) => (
+                  <Link key={s} to={`/state/${s}`} className="block text-sm text-blue-600 hover:underline">{s.replace(/_/g, ' ')}</Link>
+                ))}
+                <Link to="/state/ALL_IN" className="block text-sm text-blue-600 hover:underline font-medium">View All States</Link>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+              <h3 className="font-semibold text-gray-900 mb-3 text-sm">Jobs by Qualification</h3>
+              <div className="space-y-1">
+                {QUALIFICATIONS.map((q) => (
+                  <Link key={q} to={`/qualifications/${q.toLowerCase().replace(/\s+/g, '-')}`} className="block text-sm text-blue-600 hover:underline">{q} Pass</Link>
+                ))}
+              </div>
+            </div>
             <AdBanner slot="XXXXXXXXXX" format="vertical" className="sticky top-20" />
             <AffiliateCard
               title="Best Books for Govt Exams"

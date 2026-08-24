@@ -4,6 +4,7 @@ import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { Skeleton } from '../components/Skeleton'
 import AdBanner from '../components/AdBanner'
+import AffiliateCard from '../components/AffiliateCard'
 
 interface Job {
   id: string
@@ -81,6 +82,21 @@ export default function JobDetail() {
         ) : null}
 
         <AdBanner slot="XXXXXXXXXX" format="horizontal" className="mt-8" />
+
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <AffiliateCard
+            title="Prepare for This Exam"
+            description="Get mock tests, previous papers, and study material for this exam"
+            url="https://example.com/affiliate/prepare"
+            cta="Start Preparing"
+          />
+          <AffiliateCard
+            title="Best Books for Govt Exams"
+            description="Top-rated study material recommended by toppers"
+            url="https://example.com/affiliate/books"
+            cta="Shop Now"
+          />
+        </div>
       </main>
     </div>
   )
