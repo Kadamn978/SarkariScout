@@ -1,0 +1,37 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { BugStatus } from '@prisma/client';
+
+@Injectable()
+export class FeedbackService {
+  constructor(private prisma: PrismaService) {}
+
+  async createBugReport(userId: string | null, title: string, description: string, category = 'bug', priority = 'medium') {
+    return this.prisma.bugReport.create({
+      data: { userId, title, description, category, priority },
+    });
+  }
+
+  async getMyBugReports(userId: string) {
+    return this.prisma.bugReport.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getAllBugReports(status?: BugStatus) {
+    const where: any = {};
+    if (status) where.status = status;
+    return this.prisma.bugReport.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateBugStatus(id: string, status: BugStatus, adminNotes?: string) {
+    const update: any = { status };
+    if (adminNotes) update.adminNotes = adminNotes;
+    if (status === 'RESOLVED') update.resolvedAt = new Date();
+    return this.prisma.bugReport.update({ where: { id }, data: update });
+  }
+}

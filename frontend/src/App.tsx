@@ -10,6 +10,8 @@ import Jobs from './pages/Jobs'
 import JobDetail from './pages/JobDetail'
 import StateJobs from './pages/StateJobs'
 import QualJobs from './pages/QualJobs'
+import Documents from './pages/Documents'
+import BugReport from './pages/BugReport'
 import VerifyEmail from './pages/VerifyEmail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="/jobs/:id" element={<JobDetail />} />
             <Route path="/state/:state" element={<StateJobs />} />
             <Route path="/qualifications/:qual" element={<QualJobs />} />
+            <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+            <Route path="/bug-report" element={<BugReport />} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/verify-email" element={<VerifyEmail />} />

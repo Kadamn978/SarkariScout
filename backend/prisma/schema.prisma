@@ -57,6 +57,43 @@ enum SourceType {
   PDF
 }
 
+enum JobCategory {
+  GOVERNMENT
+  SEMI_GOVERNMENT
+  PSU
+  BANKING
+  RAILWAY
+  DEFENCE
+  POLICE
+  TEACHING
+  MEDICAL
+  ENGINEERING
+  IT
+  PRIVATE
+  INTERNSHIP
+  TRAINING
+  CONTRACT
+}
+
+enum DocumentType {
+  PHOTO
+  SIGNATURE
+  MARKSHEET
+  CERTIFICATE
+  ID_PROOF
+  ADDRESS_PROOF
+  CATEGORY_CERT
+  EXPERIENCE
+  OTHER
+}
+
+enum BugStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
 model User {
   id              String    @id @default(uuid())
   email           String    @unique
@@ -71,6 +108,8 @@ model User {
   trackers      UserJob[]
   notifications NotificationLog[]
   subscriptions Subscription[]
+  documents     UserDocument[]
+  bugReports    BugReport[]
 
   @@map("users")
 }
@@ -129,6 +168,7 @@ model Job {
   postNames           String?   @db.Text
   totalVacancies      Int?
   state               String    @default("ALL_IN")
+  category            JobCategory @default(GOVERNMENT)
   examFamily          String?
   qualificationText   String?   @db.Text
   qualificationLevels String?   @db.Text
@@ -160,6 +200,7 @@ model Job {
   @@index([sourceId])
   @@index([state])
   @@index([applyEnd])
+  @@index([category])
   @@map("jobs")
 }
 
@@ -267,4 +308,118 @@ model ErrorLog {
   @@index([createdAt])
   @@index([userId])
   @@map("error_logs")
+}
+
+model UserDocument {
+  id          String       @id @default(uuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        DocumentType
+  name        String
+  fileName    String
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  isDefault   Boolean      @default(false)
+  metadata    String?      @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@map("user_documents")
+}
+
+model BugReport {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  title       String
+  description String   @db.Text
+  category    String   @default("bug")
+  priority    String   @default("medium")
+  status      BugStatus @default(OPEN)
+  adminNotes  String?  @db.Text
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("bug_reports")
+}
+
+model MockTest {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?  @db.Text
+  examFamily      String
+  qualification   String?
+  totalQuestions  Int
+  totalMarks      Int
+  durationMinutes Int
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  questions MockQuestion[]
+  attempts  MockTestAttempt[]
+
+  @@index([examFamily])
+  @@index([isPublished])
+  @@map("mock_tests")
+}
+
+model MockQuestion {
+  id            String   @id @default(uuid())
+  testId        String
+  test          MockTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  questionText  String   @db.Text
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String
+  explanation   String?  @db.Text
+  marks         Int      @default(1)
+  sortOrder     Int      @default(0)
+
+  @@index([testId])
+  @@map("mock_questions")
+}
+
+model MockTestAttempt {
+  id            String    @id @default(uuid())
+  testId        String
+  test          MockTest  @relation(fields: [testId], references: [id], onDelete: Cascade)
+  userId        String
+  score         Int?
+  totalAnswered Int?
+  correctCount  Int?
+  timeTakenSec  Int?
+  answers       String?   @db.Text
+  createdAt     DateTime  @default(now())
+
+  @@index([testId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("mock_test_attempts")
+}
+
+model PreviousPaper {
+  id            String   @id @default(uuid())
+  title         String
+  examFamily    String
+  year          Int
+  qualification String?
+  fileUrl       String?
+  externalUrl   String?
+  description   String?  @db.Text
+  downloadCount Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([examFamily])
+  @@index([year])
+  @@map("previous_papers")
 }
