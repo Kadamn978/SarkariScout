@@ -84,6 +84,7 @@ export default function Jobs() {
             id="job-search"
             type="search"
             placeholder="Search by title, organization..."
+            maxLength={200}
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
           />

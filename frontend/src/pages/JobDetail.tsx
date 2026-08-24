@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, Navigate } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { Skeleton } from '../components/Skeleton'
@@ -24,12 +24,20 @@ export default function JobDetail() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     api.get(`/jobs/${id}`)
       .then((res) => setJob(res.data))
       .catch(() => setError('Failed to load job'))
       .finally(() => setLoading(false))
   }, [id])
+
+  if (!id || !/^[a-zA-Z0-9_-]+$/.test(id)) {
+    return <Navigate to="/jobs" replace />
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

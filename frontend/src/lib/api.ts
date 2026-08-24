@@ -4,6 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
+  withCredentials: true,
 })
 
 api.interceptors.request.use((config) => {
@@ -46,7 +47,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const res = await axios.post('/api/auth/refresh', { refreshToken })
+        const res = await axios.post('/api/auth/refresh', { refreshToken }, { withCredentials: true })
         localStorage.setItem('access_token', res.data.accessToken)
         localStorage.setItem('refresh_token', res.data.refreshToken)
         processQueue(null, res.data.accessToken)
