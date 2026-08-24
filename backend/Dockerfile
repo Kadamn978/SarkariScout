@@ -21,9 +21,11 @@ WORKDIR /app
 RUN addgroup -g 1001 -S sarkari && adduser -S sarkari -u 1001
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./
+
+RUN npm install --omit=dev --ignore-scripts 2>/dev/null || cp -r /app/node_modules . || true
+COPY --from=builder /app/node_modules ./node_modules
 
 RUN mkdir -p logs && chown -R sarkari:sarkari /app
 

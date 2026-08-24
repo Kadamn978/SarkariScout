@@ -65,7 +65,7 @@ export class AuthService {
       const stored = await this.redis.get(`refresh:${payload.sub}`);
       if (!stored || !this.timingSafeCompare(stored, refreshToken)) {
         // Potential token reuse — invalidate all tokens for this user
-        if (stored && !this.timingSafeCompare(stored, refreshToken)) {
+        if (stored) {
           await this.redis.del(`refresh:${payload.sub}`);
         }
         throw new ForbiddenException('Invalid refresh token');
@@ -185,9 +185,17 @@ export class AuthService {
   }
 
   private timingSafeCompare(a: string, b: string): boolean {
-    if (a.length !== b.length) return false;
     const bufA = Buffer.from(a);
     const bufB = Buffer.from(b);
+    if (bufA.length !== bufB.length) {
+      const maxLen = Math.max(bufA.length, bufB.length);
+      const paddedA = Buffer.alloc(maxLen, 0);
+      const paddedB = Buffer.alloc(maxLen, 0);
+      bufA.copy(paddedA);
+      bufB.copy(paddedB);
+      timingSafeEqual(paddedA, paddedB);
+      return false;
+    }
     return timingSafeEqual(bufA, bufB);
   }
 

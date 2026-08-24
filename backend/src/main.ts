@@ -17,8 +17,14 @@ async function bootstrap() {
     }
   }
 
+  const isProd = process.env.NODE_ENV === 'production';
+
+  if (isProd && !process.env.ALLOWED_ORIGINS) {
+    throw new Error('ALLOWED_ORIGINS is required in production');
+  }
+
   const app = await NestFactory.create(AppModule, {
-    logger: process.env.NODE_ENV === 'production'
+    logger: isProd
       ? ['error', 'warn', 'log']
       : ['error', 'warn', 'log', 'debug', 'verbose'],
   });
