@@ -45,6 +45,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       ? { statusCode: status, message, timestamp: new Date().toISOString(), path: request.url }
       : { statusCode: status, ...(message as any), timestamp: new Date().toISOString(), path: request.url };
 
+    // In production, strip internal details from non-HTTP exceptions
+    if (process.env.NODE_ENV === 'production' && !(exception instanceof HttpException)) {
+      delete (errorResponse as any).path;
+      delete (errorResponse as any).error;
+      (errorResponse as any).message = 'An error occurred';
+    }
+
     response.status(status).json(errorResponse);
   }
 

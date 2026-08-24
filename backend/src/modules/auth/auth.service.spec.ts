@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -50,7 +50,7 @@ describe('AuthService', () => {
       mockJwt.sign.mockReturnValue('token');
       mockRedis.set.mockResolvedValue(undefined);
 
-      const result = await service.register({ email: 'test@test.com', password: 'Test@1234', name: 'Test' });
+      const result = await service.register({ email: 'test@test.com', password: 'Test@1234!', name: 'Test' });
 
       expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { email: 'test@test.com' } });
       expect(mockPrisma.user.create).toHaveBeenCalled();
@@ -62,7 +62,7 @@ describe('AuthService', () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1', email: 'test@test.com' });
 
       await expect(
-        service.register({ email: 'test@test.com', password: 'Test@1234', name: 'Test' }),
+        service.register({ email: 'test@test.com', password: 'Test@1234!', name: 'Test' }),
       ).rejects.toThrow(ConflictException);
     });
 
@@ -72,7 +72,7 @@ describe('AuthService', () => {
       mockJwt.sign.mockReturnValue('token');
       mockRedis.set.mockResolvedValue(undefined);
 
-      await service.register({ email: '  TEST@Test.COM  ', password: 'Test@1234', name: 'Test' });
+      await service.register({ email: '  TEST@Test.COM  ', password: 'Test@1234!', name: 'Test' });
 
       expect(mockPrisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ email: 'test@test.com' }) }),
@@ -85,51 +85,57 @@ describe('AuthService', () => {
       mockJwt.sign.mockReturnValue('token');
       mockRedis.set.mockResolvedValue(undefined);
 
-      await service.register({ email: 'test@test.com', password: 'Test@1234', name: 'Test' });
+      await service.register({ email: 'test@test.com', password: 'Test@1234!', name: 'Test' });
 
       const createCall = mockPrisma.user.create.mock.calls[0][0];
       const hash = createCall.data.passwordHash;
-      expect(hash).not.toBe('Test@1234');
-      const valid = await argon2.verify(hash, 'Test@1234');
+      expect(hash).not.toBe('Test@1234!');
+      const valid = await argon2.verify(hash, 'Test@1234!');
       expect(valid).toBe(true);
     });
   });
 
   describe('login', () => {
     it('should return tokens on valid credentials', async () => {
-      const hash = await argon2.hash('Test@1234');
+      const hash = await argon2.hash('Test@1234!');
       mockRedis.get.mockResolvedValue(null);
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1', email: 'test@test.com', role: 'USER', passwordHash: hash });
       mockJwt.sign.mockReturnValue('token');
       mockRedis.set.mockResolvedValue(undefined);
       mockRedis.del.mockResolvedValue(undefined);
 
-      const result = await service.login({ email: 'test@test.com', password: 'Test@1234' });
+      const result = await service.login({ email: 'test@test.com', password: 'Test@1234!' });
 
       expect(result.accessToken).toBe('token');
       expect(mockRedis.del).toHaveBeenCalledWith('lock:test@test.com');
     });
 
-    it('should throw UnauthorizedException on bad email', async () => {
+    it('should throw UnauthorizedException on bad email (timing-safe)', async () => {
       mockRedis.get.mockResolvedValue(null);
       mockPrisma.user.findUnique.mockResolvedValue(null);
       mockRedis.incr.mockResolvedValue(1);
       mockRedis.expire.mockResolvedValue(undefined);
 
+      const start = Date.now();
       await expect(
-        service.login({ email: 'wrong@test.com', password: 'Test@1234' }),
+        service.login({ email: 'wrong@test.com', password: 'Test@1234!' }),
       ).rejects.toThrow(UnauthorizedException);
+      const elapsed = Date.now() - start;
+
+      // Should still run argon2.verify on dummy hash (takes ~100ms+)
+      expect(elapsed).toBeGreaterThan(50);
+      expect(mockRedis.incr).toHaveBeenCalled();
     });
 
     it('should throw UnauthorizedException on bad password', async () => {
-      const hash = await argon2.hash('CorrectPass@1');
+      const hash = await argon2.hash('CorrectPass@1!');
       mockRedis.get.mockResolvedValue(null);
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1', email: 'test@test.com', role: 'USER', passwordHash: hash });
       mockRedis.incr.mockResolvedValue(1);
       mockRedis.expire.mockResolvedValue(undefined);
 
       await expect(
-        service.login({ email: 'test@test.com', password: 'WrongPass@1' }),
+        service.login({ email: 'test@test.com', password: 'WrongPass@1!' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -137,47 +143,85 @@ describe('AuthService', () => {
       mockRedis.get.mockResolvedValue('5');
 
       await expect(
-        service.login({ email: 'test@test.com', password: 'Test@1234' }),
+        service.login({ email: 'test@test.com', password: 'Test@1234!' }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
     it('should increment failed login counter', async () => {
-      const hash = await argon2.hash('CorrectPass@1');
+      const hash = await argon2.hash('CorrectPass@1!');
       mockRedis.get.mockResolvedValue(null);
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1', email: 'test@test.com', role: 'USER', passwordHash: hash });
       mockRedis.incr.mockResolvedValue(1);
       mockRedis.expire.mockResolvedValue(undefined);
 
-      await service.login({ email: 'test@test.com', password: 'WrongPass@1' }).catch(() => {});
+      await service.login({ email: 'test@test.com', password: 'WrongPass@1!' }).catch(() => {});
 
       expect(mockRedis.incr).toHaveBeenCalledWith('lock:test@test.com');
       expect(mockRedis.expire).toHaveBeenCalledWith('lock:test@test.com', 900);
     });
+
+    it('should have similar response time for bad email vs bad password', async () => {
+      const hash = await argon2.hash('CorrectPass@1!');
+      mockRedis.get.mockResolvedValue(null);
+      mockRedis.incr.mockResolvedValue(1);
+      mockRedis.expire.mockResolvedValue(undefined);
+
+      // Bad email path
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      const start1 = Date.now();
+      await service.login({ email: 'bad@test.com', password: 'WrongPass@1!' }).catch(() => {});
+      const time1 = Date.now() - start1;
+
+      // Bad password path
+      mockPrisma.user.findUnique.mockResolvedValue({ id: '1', email: 'test@test.com', role: 'USER', passwordHash: hash });
+      const start2 = Date.now();
+      await service.login({ email: 'test@test.com', password: 'WrongPass@1!' }).catch(() => {});
+      const time2 = Date.now() - start2;
+
+      // Both should take roughly the same time (argon2.verify on both)
+      // Allow generous tolerance since argon2 timing varies
+      const diff = Math.abs(time1 - time2);
+      expect(diff).toBeLessThan(300); // within 300ms of each other
+    });
   });
 
   describe('refreshTokens', () => {
-    it('should return new tokens pair', async () => {
+    it('should return new tokens pair with rotation', async () => {
       mockJwt.verifyAsync.mockResolvedValue({ sub: '1', email: 'test@test.com', role: 'USER', type: 'refresh' });
       mockRedis.get.mockResolvedValue('valid-refresh-token');
+      mockRedis.del.mockResolvedValue(undefined);
       mockJwt.sign.mockReturnValue('new-token');
       mockRedis.set.mockResolvedValue(undefined);
 
       const result = await service.refreshTokens('valid-refresh-token');
 
       expect(result.accessToken).toBe('new-token');
+      // Old token should be deleted (rotation)
+      expect(mockRedis.del).toHaveBeenCalledWith('refresh:1');
     });
 
-    it('should throw UnauthorizedException if token not in Redis', async () => {
+    it('should throw ForbiddenException if token not in Redis', async () => {
       mockJwt.verifyAsync.mockResolvedValue({ sub: '1', email: 'test@test.com', role: 'USER' });
       mockRedis.get.mockResolvedValue(null);
 
-      await expect(service.refreshTokens('stale-token')).rejects.toThrow(UnauthorizedException);
+      await expect(service.refreshTokens('stale-token')).rejects.toThrow(ForbiddenException);
     });
 
     it('should throw UnauthorizedException on invalid token', async () => {
       mockJwt.verifyAsync.mockRejectedValue(new Error('jwt expired'));
 
       await expect(service.refreshTokens('expired-token')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should invalidate all tokens on token reuse attempt', async () => {
+      mockJwt.verifyAsync.mockResolvedValue({ sub: '1', email: 'test@test.com', role: 'USER', type: 'refresh' });
+      // Stored token is different from presented token (reuse attempt)
+      mockRedis.get.mockResolvedValue('new-legitimate-token');
+      mockRedis.del.mockResolvedValue(undefined);
+
+      await expect(service.refreshTokens('old-stolen-token')).rejects.toThrow(ForbiddenException);
+      // Should delete the stored token (invalidate session)
+      expect(mockRedis.del).toHaveBeenCalledWith('refresh:1');
     });
   });
 

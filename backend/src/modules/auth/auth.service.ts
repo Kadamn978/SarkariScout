@@ -1,9 +1,12 @@
 import { Injectable, UnauthorizedException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
+import { randomBytes, timingSafeEqual } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
 import { RegisterDto, LoginDto } from './auth.dto';
+
+const DUMMY_HASH = '$argon2id$v=19$m=65536,t=3,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
 @Injectable()
 export class AuthService {
@@ -34,13 +37,13 @@ export class AuthService {
     }
 
     const user = await this.prisma.user.findUnique({ where: { email: dto.email.toLowerCase().trim() } });
-    if (!user) {
-      await this.handleFailedLogin(dto.email);
-      throw new UnauthorizedException('Invalid credentials');
-    }
 
-    const valid = await argon2.verify(user.passwordHash, dto.password);
-    if (!valid) {
+    // Timing-safe: always run argon2.verify to prevent email enumeration
+    const passwordToVerify = dto.password;
+    const hashToVerify = user?.passwordHash || DUMMY_HASH;
+    const valid = await argon2.verify(hashToVerify, passwordToVerify);
+
+    if (!user || !valid) {
       await this.handleFailedLogin(dto.email);
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -54,12 +57,19 @@ export class AuthService {
       const payload = await this.jwt.verifyAsync(refreshToken);
 
       const stored = await this.redis.get(`refresh:${payload.sub}`);
-      if (stored !== refreshToken) {
+      if (!stored || !this.timingSafeCompare(stored, refreshToken)) {
+        // Potential token reuse — invalidate all tokens for this user
+        if (stored && !this.timingSafeCompare(stored, refreshToken)) {
+          await this.redis.del(`refresh:${payload.sub}`);
+        }
         throw new ForbiddenException('Invalid refresh token');
       }
 
+      // Token rotation: delete old refresh token before issuing new pair
+      await this.redis.del(`refresh:${payload.sub}`);
       return this.generateTokens(payload.sub, payload.email, payload.role);
-    } catch {
+    } catch (err) {
+      if (err instanceof ForbiddenException) throw err;
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
@@ -89,6 +99,13 @@ export class AuthService {
     await this.redis.set(`refresh:${userId}`, refreshToken, 604800);
 
     return { accessToken, refreshToken, user: { id: userId, email, role } };
+  }
+
+  private timingSafeCompare(a: string, b: string): boolean {
+    if (a.length !== b.length) return false;
+    const bufA = Buffer.from(a);
+    const bufB = Buffer.from(b);
+    return timingSafeEqual(bufA, bufB);
   }
 
   async verifyToken(token: string) {
