@@ -67,33 +67,33 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  profile         Profile?
-  trackers        UserJob[]
-  notifications   NotificationLog[]
-  subscriptions   Subscription[]
+  profile       Profile?
+  trackers      UserJob[]
+  notifications NotificationLog[]
+  subscriptions Subscription[]
 
   @@map("users")
 }
 
 model Profile {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   educationLevel String?
-  degrees        String?  @db.Text
+  degrees        String?   @db.Text
   state          String?
   district       String?
-  languages      String?  @db.Text
+  languages      String?   @db.Text
   category       Category?
   dob            DateTime?
   gender         String?
-  examFamilies   String?  @db.Text
-  keywords       String?  @db.Text
-  notifyInstant  Boolean  @default(true)
-  notifyDigest   Boolean  @default(true)
-  digestTime     String   @default("09:00")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  examFamilies   String?   @db.Text
+  keywords       String?   @db.Text
+  notifyInstant  Boolean   @default(true)
+  notifyDigest   Boolean   @default(true)
+  digestTime     String    @default("09:00")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@map("profiles")
 }
@@ -112,49 +112,54 @@ model Source {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
-  jobs          Job[]
+  jobs Job[]
 
   @@map("sources")
 }
 
 model Job {
-  id                  String     @id @default(uuid())
-  fingerprint         String     @unique
+  id                  String    @id @default(uuid())
+  fingerprint         String    @unique
   sourceId            String?
-  source              Source?    @relation(fields: [sourceId], references: [id])
+  source              Source?   @relation(fields: [sourceId], references: [id])
   sourceUrl           String?
   org                 String
   advtNo              String?
   title               String
-  postNames           String?    @db.Text
+  postNames           String?   @db.Text
   totalVacancies      Int?
-  state               String     @default("ALL_IN")
+  state               String    @default("ALL_IN")
   examFamily          String?
-  qualificationText   String?    @db.Text
-  qualificationLevels String?    @db.Text
+  qualificationText   String?   @db.Text
+  qualificationLevels String?   @db.Text
   ageMin              Int?
   ageMax              Int?
-  categoryFeesJson    String?    @db.Text
+  categoryFeesJson    String?   @db.Text
   applyStart          DateTime?
   applyEnd            DateTime?
   feeEnd              DateTime?
   examDate            DateTime?
   admitCardDate       DateTime?
   resultDate          DateTime?
-  status              JobStatus  @default(OPEN)
+  status              JobStatus @default(OPEN)
   notificationPdfUrl  String?
   applyUrl            String?
-  officialUrls        String?    @db.Text
+  officialUrls        String?   @db.Text
   rawHash             String?
-  firstSeenAt         DateTime   @default(now())
-  lastSeenAt          DateTime   @default(now())
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+  firstSeenAt         DateTime  @default(now())
+  lastSeenAt          DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  changes             JobChange[]
-  trackers            UserJob[]
-  notifications       NotificationLog[]
+  changes       JobChange[]
+  trackers      UserJob[]
+  notifications NotificationLog[]
 
+  @@index([status])
+  @@index([rawHash])
+  @@index([sourceId])
+  @@index([state])
+  @@index([applyEnd])
   @@map("jobs")
 }
 
@@ -170,6 +175,8 @@ model JobChange {
   notified   Boolean    @default(false)
   createdAt  DateTime   @default(now())
 
+  @@index([jobId])
+  @@index([detectedAt])
   @@map("job_changes")
 }
 
@@ -192,16 +199,18 @@ model UserJob {
 }
 
 model NotificationLog {
-  id        String           @id @default(uuid())
-  userId    String
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobId     String?
-  job       Job?             @relation(fields: [jobId], references: [id], onDelete: SetNull)
-  changeId  String?
-  type      NotificationType
-  sentAt    DateTime         @default(now())
-  status    String           @default("sent")
+  id     String           @id @default(uuid())
+  userId String
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId  String?
+  job    Job?             @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  type   NotificationType
+  sentAt DateTime         @default(now())
+  status String           @default("sent")
 
+  @@index([userId])
+  @@index([jobId])
+  @@index([sentAt])
   @@map("notification_logs")
 }
 

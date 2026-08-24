@@ -6,10 +6,22 @@ import { Logger } from './common/logger/logger.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
+const requiredEnvVars = ['DATABASE_URL', 'REDIS_URL', 'JWT_SECRET'];
+
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log'] });
+  for (const key of requiredEnvVars) {
+    if (!process.env[key]) {
+      throw new Error(`Required environment variable ${key} is not set`);
+    }
+  }
+
+  const app = await NestFactory.create(AppModule, {
+    logger: process.env.NODE_ENV === 'production'
+      ? ['error', 'warn', 'log']
+      : ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
 
   app.setGlobalPrefix('api');
 

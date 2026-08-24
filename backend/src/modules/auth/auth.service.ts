@@ -77,9 +77,14 @@ export class AuthService {
   }
 
   private async generateTokens(userId: string, email: string, role: string) {
-    const payload = { sub: userId, email, role };
-    const accessToken = this.jwt.sign(payload, { expiresIn: '15m' });
-    const refreshToken = this.jwt.sign(payload, { expiresIn: '7d' });
+    const accessToken = this.jwt.sign(
+      { sub: userId, email, role, type: 'access' },
+      { expiresIn: '15m' },
+    );
+    const refreshToken = this.jwt.sign(
+      { sub: userId, email, role, type: 'refresh' },
+      { expiresIn: '7d' },
+    );
 
     await this.redis.set(`refresh:${userId}`, refreshToken, 604800);
 

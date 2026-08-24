@@ -3,6 +3,7 @@
 **Owns:** `infra/`, CI/CD pipelines, deployment, environment configuration
 
 **Responsibilities:**
+
 - Maintain docker-compose for local development
 - Set up and maintain CI/CD pipelines (GitHub Actions)
 - Manage environment isolation (dev/staging/prod)
@@ -11,6 +12,7 @@
 - Handle secrets management
 
 **When to escalate:**
+
 - Production deployment needed
 - Infrastructure cost changes
 - New cloud service required
