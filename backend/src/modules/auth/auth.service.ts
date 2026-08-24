@@ -169,6 +169,24 @@ export class AuthService {
     }
   }
 
+  async findOrCreateGoogleUser(profile: { googleId: string; email: string; name: string; avatar?: string }) {
+    let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
+
+    if (!user) {
+      const dummyHash = await argon2.hash(randomUUID(), { memoryCost: 65536, timeCost: 3 });
+      user = await this.prisma.user.create({
+        data: {
+          email: profile.email.toLowerCase(),
+          passwordHash: dummyHash,
+          name: profile.name,
+          emailVerifiedAt: new Date(),
+        },
+      });
+    }
+
+    return { id: user.id, email: user.email, role: user.role, name: user.name };
+  }
+
   private async generateTokens(userId: string, email: string, role: string) {
     const accessToken = this.jwt.sign(
       { sub: userId, email, role, type: 'access' },

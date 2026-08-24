@@ -49,6 +49,14 @@ junit.xml
 # Docker
 docker-compose.override.yml
 
+# Python / crewAI
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+crewai/.env
+
 # Misc
 *.tgz
 *.tmp
