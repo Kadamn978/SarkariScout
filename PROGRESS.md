@@ -82,6 +82,33 @@ Single source of truth. Read this file first at the start of every session.
 | Sprint 3 | Eligibility matching — 6-factor scoring (edu/state/category/age/gender/qual)             | Done   |
 | Sprint 4 | Email service — digest, instant alerts, unsubscribe, preferences, notification log       | Done   |
 | Sprint 5 | Application tracker — track/untrack, stage management, tracker stats, upcoming deadlines | Done   |
+| Sprint 6 | Mock Test Engine — 10 endpoints, CRUD, start/submit scoring, leaderboard, 5 tests       | Done   |
+| Sprint 7 | Previous Year Papers — 7 endpoints, download tracking, 20 papers                        | Done   |
+| Sprint 8 | SEO — Open Graph, JSON-LD, sitemap.xml, robots.txt, canonical URLs                      | Done   |
+| Sprint 9 | Document Wallet — photo, signature, certificates upload                                  | Done   |
+| Sprint 10| Performance + QA — TypeScript clean, tests passing                                       | Done   |
+| Sprint 11| Email Preferences — digest/instant/weekly toggles, notification history                  | Done   |
+| Sprint 12| Admin Dashboard — overview/sources/crawlers tabs, crawl all                              | Done   |
+| Sprint 13| Footer + 404 + Layout — Footer, NotFound, Privacy, AppLayout, AdminRoute                | Done   |
+| Sprint 14| SEO upgrade — OG, Twitter, JSON-LD, sitemap.xml, canonical, robots meta                 | Done   |
+| Sprint 15| Expanded seed — 96 jobs, 11 tests, 110 questions, 20 papers                            | Done   |
+| Sprint 16| Landing redesign — Live data, expiring soon, stats counter, state/category links         | Done   |
+| Sprint 17| Dashboard upgrade — 4-stat grid, quick actions, deadline sidebar, stage badges           | Done   |
+| Sprint 18| Dark mode — ThemeContext, localStorage, OS preference, Navbar toggle                     | Done   |
+| Sprint 19| Job sharing + tracking — Share button, track/untrack toggle, eligibility details         | Done   |
+| Sprint 20| Final polish — Category filter, deadline countdown, proper state names                   | Done   |
+| Sprint 21| Exam Calendar + Results + Admit Cards — Timeline, declared/upcoming, available/uploading  | Done   |
+| Sprint 22| Related jobs + breadcrumbs — Breadcrumbs, related jobs, scroll-to-top, loading skeletons | Done   |
+| Sprint 23| FAQ + About + Testimonials — Accordion, mission/features/sources/team, reviews           | Done   |
+| Sprint 24| Toast notifications — Success/error/info toasts, auto-dismiss, slide-in animation        | Done   |
+| Sprint 25| Massive data expansion — 200+ jobs, 22+ tests, 220+ questions, 100+ papers              | Done   |
+| Sprint 26| Awwwards UI — Custom cursor, page transitions, 3D effects, noise texture, skeletons      | Done   |
+| Sprint 27| USP section — "Why We're Different" with 6 differentiators                               | Done   |
+| Sprint 28| Profile upgrade — TiltCard + ScrollReveal on profile form                                | Done   |
+| Sprint 29| Leaderboard — Top scorers with medals, test history with scores                          | Done   |
+| Sprint 30| Notification bell — Deadline alerts dropdown, unread count, auto-refresh                 | Done   |
+| Sprint 31| Progress analytics — Pipeline visualization, animated counters, study streak             | Done   |
+| Sprint 32| Revenue strategy — Free first, ads + affiliate, premium later documentation             | Done   |
 
 ## Testing
 
