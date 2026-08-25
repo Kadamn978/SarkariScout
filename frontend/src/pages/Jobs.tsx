@@ -6,6 +6,8 @@ import { useToast } from '../contexts/ToastContext'
 import { JobCardSkeleton } from '../components/Skeleton'
 import ScrollReveal from '../components/ScrollReveal'
 import TiltCard from '../components/TiltCard'
+import AdBanner from '../components/AdBanner'
+import AffiliateCard from '../components/AffiliateCard'
 
 interface Job {
   id: string
