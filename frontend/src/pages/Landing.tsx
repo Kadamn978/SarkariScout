@@ -71,6 +71,9 @@ export default function Landing() {
           <Link to="/" className="text-xl sm:text-2xl font-bold tracking-tight">SarkariScout</Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <Link to="/jobs" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Jobs</Link>
+            <Link to="/exam-calendar" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Calendar</Link>
+            <Link to="/results" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Results</Link>
+            <Link to="/admit-cards" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Admit Cards</Link>
             <Link to="/mock-tests" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Mock Tests</Link>
             <Link to="/papers" className="px-3 py-2 text-sm hover:text-blue-200 hidden sm:inline">Papers</Link>
             {user ? (
@@ -248,6 +251,9 @@ export default function Landing() {
               <h4 className="text-white font-medium mb-3 text-sm">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link to="/jobs" className="hover:text-white transition">All Jobs</Link></li>
+                <li><Link to="/exam-calendar" className="hover:text-white transition">Exam Calendar</Link></li>
+                <li><Link to="/results" className="hover:text-white transition">Results</Link></li>
+                <li><Link to="/admit-cards" className="hover:text-white transition">Admit Cards</Link></li>
                 <li><Link to="/mock-tests" className="hover:text-white transition">Mock Tests</Link></li>
                 <li><Link to="/papers" className="hover:text-white transition">Previous Papers</Link></li>
                 <li><Link to="/register" className="hover:text-white transition">Register</Link></li>

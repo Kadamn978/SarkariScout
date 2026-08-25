@@ -25,6 +25,9 @@ import EmailPreferences from './pages/EmailPreferences'
 import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import Privacy from './pages/Privacy'
+import ExamCalendar from './pages/ExamCalendar'
+import Results from './pages/Results'
+import AdmitCards from './pages/AdmitCards'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -75,6 +78,9 @@ export default function App() {
             <Route path="/mock-tests" element={<AppLayout><MockTests /></AppLayout>} />
             <Route path="/mock-tests/:id" element={<ProtectedRoute><AppLayout><MockTestPlay /></AppLayout></ProtectedRoute>} />
             <Route path="/papers" element={<AppLayout><Papers /></AppLayout>} />
+            <Route path="/exam-calendar" element={<AppLayout><ExamCalendar /></AppLayout>} />
+            <Route path="/results" element={<AppLayout><Results /></AppLayout>} />
+            <Route path="/admit-cards" element={<AppLayout><AdmitCards /></AppLayout>} />
             <Route path="/documents" element={<ProtectedRoute><AppLayout><Documents /></AppLayout></ProtectedRoute>} />
             <Route path="/email-preferences" element={<ProtectedRoute><AppLayout><EmailPreferences /></AppLayout></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AppLayout><AdminDashboard /></AppLayout></AdminRoute>} />

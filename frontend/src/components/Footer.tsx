@@ -13,6 +13,9 @@ export default function Footer() {
             <h4 className="text-white font-medium mb-3 text-sm">Jobs</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/jobs" className="hover:text-white transition">All Jobs</Link></li>
+              <li><Link to="/exam-calendar" className="hover:text-white transition">Exam Calendar</Link></li>
+              <li><Link to="/results" className="hover:text-white transition">Results</Link></li>
+              <li><Link to="/admit-cards" className="hover:text-white transition">Admit Cards</Link></li>
               <li><Link to="/mock-tests" className="hover:text-white transition">Mock Tests</Link></li>
               <li><Link to="/papers" className="hover:text-white transition">Previous Papers</Link></li>
             </ul>

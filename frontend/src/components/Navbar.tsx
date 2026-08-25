@@ -17,6 +17,9 @@ export default function Navbar() {
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-4">
           <Link to="/jobs" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Jobs</Link>
+          <Link to="/exam-calendar" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Calendar</Link>
+          <Link to="/results" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Results</Link>
+          <Link to="/admit-cards" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Admit Cards</Link>
           <Link to="/mock-tests" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Mock Tests</Link>
           <Link to="/papers" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Papers</Link>
           {user ? (
@@ -59,6 +62,9 @@ export default function Navbar() {
       {menuOpen && (
         <div className="sm:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-3 space-y-1 bg-white dark:bg-gray-900">
           <Link to="/jobs" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Jobs</Link>
+          <Link to="/exam-calendar" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Exam Calendar</Link>
+          <Link to="/results" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Results</Link>
+          <Link to="/admit-cards" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Admit Cards</Link>
           <Link to="/mock-tests" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Mock Tests</Link>
           <Link to="/papers" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Previous Papers</Link>
           <hr className="my-2 border-gray-100 dark:border-gray-800" />
