@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { JobCardSkeleton } from '../components/Skeleton'
-import AdBanner from '../components/AdBanner'
-import AffiliateCard from '../components/AffiliateCard'
+import ScrollReveal from '../components/ScrollReveal'
+import TiltCard from '../components/TiltCard'
 
 interface Job {
   id: string
@@ -174,12 +174,12 @@ export default function Jobs() {
         ) : (
           <>
             <div className="space-y-3" role="list" aria-label="Job listings">
-              {jobs.map((job) => (
+              {jobs.map((job, i) => (
+                <ScrollReveal key={job.id} delay={i * 40} direction="up">
                 <Link
-                  key={job.id}
                   to={`/jobs/${job.id}`}
                   role="listitem"
-                  className="block p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block p-5 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all duration-300 hover-lift card-shine focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -204,6 +204,7 @@ export default function Jobs() {
                   </div>
                   <span className="inline-block mt-2 px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">{job.source?.name || 'Unknown'}</span>
                 </Link>
+                </ScrollReveal>
               ))}
             </div>
             <div ref={observerRef} className="h-4" />

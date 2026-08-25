@@ -3,6 +3,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider } from './contexts/ToastContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import CustomCursor from './components/CustomCursor'
+import ProgressBar from './components/ProgressBar'
+import NoiseOverlay from './components/NoiseOverlay'
 import Footer from './components/Footer'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -71,6 +74,9 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <AuthProvider>
+          <CustomCursor />
+          <ProgressBar />
+          <NoiseOverlay />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />

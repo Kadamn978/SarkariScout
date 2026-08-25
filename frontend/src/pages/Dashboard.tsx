@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/api'
+import ScrollReveal from '../components/ScrollReveal'
+import TiltCard from '../components/TiltCard'
 
 interface TrackedJob {
   id: string; jobId: string; stage: string | null;
@@ -61,24 +63,26 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          <Link to="/jobs" className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition">
-            <p className="text-2xl font-bold text-blue-600">{trackedJobs.length}</p>
-            <p className="text-sm text-gray-500">Tracked Jobs</p>
-          </Link>
-          <Link to="/mock-tests" className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-200 transition">
-            <p className="text-2xl font-bold text-purple-600">11</p>
-            <p className="text-sm text-gray-500">Mock Tests</p>
-          </Link>
-          <Link to="/papers" className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition">
-            <p className="text-2xl font-bold text-green-600">20</p>
-            <p className="text-sm text-gray-500">Papers</p>
-          </Link>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <p className="text-2xl font-bold text-orange-600">{deadlines.length}</p>
-            <p className="text-sm text-gray-500">Expiring Soon</p>
+        <ScrollReveal>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+            <TiltCard className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all duration-300">
+              <p className="text-3xl font-black text-blue-600">{trackedJobs.length}</p>
+              <p className="text-sm text-gray-500 mt-1">Tracked Jobs</p>
+            </TiltCard>
+            <TiltCard className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-purple-200 transition-all duration-300">
+              <p className="text-3xl font-black text-purple-600">11</p>
+              <p className="text-sm text-gray-500 mt-1">Mock Tests</p>
+            </TiltCard>
+            <TiltCard className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-green-200 transition-all duration-300">
+              <p className="text-3xl font-black text-green-600">20</p>
+              <p className="text-sm text-gray-500 mt-1">Papers</p>
+            </TiltCard>
+            <TiltCard className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-orange-200 transition-all duration-300">
+              <p className="text-3xl font-black text-orange-600">{deadlines.length}</p>
+              <p className="text-sm text-gray-500 mt-1">Expiring Soon</p>
+            </TiltCard>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3 mb-8">
