@@ -15,6 +15,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { MockTestsModule } from './modules/mock-tests/mock-tests.module';
 import { PapersModule } from './modules/papers/papers.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 
@@ -38,6 +39,7 @@ import { RedisModule } from './common/redis/redis.module';
     FeedbackModule,
     MockTestsModule,
     PapersModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

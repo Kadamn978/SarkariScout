@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import CustomCursor from './components/CustomCursor'
 import ProgressBar from './components/ProgressBar'
 import NoiseOverlay from './components/NoiseOverlay'
+import ContentProtection from './components/ContentProtection'
 import Footer from './components/Footer'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -36,6 +37,7 @@ import FAQ from './pages/FAQ'
 import About from './pages/About'
 import Leaderboard from './pages/Leaderboard'
 import Progress from './pages/Progress'
+import { usePageView } from './hooks/usePageView'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -69,6 +71,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
+function PageViewTracker() {
+  usePageView()
+  return null
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -76,9 +83,11 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <AuthProvider>
+          <PageViewTracker />
           <CustomCursor />
           <ProgressBar />
           <NoiseOverlay />
+          <ContentProtection />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />

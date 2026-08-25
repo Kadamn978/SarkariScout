@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -506,4 +507,43 @@ model PreviousPaper {
   @@index([examFamily])
   @@index([year])
   @@map("previous_papers")
+}
+
+model PageView {
+  id          String   @id @default(uuid())
+  path        String
+  visitorId   String
+  userAgent   String?
+  referrer    String?
+  country     String?
+  city        String?
+  device      String?
+  browser     String?
+  os          String?
+  isUnique    Boolean  @default(false)
+  sessionId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([path])
+  @@index([visitorId])
+  @@index([createdAt])
+  @@index([path, createdAt])
+  @@map("page_views")
+}
+
+model DailyStats {
+  id              String   @id @default(uuid())
+  date            DateTime @unique
+  totalViews      Int      @default(0)
+  uniqueVisitors  Int      @default(0)
+  pageViews       Json?
+  topPages        Json?
+  referrers       Json?
+  devices         Json?
+  browsers        Json?
+  newVsReturning  Json?
+  createdAt       DateTime @default(now())
+
+  @@index([date])
+  @@map("daily_stats")
 }
