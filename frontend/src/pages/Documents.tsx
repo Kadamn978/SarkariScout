@@ -55,6 +55,12 @@ export default function Documents() {
     const file = fileInputRef.current?.files?.[0]
     if (!file) return
 
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Only JPEG, PNG, WebP, and PDF files are allowed')
+      return
+    }
+
     if (file.size > 5 * 1024 * 1024) {
       setError('File size must be less than 5MB')
       return

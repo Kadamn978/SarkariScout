@@ -14,6 +14,10 @@ describe('EmailService', () => {
       },
       user: { findUnique: jest.fn() },
       job: { findMany: jest.fn().mockResolvedValue([]), findUnique: jest.fn() },
+      emailPreference: {
+        findMany: jest.fn().mockResolvedValue([]),
+        findUnique: jest.fn(),
+      },
       notificationLog: { create: jest.fn() },
     };
 

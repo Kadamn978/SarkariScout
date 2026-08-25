@@ -4,6 +4,7 @@ import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
+import { useSEO } from '../hooks/useSEO'
 
 interface Job {
   id: string; title: string; org: string; state: string; district: string | null;
@@ -57,6 +58,26 @@ export default function JobDetail() {
       setRelated(res.data.jobs.filter((j: RelatedJob) => j.id !== currentId).slice(0, 3))
     } catch { /* ignore */ }
   }
+
+  useSEO({
+    title: job ? `${job.title} - ${job.org}` : 'Loading...',
+    description: job ? `${job.title} at ${job.org}. ${job.totalVacancies || ''} vacancies. Apply before ${job.applyEnd || 'deadline'}.` : '',
+    canonical: job ? `https://sarakriradar.in/jobs/${job.id}` : undefined,
+    ogTitle: job ? `${job.title} | SarkariScout` : undefined,
+    ogDescription: job ? `${job.totalVacancies || ''} vacancies at ${job.org}. Free apply link.` : undefined,
+    jsonLd: job ? {
+      '@context': 'https://schema.org',
+      '@type': 'JobPosting',
+      title: job.title,
+      hiringOrganization: { '@type': 'Organization', name: job.org },
+      jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressRegion: job.state } },
+      employmentType: 'FULL_TIME',
+      datePosted: job.applyStart,
+      validThrough: job.applyEnd,
+      description: job.eligibilityCriteria || job.title,
+      baseSalary: job.generalFee ? { '@type': 'MonetaryAmount', value: job.generalFee } : undefined,
+    } : undefined,
+  })
 
   async function checkTracking(jobId: string) {
     try {

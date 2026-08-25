@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
@@ -15,6 +16,10 @@ async function bootstrap() {
     if (!process.env[key]) {
       throw new Error(`Required environment variable ${key} is not set`);
     }
+  }
+
+  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters');
   }
 
   const isProd = process.env.NODE_ENV === 'production';

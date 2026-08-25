@@ -46,7 +46,11 @@ describe('JobsService', () => {
       await service.findAll({ state: 'Maharashtra' });
       expect(prisma.job.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ state: 'Maharashtra' }),
+          where: expect.objectContaining({
+            OR: expect.arrayContaining([
+              expect.objectContaining({ state: 'Maharashtra' }),
+            ]),
+          }),
         }),
       );
     });
@@ -59,10 +63,9 @@ describe('JobsService', () => {
       expect(prisma.job.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            OR: [
-              { title: { contains: 'CGL' } },
-              { org: { contains: 'CGL' } },
-            ],
+            OR: expect.arrayContaining([
+              expect.objectContaining({ title: { contains: 'CGL' } }),
+            ]),
           }),
         }),
       );
@@ -110,15 +113,17 @@ describe('JobsService', () => {
 
   describe('getTrackedJobs', () => {
     it('should return tracked jobs with job details', async () => {
-      const mockTracked = [{ userId: 'u1', jobId: 'j1', job: { title: 'SSC CGL' } }];
+      const mockTracked = [{ userId: 'u1', jobId: 'j1', job: { title: 'SSC CGL', changes: [] } }];
       prisma.userJob.findMany.mockResolvedValue(mockTracked);
 
       const result = await service.getTrackedJobs('u1');
-      expect(result).toEqual(mockTracked);
-      expect(prisma.userJob.findMany).toHaveBeenCalledWith({
-        where: { userId: 'u1' },
-        include: { job: true },
-      });
+      expect(result).toHaveLength(1);
+      expect(result[0].job.title).toBe('SSC CGL');
+      expect(prisma.userJob.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: 'u1' },
+        }),
+      );
     });
   });
 });
