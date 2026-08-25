@@ -19,11 +19,17 @@ interface Job {
   changes: { id: string; type: string; field: string; before: string | null; after: string; detectedAt: string }[];
 }
 
+interface RelatedJob {
+  id: string; title: string; org: string; state: string;
+  totalVacancies: number | null; applyEnd: string | null; category: string;
+}
+
 export default function JobDetail() {
   const { id } = useParams()
   const { user } = useAuth()
   const navigate = useNavigate()
   const [job, setJob] = useState<Job | null>(null)
+  const [related, setRelated] = useState<RelatedJob[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [tracked, setTracked] = useState(false)
@@ -33,14 +39,23 @@ export default function JobDetail() {
   useEffect(() => {
     if (!id) { setLoading(false); return }
     setLoading(true)
+    window.scrollTo(0, 0)
     api.get(`/jobs/${id}`)
       .then((res) => {
         setJob(res.data)
         if (user) checkTracking(id)
+        loadRelated(res.data.category, res.data.state, id)
       })
       .catch(() => setError('Failed to load job details'))
       .finally(() => setLoading(false))
   }, [id, user])
+
+  async function loadRelated(category: string, state: string, currentId: string) {
+    try {
+      const res = await api.get('/jobs', { params: { category, state, limit: 4 } })
+      setRelated(res.data.jobs.filter((j: RelatedJob) => j.id !== currentId).slice(0, 3))
+    } catch { /* ignore */ }
+  }
 
   async function checkTracking(jobId: string) {
     try {
@@ -94,15 +109,27 @@ export default function JobDetail() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-4xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
-        <Link to="/jobs" className="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm mb-4">
-          ← Back to jobs
-        </Link>
+        <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+          <Link to="/" className="hover:text-blue-600 transition">Home</Link>
+          <span>/</span>
+          <Link to="/jobs" className="hover:text-blue-600 transition">Jobs</Link>
+          {!loading && job && (
+            <>
+              <span>/</span>
+              {job.category && <><Link to={`/jobs?category=${job.category}`} className="hover:text-blue-600 transition">{job.category}</Link><span>/</span></>}
+              <span className="text-gray-900 truncate max-w-[200px]">{job.title}</span>
+            </>
+          )}
+        </nav>
 
         {loading ? (
           <div className="bg-white p-8 rounded-2xl shadow-sm space-y-4 animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-24 mb-4" />
             <div className="h-7 bg-gray-200 rounded w-3/4" />
             <div className="h-5 bg-gray-200 rounded w-1/2" />
             <div className="grid grid-cols-2 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-4 bg-gray-100 rounded" />)}</div>
+            <div className="h-32 bg-gray-100 rounded" />
+            <div className="h-24 bg-gray-100 rounded" />
           </div>
         ) : error ? (
           <div className="p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">{error}</div>
@@ -111,7 +138,7 @@ export default function JobDetail() {
             <article className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100 mb-6">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">{job.category}</span>
                     {job.examFamily && <span className="px-2.5 py-0.5 bg-purple-50 text-purple-700 text-xs font-medium rounded-full">{job.examFamily}</span>}
                     <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${job.status === 'OPEN' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{job.status}</span>
@@ -153,6 +180,13 @@ export default function JobDetail() {
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg"><p className="text-xs text-purple-600 font-medium">Exam Date</p><p className="text-sm font-semibold">{formatDate(job.examDate)}</p></div>
               </div>
+
+              {job.postNames && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <p className="text-xs text-gray-500 font-medium">Post Names</p>
+                  <p className="text-sm text-gray-900">{job.postNames}</p>
+                </div>
+              )}
 
               {job.eligibilityCriteria && (
                 <div className="mb-6"><h3 className="font-semibold text-gray-900 mb-2">Eligibility Criteria</h3><p className="text-sm text-gray-700 leading-relaxed">{job.eligibilityCriteria}</p></div>
@@ -200,6 +234,26 @@ export default function JobDetail() {
                         <span className="text-gray-400 ml-2">{new Date(c.detectedAt).toLocaleDateString('en-IN')}</span>
                       </div>
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {related.length > 0 && (
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h2 className="font-semibold text-gray-900 mb-4">Related Jobs</h2>
+                <div className="space-y-3">
+                  {related.map((r) => (
+                    <Link key={r.id} to={`/jobs/${r.id}`}
+                      className="flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition group">
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate group-hover:text-blue-600">{r.title}</p>
+                        <p className="text-sm text-gray-500">{r.org}</p>
+                      </div>
+                      <div className="text-right shrink-0 ml-4">
+                        {r.applyEnd && <p className="text-xs text-gray-500">Deadline: {new Date(r.applyEnd).toLocaleDateString('en-IN')}</p>}
+                      </div>
+                    </Link>
                   ))}
                 </div>
               </div>

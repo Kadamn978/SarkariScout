@@ -119,6 +119,11 @@ export default function Jobs() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
+        <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+          <Link to="/" className="hover:text-blue-600 transition">Home</Link>
+          <span>/</span>
+          <span className="text-gray-900">Jobs</span>
+        </nav>
         <h1 className="text-2xl sm:text-3xl font-bold mb-4">Latest Government Jobs</h1>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
