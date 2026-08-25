@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div>
             <h3 className="text-white font-semibold mb-4">SarkariScout</h3>
             <p className="text-sm text-gray-400">Never miss a government job. Get personalized alerts for Sarkari Naukri.</p>
@@ -25,6 +25,10 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/about" className="hover:text-white transition">About</Link></li>
               <li><Link to="/faq" className="hover:text-white transition">FAQ</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-medium mb-3 text-sm">Categories</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/jobs?category=GOVERNMENT" className="hover:text-white transition">Government</Link></li>
               <li><Link to="/jobs?category=BANKING" className="hover:text-white transition">Banking</Link></li>
