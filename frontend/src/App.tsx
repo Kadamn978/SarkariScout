@@ -34,6 +34,8 @@ import Results from './pages/Results'
 import AdmitCards from './pages/AdmitCards'
 import FAQ from './pages/FAQ'
 import About from './pages/About'
+import Leaderboard from './pages/Leaderboard'
+import Progress from './pages/Progress'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -98,6 +100,8 @@ export default function App() {
             <Route path="/terms" element={<AppLayout><Privacy /></AppLayout>} />
             <Route path="/faq" element={<AppLayout><FAQ /></AppLayout>} />
             <Route path="/about" element={<AppLayout><About /></AppLayout>} />
+            <Route path="/leaderboard" element={<AppLayout><Leaderboard /></AppLayout>} />
+            <Route path="/progress" element={<ProtectedRoute><AppLayout><Progress /></AppLayout></ProtectedRoute>} />
             <Route path="/bug-report" element={<AppLayout><BugReport /></AppLayout>} />
             <Route path="/auth/google" element={<GoogleAuth />} />
             <Route path="/profile" element={<ProtectedRoute><AppLayout><Profile /></AppLayout></ProtectedRoute>} />

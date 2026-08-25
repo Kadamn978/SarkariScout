@@ -243,6 +243,62 @@ export default function Landing() {
         </section>
       )}
 
+      {/* USP — Why We're Different */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900" />
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(59,130,246,0.3) 0px, transparent 50%), radial-gradient(circle at 80% 50%, rgba(147,51,234,0.3) 0px, transparent 50%)' }} />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <span className="text-sm font-semibold text-blue-400 uppercase tracking-widest">Why SarkariScout</span>
+              <h2 className="text-4xl sm:text-5xl font-black text-white mt-3 mb-4">Not Just Another Job Site</h2>
+              <p className="text-blue-200/60 max-w-xl mx-auto text-lg">We don't just list jobs. We think, match, and alert — so you never miss what matters.</p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {[
+              { icon: '🧠', title: 'AI-Matched Alerts', desc: 'We match jobs to YOUR profile — education, state, age, category. No noise, only relevance.', highlight: 'Other sites show 1000+ random jobs. We show 10 that matter.' },
+              { icon: '⚡', title: 'Real-Time Change Detection', desc: 'Our crawlers detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
+              { icon: '📊', title: 'Application Pipeline', desc: 'Track from Interested → Applied → Exam Prep → Result. Your personal recruitment CRM.', highlight: 'Others let you save. We let you manage.' },
+              { icon: '📅', title: 'All Dates in One View', desc: 'Exam calendar, admit cards, results — every important date on a single timeline.', highlight: 'Others scatter dates. We consolidate them.' },
+              { icon: '🎯', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Leaderboard to benchmark.', highlight: 'Others link to PDFs. We simulate the exam.' },
+              { icon: '🚫', title: 'Zero Noise, Zero Spam', desc: 'No pop-ups, no fake urgency, no affiliate clutter. Clean. Focused. Free.', highlight: 'Others monetize your attention. We respect it.' },
+            ].map((item, i) => (
+              <ScrollReveal key={i} delay={i * 80}>
+                <div className="group p-6 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-500 h-full flex flex-col">
+                  <span className="text-3xl mb-4 block group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
+                  <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+                  <p className="text-blue-200/60 text-sm leading-relaxed mb-4 flex-1">{item.desc}</p>
+                  <div className="pt-3 border-t border-white/10">
+                    <p className="text-xs text-blue-300/80 italic">"{item.highlight}"</p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+
+          <ScrollReveal>
+            <div className="text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white text-sm mb-6">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                20+ sources monitored every 6 hours
+              </div>
+              <br />
+              <MagneticButton className="px-10 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl text-lg font-bold shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-shadow mt-4">
+                <Link to="/register" className="flex items-center gap-2">
+                  Try SarkariScout Free
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </MagneticButton>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Features — Glass Cards */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
         <ScrollReveal>

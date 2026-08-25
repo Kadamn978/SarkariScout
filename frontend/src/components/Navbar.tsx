@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
+import NotificationBell from './NotificationBell'
 import { useState } from 'react'
 
 export default function Navbar() {
@@ -26,7 +27,9 @@ export default function Navbar() {
           <Link to="/about" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">About</Link>
           {user ? (
             <>
+              <NotificationBell />
               <Link to="/dashboard" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Dashboard</Link>
+              <Link to="/progress" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Progress</Link>
               <Link to="/profile" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Profile</Link>
               <span className="text-sm text-gray-300 dark:text-gray-600">|</span>
               <span className="text-sm text-gray-500 dark:text-gray-400 max-w-[120px] truncate">{user.name || user.email}</span>
@@ -75,6 +78,8 @@ export default function Navbar() {
           {user ? (
             <>
               <Link to="/dashboard" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+              <Link to="/progress" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>My Progress</Link>
+              <Link to="/leaderboard" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Leaderboard</Link>
               <Link to="/profile" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Profile</Link>
               <Link to="/documents" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Documents</Link>
               <Link to="/email-preferences" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Email Settings</Link>

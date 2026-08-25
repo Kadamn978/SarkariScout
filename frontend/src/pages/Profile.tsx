@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
+import ScrollReveal from '../components/ScrollReveal'
+import TiltCard from '../components/TiltCard'
 
 const STATES = [
   'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Goa','Gujarat',
@@ -97,9 +99,10 @@ export default function Profile() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-2xl mx-auto py-6 sm:py-8 px-4">
-        <div className="bg-white p-6 sm:p-8 rounded-lg shadow-sm border border-gray-100">
-          <h1 className="text-2xl font-bold mb-1">Your Profile</h1>
-          <p className="text-gray-500 text-sm mb-6">Update your details to get personalized job alerts.</p>
+        <ScrollReveal>
+          <TiltCard className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h1 className="text-2xl font-bold mb-1">Your Profile</h1>
+            <p className="text-gray-500 text-sm mb-6">Update your details to get personalized job alerts.</p>
           {error && <div role="alert" className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -185,7 +188,8 @@ export default function Profile() {
               {loading ? 'Saving...' : 'Save Profile'}
             </button>
           </form>
-        </div>
+        </TiltCard>
+        </ScrollReveal>
       </main>
     </div>
   )
