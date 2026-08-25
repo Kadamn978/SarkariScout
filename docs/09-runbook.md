@@ -6,15 +6,15 @@
 
 ## 1. Prerequisites
 
-| Tool | Version | Why |
-|---|---|---|
-| Node.js | ≥ 20 LTS (v22.11.0 tested) | all services |
-| npm | ≥ 9 | package management |
-| MySQL 8.4 | via Laragon | primary database |
-| Redis 5.0 | via Laragon | session cache + JWT storage |
-| Git | latest | version control |
-| Python | ≥ 3.12 | crewAI agents |
-| Browser | Chrome/Edge/Firefox | dev |
+| Tool      | Version                     | Why                         |
+| --------- | --------------------------- | --------------------------- |
+| Node.js   | ≥ 20 LTS (v22.11.0 tested) | all services                |
+| npm       | ≥ 9                        | package management          |
+| MySQL 8.4 | via Laragon                 | primary database            |
+| Redis 5.0 | via Laragon                 | session cache + JWT storage |
+| Git       | latest                      | version control             |
+| Python    | ≥ 3.12                     | crewAI agents               |
+| Browser   | Chrome/Edge/Firefox         | dev                         |
 
 **Laragon path:** `D:\Nilesh\laragon`
 **MySQL binary:** `D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe` (root, no password)
@@ -71,12 +71,12 @@ npm run dev
 
 ## 3. What should be running
 
-| Service | URL | Health check |
-|---|---|---|
-| API | http://localhost:3000/api/health | `{"status":"ok","db":"up","redis":"up"}` |
-| Frontend | http://localhost:5173 | landing page |
-| MySQL | localhost:3306 | `mysql -u root -e "SELECT 1"` |
-| Redis | localhost:6379 | `redis-cli ping` → PONG |
+| Service  | URL                              | Health check                               |
+| -------- | -------------------------------- | ------------------------------------------ |
+| API      | http://localhost:3000/api/health | `{"status":"ok","db":"up","redis":"up"}` |
+| Frontend | http://localhost:5173            | landing page                               |
+| MySQL    | localhost:3306                   | `mysql -u root -e "SELECT 1"`            |
+| Redis    | localhost:6379                   | `redis-cli ping` → PONG                 |
 
 ---
 
@@ -111,6 +111,7 @@ python run.py sprint "full sprint goal"  # all 10 agents
 ## 5. crewAI Agent System
 
 ### Setup
+
 ```bash
 # Install Python deps (Windows)
 python -m pip install crewai crewai-core json-repair json5 pydantic pydantic_settings litellm aiofiles aiosqlite chromadb appdirs regex imageio Pillow img2pdf python-dotenv
@@ -120,20 +121,22 @@ python -m pip install crewai crewai-core json-repair json5 pydantic pydantic_set
 ```
 
 ### 10 Agents (FREE TIER models)
-| # | Agent | Role | Model (Free) |
-|---|---|---|---|
-| 1 | Product Manager | PRDs, backlog, prioritization | Gemini 2.0 Flash (via OpenRouter) |
-| 2 | Solution Architect | System design, API contracts | Llama 3.3 70B (via OpenRouter) |
-| 3 | Senior Developer | Production TypeScript code | Claude 3.5 Sonnet (via OpenRouter) |
-| 4 | QA Engineer | Tests, validation, bug reports | Llama 3.3 70B (via OpenRouter) |
-| 5 | DevOps Engineer | Docker, CI/CD, monitoring | Gemini 2.0 Flash (via OpenRouter) |
-| 6 | Security Engineer | OWASP audits, vulnerabilities | Claude 3.5 Sonnet (via OpenRouter) |
-| 7 | Data Engineer | Crawlers, scraping, normalization | Llama 3.3 70B (via OpenRouter) |
-| 8 | UX Designer | UI/UX, accessibility, responsive | Gemini 2.0 Flash (via OpenRouter) |
-| 9 | Competitive Intel | Competitor monitoring | Gemini 2.0 Flash (via OpenRouter) |
-| 10 | Scrum Master | Sprint planning, progress tracking | Llama 3.3 70B (via OpenRouter) |
+
+| #  | Agent              | Role                               | Model (Free)                       |
+| -- | ------------------ | ---------------------------------- | ---------------------------------- |
+| 1  | Product Manager    | PRDs, backlog, prioritization      | Gemini 2.0 Flash (via OpenRouter)  |
+| 2  | Solution Architect | System design, API contracts       | Llama 3.3 70B (via OpenRouter)     |
+| 3  | Senior Developer   | Production TypeScript code         | Claude 3.5 Sonnet (via OpenRouter) |
+| 4  | QA Engineer        | Tests, validation, bug reports     | Llama 3.3 70B (via OpenRouter)     |
+| 5  | DevOps Engineer    | Docker, CI/CD, monitoring          | Gemini 2.0 Flash (via OpenRouter)  |
+| 6  | Security Engineer  | OWASP audits, vulnerabilities      | Claude 3.5 Sonnet (via OpenRouter) |
+| 7  | Data Engineer      | Crawlers, scraping, normalization  | Llama 3.3 70B (via OpenRouter)     |
+| 8  | UX Designer        | UI/UX, accessibility, responsive   | Gemini 2.0 Flash (via OpenRouter)  |
+| 9  | Competitive Intel  | Competitor monitoring              | Gemini 2.0 Flash (via OpenRouter)  |
+| 10 | Scrum Master       | Sprint planning, progress tracking | Llama 3.3 70B (via OpenRouter)     |
 
 ### Run commands
+
 ```bash
 # Quick tasks
 python crewai/run.py research           # weekly competitive analysis
@@ -148,6 +151,7 @@ python crewai/run.py sprint "implement mock test engine with 100 questions"
 ```
 
 ### 5 Crew Formations
+
 - **full_sdlc_crew** — all 10 agents, sequential
 - **feature_crew** — PM → Architect → Dev → QA
 - **security_crew** — Security → Dev → DevOps
@@ -204,16 +208,16 @@ git commit -m "test: description"
 
 ## 9. Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `DATABASE_URL` connect fail | Start MySQL in Laragon; check port 3306 free |
-| Prisma migrate fails | `npx prisma generate` then `npx prisma migrate dev` |
-| Redis connection refused | Start Redis: `Start-Process "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"` |
-| `nest build` fails | Use `npx ts-node src/main.ts` instead |
-| npm install fails | Try `npm install --legacy-peer-deps` or `npm pack` workaround |
-| crewAI import errors | Install missing deps: `python -m pip install <module>` |
-| Google OAuth callback fails | Check GOOGLE_CLIENT_ID/SECRET in .env, verify callback URL |
-| 50/50 tests failing | Run `npx jest --forceExit` from backend/ directory |
+| Symptom                       | Fix                                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| `DATABASE_URL` connect fail | Start MySQL in Laragon; check port 3306 free                                                    |
+| Prisma migrate fails          | `npx prisma generate` then `npx prisma migrate dev`                                         |
+| Redis connection refused      | Start Redis:`Start-Process "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"` |
+| `nest build` fails          | Use`npx ts-node src/main.ts` instead                                                          |
+| npm install fails             | Try`npm install --legacy-peer-deps` or `npm pack` workaround                                |
+| crewAI import errors          | Install missing deps:`python -m pip install <module>`                                         |
+| Google OAuth callback fails   | Check GOOGLE_CLIENT_ID/SECRET in .env, verify callback URL                                      |
+| 50/50 tests failing           | Run`npx jest --forceExit` from backend/ directory                                             |
 
 ---
 
@@ -222,6 +226,7 @@ git commit -m "test: description"
 **Cost: ₹0 forever** — no credit card, no registration needed.
 
 ### Setup on VPS (Ubuntu 22.04)
+
 ```bash
 # 1. Install certbot
 sudo apt update
@@ -238,6 +243,7 @@ sudo certbot certificates
 ```
 
 ### How it works
+
 - Certbot queries Let's Encrypt (free CA) via HTTP-01 challenge
 - Nginx serves a temporary file to prove domain ownership
 - Certificate issued instantly, valid for 90 days
@@ -245,6 +251,7 @@ sudo certbot certificates
 - **No payment, no registration, no API keys needed**
 
 ### Alternative: ZeroSSL
+
 ```bash
 # If Let's Encrypt is blocked in your region
 sudo apt install snapd
@@ -258,18 +265,20 @@ sudo certbot --nginx -d sarkariscout.in
 ## 11. VPS Deployment (FREE / ₹0)
 
 ### Free VPS Options
-| Provider | Spec | Duration | Card Required |
-|---|---|---|---|
-| Oracle Cloud Free Tier | 4 cores ARM, 24GB RAM | Forever | No |
-| Google Cloud Free Trial | 1 e2-micro | 90 days | Yes (no charge) |
-| AWS Lightsail | 1 core, 1GB | 3 months free | Yes |
-| Railway.app | 500 hours/month | Monthly reset | Yes |
-| Render.com | 512MB RAM | Free tier | No |
-| Cyclic.sh | Serverless | Free tier | No |
+
+| Provider                | Spec                  | Duration      | Card Required   |
+| ----------------------- | --------------------- | ------------- | --------------- |
+| Oracle Cloud Free Tier  | 4 cores ARM, 24GB RAM | Forever       | No              |
+| Google Cloud Free Trial | 1 e2-micro            | 90 days       | Yes (no charge) |
+| AWS Lightsail           | 1 core, 1GB           | 3 months free | Yes             |
+| Railway.app             | 500 hours/month       | Monthly reset | Yes             |
+| Render.com              | 512MB RAM             | Free tier     | No              |
+| Cyclic.sh               | Serverless            | Free tier     | No              |
 
 **Recommended: Oracle Cloud Free Tier** (always free, no card)
 
 ### VPS Setup (Ubuntu 22.04 on Oracle Cloud)
+
 ```bash
 # 1. SSH into VPS
 ssh -i ~/.ssh/id_rsa ubuntu@<vps-ip>
@@ -329,6 +338,7 @@ pm2 startup
 ```
 
 ### Docker Deployment (Alternative)
+
 ```bash
 # On VPS
 cd /var/www/sarkariscout
@@ -336,6 +346,7 @@ docker compose -f infra/docker-compose.prod.yml up -d
 ```
 
 ### crewAI on VPS (24/7 agents)
+
 ```bash
 # Setup cron for daily agent runs
 crontab -e
@@ -383,8 +394,51 @@ New folder/
 
 ---
 
+---
+
+## 13. Phone Server (24/7 Android Device)
+
+**Goal:** Use old Android phone as always-on server so processes run even when laptop is off.
+**Phone specs:** 6GB RAM, 128GB ROM (Xiaomi M2007J20CI)
+**Network:** Phone on home WiFi, laptop on office network — connected via Tailscale VPN
+**Phone Tailscale IP:** 100.119.33.26
+
+### Quick Setup (from laptop PowerShell)
+
+```powershell
+# Connect to phone
+ssh -p 8022 127.0.0.1@100.119.33.26
+
+# Paste this ONE block in Termux to start everything:
+termux-wake-lock && sshd && mariadbd-safe --datadir=$PREFIX/var/lib/mysql & sleep 2 && redis-server --daemonize yes --ignore-warnings ARM64-COW-BUG && echo "All services started"
+```
+
+### Services Running on Phone
+
+| Service          | Port | Start Command                                                    |
+| ---------------- | ---- | ---------------------------------------------------------------- |
+| SSH              | 8022 | `sshd`                                                         |
+| MariaDB (MySQL)  | 3306 | `mariadbd-safe --datadir=$PREFIX/var/lib/mysql &`              |
+| Redis            | 6379 | `redis-server --daemonize yes --ignore-warnings ARM64-COW-BUG` |
+| Node.js (NestJS) | 3000 | `cd ~/SarkariScout/backend && npm run start:prod`              |
+
+### Phone Server Files
+
+- Setup guide: `infra/phone-server/QUICK-START.md`
+- Troubleshooting: `infra/phone-server/TROUBLESHOOTING.md`
+- Phone compose: `infra/phone-server/docker-compose.phone.yml`
+
+### Known Limitations
+
+- **Docker does NOT work** in proot-distro on Android (kernel permission issues)
+- Services must run natively in Termux
+- `argon2` native module fails to compile — use `bcryptjs` instead
+- Android kills background apps — must set Battery > Unrestricted for Termux + Tailscale
+
 ### Change log
-| Date | Change |
-|---|---|
+
+| Date         | Change                                                         |
+| ------------ | -------------------------------------------------------------- |
+| Aug 25, 2026 | Added phone server section (Section 13)                        |
 | Aug 24, 2026 | v2.0 — Updated for crewAI, Google OAuth, MySQL, current stack |
-| Aug 20, 2026 | v1.0 — Initial runbook |
+| Aug 20, 2026 | v1.0 — Initial runbook                                        |

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { v4 as uuidv4 } from 'uuid';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class AnalyticsService {
@@ -13,7 +12,7 @@ export class AnalyticsService {
     referrer?: string;
     sessionId?: string;
   }) {
-    const visitorId = data.visitorId || this.generateVisitorId(data.userAgent, data.ip);
+    const visitorId = data.visitorId || this.generateVisitorId();
     const device = this.parseDevice(data.userAgent);
     const browser = this.parseBrowser(data.userAgent);
     const os = this.parseOS(data.userAgent);
@@ -121,8 +120,7 @@ export class AnalyticsService {
   }
 
   private generateVisitorId(userAgent?: string, ip?: string): string {
-    const raw = `${userAgent || ''}${ip || ''}${Date.now()}`;
-    return uuidv4();
+    return crypto.randomUUID();
   }
 
   private parseDevice(ua?: string): string {
