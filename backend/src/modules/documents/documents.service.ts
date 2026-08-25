@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DocumentType } from '@prisma/client';
+import * as fs from 'fs';
 
 @Injectable()
 export class DocumentsService {
@@ -51,7 +52,6 @@ export class DocumentsService {
     if (!doc) throw new NotFoundException('Document not found');
     if (doc.userId !== userId) throw new ForbiddenException('Access denied');
 
-    const fs = require('fs');
     if (fs.existsSync(doc.filePath)) {
       fs.unlinkSync(doc.filePath);
     }
