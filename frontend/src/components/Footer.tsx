@@ -21,7 +21,10 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-medium mb-3 text-sm">Categories</h4>
+            <h4 className="text-white font-medium mb-3 text-sm">Company</h4>
+            <ul className="space-y-2 text-sm">
+              <li><Link to="/about" className="hover:text-white transition">About</Link></li>
+              <li><Link to="/faq" className="hover:text-white transition">FAQ</Link></li>
             <ul className="space-y-2 text-sm">
               <li><Link to="/jobs?category=GOVERNMENT" className="hover:text-white transition">Government</Link></li>
               <li><Link to="/jobs?category=BANKING" className="hover:text-white transition">Banking</Link></li>

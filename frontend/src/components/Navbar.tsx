@@ -22,6 +22,8 @@ export default function Navbar() {
           <Link to="/admit-cards" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Admit Cards</Link>
           <Link to="/mock-tests" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Mock Tests</Link>
           <Link to="/papers" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Papers</Link>
+          <Link to="/faq" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">FAQ</Link>
+          <Link to="/about" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">About</Link>
           {user ? (
             <>
               <Link to="/dashboard" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1">Dashboard</Link>
@@ -67,6 +69,8 @@ export default function Navbar() {
           <Link to="/admit-cards" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Admit Cards</Link>
           <Link to="/mock-tests" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Mock Tests</Link>
           <Link to="/papers" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Previous Papers</Link>
+          <Link to="/faq" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>FAQ</Link>
+          <Link to="/about" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>About</Link>
           <hr className="my-2 border-gray-100 dark:border-gray-800" />
           {user ? (
             <>

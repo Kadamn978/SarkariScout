@@ -28,6 +28,8 @@ import Privacy from './pages/Privacy'
 import ExamCalendar from './pages/ExamCalendar'
 import Results from './pages/Results'
 import AdmitCards from './pages/AdmitCards'
+import FAQ from './pages/FAQ'
+import About from './pages/About'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -86,6 +88,8 @@ export default function App() {
             <Route path="/admin" element={<AdminRoute><AppLayout><AdminDashboard /></AppLayout></AdminRoute>} />
             <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
             <Route path="/terms" element={<AppLayout><Privacy /></AppLayout>} />
+            <Route path="/faq" element={<AppLayout><FAQ /></AppLayout>} />
+            <Route path="/about" element={<AppLayout><About /></AppLayout>} />
             <Route path="/bug-report" element={<AppLayout><BugReport /></AppLayout>} />
             <Route path="/auth/google" element={<GoogleAuth />} />
             <Route path="/profile" element={<ProtectedRoute><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
