@@ -84,7 +84,7 @@ export class JobsService {
     await this.findOne(jobId);
     return this.prisma.userJob.upsert({
       where: { userId_jobId: { userId, jobId } },
-      create: { userId, jobId, stage: (stage as any) || 'INTERESTED' },
+      create: { userId, jobId, stage: (stage as any) || 'APPLIED' },
       update: { stage: stage as any },
     });
   }

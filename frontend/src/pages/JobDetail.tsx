@@ -99,7 +99,7 @@ export default function JobDetail() {
         setTracked(false)
         toast('Job removed from tracker', 'info')
       } else {
-        await api.post(`/jobs/${id}/track`, { stage: 'INTERESTED' })
+        await api.post(`/jobs/${id}/track`, { stage: 'APPLIED' })
         setTracked(true)
         toast('Job added to tracker', 'success')
       }

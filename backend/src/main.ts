@@ -43,12 +43,12 @@ async function bootstrap() {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
-        fontSrc: ["'self'", 'data:'],
+        scriptSrc: ["'self'", 'https://pagead2.googlesyndication.com', 'https://www.googletagmanager.com'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        imgSrc: ["'self'", 'data:', 'https:', 'https://pagead2.googlesyndication.com'],
+        fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
         connectSrc: ["'self'"],
-        frameSrc: ["'none'"],
+        frameSrc: ["'self'", 'https://googleads.g.doubleclick.net', 'https://www.google.com'],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],

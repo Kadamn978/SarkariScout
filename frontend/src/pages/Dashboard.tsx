@@ -37,10 +37,10 @@ export default function Dashboard() {
   }
 
   const appliedJobs = trackedJobs.filter((t) => t.stage === 'APPLIED' || t.stage === 'EXAM_PREP' || t.stage === 'EXAM_DONE' || t.stage === 'SELECTED')
-  const interestedJobs = trackedJobs.filter((t) => !t.stage || t.stage === 'INTERESTED')
+  const interestedJobs = trackedJobs.filter((t) => !t.stage || t.stage === 'APPLIED')
 
   const stageColors: Record<string, string> = {
-    INTERESTED: 'bg-gray-100 text-gray-700',
+    APPLIED: 'bg-gray-100 text-gray-700',
     APPLIED: 'bg-blue-100 text-blue-700',
     EXAM_PREP: 'bg-purple-100 text-purple-700',
     EXAM_DONE: 'bg-orange-100 text-orange-700',

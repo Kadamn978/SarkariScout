@@ -37,7 +37,7 @@
 ## 🚀 Quick Start (5 min)
 
 ```bash
-git clone <repo-url> sarkariradar && cd sarkariradar
+git clone <repo-url> sarakriradar && cd sarakriradar
 docker compose -f infra/docker-compose.yml up -d   # Postgres + Redis
 cp .env.example .env                               # fill secrets
 npm run dev                                       # frontend :5173, backend :3000
