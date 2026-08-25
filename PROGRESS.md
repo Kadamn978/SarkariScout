@@ -127,3 +127,53 @@ Run: `python crewai/run.py [research|security|feature|data|sprint]`
 - Affiliate cards on job detail (Amazon, coaching)
 - Competitive analysis document (7 competitors analyzed)
 - Seed data: 14 diverse jobs across 8 categories
+
+## Revenue Strategy (Free First → Ads → Premium Later)
+
+**Core principle:** Keep everything free for 6-12 months. Build user base. Monetize with ads + affiliate. Premium comes AFTER trust is proven.
+
+### Phase 1: Launch → 10K Users (Months 1-6)
+| Feature | Access | Revenue |
+|---------|--------|---------|
+| Job listings | Free | Display ads (AdSense) |
+| Mock tests | Free | Affiliate cards (Testbook/Adda247) |
+| Previous papers | Free | Sponsored listings |
+| Email alerts | Free | — |
+| Application tracker | Free | — |
+| Document wallet | Free | — |
+
+### Phase 2: 10K+ Users (Month 6+)
+| Feature | Access | Revenue |
+|---------|--------|---------|
+| Everything above | Free | Ads + affiliate |
+| Ad-free experience | Premium ₹49/mo | Subscription |
+| Priority alerts | Premium ₹49/mo | Subscription |
+| Unlimited trackers | Premium ₹99/mo | Subscription |
+| Resume builder | Premium ₹99/mo | Subscription |
+
+### Why Free First Works
+1. **SEO** — Google indexes free content (mock tests, papers rank high)
+2. **Trust** — Users try before they buy (no upfront risk)
+3. **Growth** — Aspirants share free content in WhatsApp/Telegram groups
+4. **Data** — Learn what users want before building premium features
+5. **Competitors** — Testbook/Adda247 already charge; we undercut with free
+
+### Revenue Projections (Conservative)
+| Month | Users | Pageviews/mo | Ad Revenue | Affiliate | Total |
+|-------|-------|--------------|------------|-----------|-------|
+| 3 | 2K | 20K | ₹4K | ₹2K | ₹6K |
+| 6 | 10K | 100K | ₹20K | ₹10K | ₹30K |
+| 12 | 50K | 500K | ₹1L | ₹50K | ₹1.5L |
+| 18 | 100K | 1M | ₹2.5L | ₹1L | ₹3.5L |
+
+### Premium Tier (Later)
+- **Lite ₹49/mo:** Ad-free, 10 trackers, priority crawl
+- **Pro ₹99/mo:** Unlimited trackers, analytics, resume builder, no ads
+- **Conversion target:** 2-4% after month 6 (when trust is proven)
+
+### Code Status
+- ✅ No paywalls in frontend (mock tests, papers, tracker all free)
+- ✅ No premium checks in backend
+- ✅ Affiliate cards ready on job detail pages
+- ✅ Ad placeholders ready (Google AdSense integration)
+- ✅ FAQ confirms: "Core features will always remain free"
