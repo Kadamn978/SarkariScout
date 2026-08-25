@@ -19,6 +19,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement
+    root.style.transition = 'background-color 0.3s ease, color 0.3s ease'
     if (dark) {
       root.classList.add('dark')
     } else {
