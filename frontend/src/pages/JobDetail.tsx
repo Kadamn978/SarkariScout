@@ -3,6 +3,7 @@ import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 
 interface Job {
   id: string; title: string; org: string; state: string; district: string | null;
@@ -27,6 +28,7 @@ interface RelatedJob {
 export default function JobDetail() {
   const { id } = useParams()
   const { user } = useAuth()
+  const { toast } = useToast()
   const navigate = useNavigate()
   const [job, setJob] = useState<Job | null>(null)
   const [related, setRelated] = useState<RelatedJob[]>([])
@@ -34,7 +36,6 @@ export default function JobDetail() {
   const [error, setError] = useState('')
   const [tracked, setTracked] = useState(false)
   const [tracking, setTracking] = useState(false)
-  const [shareMsg, setShareMsg] = useState('')
 
   useEffect(() => {
     if (!id) { setLoading(false); return }
@@ -71,9 +72,11 @@ export default function JobDetail() {
       if (tracked) {
         await api.delete(`/jobs/${id}/track`)
         setTracked(false)
+        toast('Job removed from tracker', 'info')
       } else {
         await api.post(`/jobs/${id}/track`, { stage: 'INTERESTED' })
         setTracked(true)
+        toast('Job added to tracker', 'success')
       }
     } catch { /* ignore */ }
     finally { setTracking(false) }
@@ -87,9 +90,8 @@ export default function JobDetail() {
     } else {
       try {
         await navigator.clipboard.writeText(url)
-        setShareMsg('Link copied!')
-        setTimeout(() => setShareMsg(''), 3000)
-      } catch { setShareMsg('Copy this URL: ' + url) }
+        toast('Link copied to clipboard', 'success')
+      } catch { toast('Could not copy link', 'error') }
     }
   }
 
@@ -160,7 +162,6 @@ export default function JobDetail() {
                   )}
                 </div>
               </div>
-              {shareMsg && <p className="text-sm text-green-600 mb-2">{shareMsg}</p>}
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-xl">
                 <div><p className="text-xs text-gray-500">Vacancies</p><p className="font-semibold text-gray-900">{job.totalVacancies || '—'}</p></div>
