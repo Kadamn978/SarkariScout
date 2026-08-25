@@ -7,6 +7,7 @@ import CustomCursor from './components/CustomCursor'
 import ProgressBar from './components/ProgressBar'
 import NoiseOverlay from './components/NoiseOverlay'
 import ContentProtection from './components/ContentProtection'
+import AdblockDetector from './components/AdblockDetector'
 import Footer from './components/Footer'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -88,6 +89,7 @@ export default function App() {
           <ProgressBar />
           <NoiseOverlay />
           <ContentProtection />
+          <AdblockDetector />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
