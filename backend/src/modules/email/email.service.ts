@@ -36,8 +36,12 @@ export class EmailService {
     let sent = 0, failed = 0;
     for (const pref of prefs) {
       try {
-        const profile = (pref as any).user?.profile;
+        const user = (pref as any).user;
+        const profile = user?.profile;
         if (!profile) continue;
+
+        // Only send to verified users
+        if (!user?.emailVerifiedAt) continue;
 
         const matchingJobs = await this.getMatchingJobs(profile);
         if (matchingJobs.length === 0) continue;
@@ -81,6 +85,9 @@ export class EmailService {
 
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) return false;
+
+    // Only send to verified users
+    if (!user.emailVerifiedAt) return false;
 
     const job = await this.prisma.job.findUnique({ where: { id: jobId } });
     if (!job) return false;

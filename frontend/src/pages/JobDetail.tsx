@@ -56,7 +56,9 @@ export default function JobDetail() {
     try {
       const res = await api.get('/jobs', { params: { category, state, limit: 4 } })
       setRelated(res.data.jobs.filter((j: RelatedJob) => j.id !== currentId).slice(0, 3))
-    } catch { /* ignore */ }
+    } catch {
+      setRelated([])
+    }
   }
 
   useSEO({
@@ -83,7 +85,9 @@ export default function JobDetail() {
     try {
       const res = await api.get('/jobs/user/tracked')
       setTracked(res.data.some((t: any) => t.jobId === jobId))
-    } catch { /* ignore */ }
+    } catch {
+      setTracked(false)
+    }
   }
 
   async function toggleTrack() {
@@ -99,7 +103,9 @@ export default function JobDetail() {
         setTracked(true)
         toast('Job added to tracker', 'success')
       }
-    } catch { /* ignore */ }
+    } catch {
+      toast('Failed to update tracker', 'error')
+    }
     finally { setTracking(false) }
   }
 
@@ -107,7 +113,9 @@ export default function JobDetail() {
     const url = window.location.href
     const text = `${job?.title} — ${job?.org} | Apply at ${url}`
     if (navigator.share) {
-      try { await navigator.share({ title: job?.title, text, url }) } catch { /* ignore */ }
+      try { await navigator.share({ title: job?.title, text, url }) } catch {
+        // User cancelled share dialog — not an error
+      }
     } else {
       try {
         await navigator.clipboard.writeText(url)

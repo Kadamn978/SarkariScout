@@ -49,7 +49,9 @@ export default function NotificationBell() {
         }
       }
       setNotifications(alerts)
-    } catch { /* ignore */ }
+    } catch {
+      setNotifications([])
+    }
   }
 
   async function markAllRead() {

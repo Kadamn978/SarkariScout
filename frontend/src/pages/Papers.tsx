@@ -54,7 +54,9 @@ export default function Papers() {
   async function handleDownload(paper: Paper) {
     try {
       await api.post(`/papers/${paper.id}/download`)
-    } catch (e) { /* ignore */ }
+    } catch {
+      // Download tracking failed — continue with download anyway
+    }
     if (paper.fileUrl) {
       window.open(paper.fileUrl, '_blank')
     } else if (paper.externalUrl) {

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
+import { useToast } from '../contexts/ToastContext'
 import { JobCardSkeleton } from '../components/Skeleton'
 import ScrollReveal from '../components/ScrollReveal'
 import TiltCard from '../components/TiltCard'
@@ -48,6 +49,7 @@ export default function Jobs() {
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState('')
   const [trackedIds, setTrackedIds] = useState<Set<string>>(new Set())
+  const { toast } = useToast()
   const observerRef = useRef<HTMLDivElement>(null)
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
@@ -112,7 +114,10 @@ export default function Jobs() {
     try {
       await api.post(`/jobs/${jobId}/track`)
       setTrackedIds((prev) => new Set(prev).add(jobId))
-    } catch {}
+      toast('Job tracked successfully', 'success')
+    } catch {
+      toast('Failed to track job', 'error')
+    }
   }
 
   return (

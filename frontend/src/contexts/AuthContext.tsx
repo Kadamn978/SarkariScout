@@ -51,7 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await api.post('/auth/logout')
-    } catch { /* ignore */ }
+    } catch {
+      // Clear local state even if server call fails
+    }
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     setUser(null)

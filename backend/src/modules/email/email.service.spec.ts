@@ -44,4 +44,23 @@ describe('EmailService', () => {
     const result = await service.sendInstantAlert('u1', 'j1');
     expect(result).toBe(false);
   });
+
+  it('sendInstantAlert returns false when email not verified', async () => {
+    prisma.emailPreference.findUnique.mockResolvedValue({ userId: 'u1', instantEnabled: true });
+    prisma.profile.findUnique.mockResolvedValue({ userId: 'u1', notifyInstant: true });
+    prisma.user.findUnique.mockResolvedValue({ id: 'u1', email: 'test@test.com', emailVerifiedAt: null });
+    const result = await service.sendInstantAlert('u1', 'j1');
+    expect(result).toBe(false);
+  });
+
+  it('sendDailyDigest skips unverified users', async () => {
+    prisma.emailPreference.findMany.mockResolvedValue([{
+      userId: 'u1',
+      digestEnabled: true,
+      unsubscribedAt: null,
+      user: { email: 'test@test.com', emailVerifiedAt: null, profile: { state: 'Maharashtra' } },
+    }]);
+    const result = await service.sendDailyDigest();
+    expect(result.sent).toBe(0);
+  });
 });
