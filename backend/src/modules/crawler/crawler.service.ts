@@ -485,7 +485,7 @@ export class CrawlerService {
           org: job.org,
           title: job.title,
           status: 'OPEN',
-          category: (job.category as any) || 'GOVERNMENT',
+          category: (job.category as 'GOVERNMENT' | 'SEMI_GOVERNMENT' | 'PSU' | 'BANKING' | 'RAILWAY' | 'DEFENCE' | 'POLICE' | 'TEACHING' | 'MEDICAL' | 'ENGINEERING' | 'IT' | 'PRIVATE' | 'INTERNSHIP' | 'TRAINING' | 'CONTRACT') || 'GOVERNMENT',
           ...data,
         },
       });

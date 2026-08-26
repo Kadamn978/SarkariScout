@@ -1,9 +1,9 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Query } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, RefreshTokenDto, ForgotPasswordDto, VerifyEmailDto, ResetPasswordDto } from './auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { AuthRequest } from './auth-request.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -31,8 +31,8 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request) {
-    await this.authService.logout((req as any).user.sub);
+  async logout(@Req() req: AuthRequest) {
+    await this.authService.logout(req.user.sub);
     return { message: 'Logged out' };
   }
 
@@ -46,9 +46,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
-  async resendVerification(@Req() req: Request) {
-    const user = (req as any).user;
-    await this.authService.sendVerificationEmail(user.sub, user.email);
+  async resendVerification(@Req() req: AuthRequest) {
+    const { sub, email } = req.user;
+    await this.authService.sendVerificationEmail(sub, email);
     return { message: 'Verification email sent' };
   }
 

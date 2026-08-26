@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('HealthController', () => {
   let controller: HealthController;
@@ -35,24 +35,61 @@ describe('HealthController', () => {
     expect(result.timestamp).toBeDefined();
   });
 
+  it('should include a valid ISO timestamp', async () => {
+    prisma.$queryRaw.mockResolvedValue([{ '1': 1 }]);
+    redis.ping.mockResolvedValue('PONG');
+
+    const result = await controller.check() as any;
+    expect(() => new Date(result.timestamp)).not.toThrow();
+    expect(new Date(result.timestamp).toISOString()).toBe(result.timestamp);
+  });
+
   it('should throw 503 when DB disconnected', async () => {
     prisma.$queryRaw.mockRejectedValue(new Error('Connection refused'));
     redis.ping.mockResolvedValue('PONG');
 
-    await expect(controller.check()).rejects.toThrow(HttpException);
+    try {
+      await controller.check();
+      fail('Expected HttpException');
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect((e as HttpException).getStatus()).toBe(HttpStatus.SERVICE_UNAVAILABLE);
+      const response = (e as HttpException).getResponse() as any;
+      expect(response.status).toBe('error');
+      expect(response.database).toBe('disconnected');
+      expect(response.redis).toBe('connected');
+    }
   });
 
   it('should throw 503 when Redis disconnected', async () => {
     prisma.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     redis.ping.mockRejectedValue(new Error('ECONNREFUSED'));
 
-    await expect(controller.check()).rejects.toThrow(HttpException);
+    try {
+      await controller.check();
+      fail('Expected HttpException');
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect((e as HttpException).getStatus()).toBe(HttpStatus.SERVICE_UNAVAILABLE);
+      const response = (e as HttpException).getResponse() as any;
+      expect(response.database).toBe('connected');
+      expect(response.redis).toBe('disconnected');
+    }
   });
 
   it('should throw 503 when both disconnected', async () => {
     prisma.$queryRaw.mockRejectedValue(new Error('DB down'));
     redis.ping.mockRejectedValue(new Error('Redis down'));
 
-    await expect(controller.check()).rejects.toThrow(HttpException);
+    try {
+      await controller.check();
+      fail('Expected HttpException');
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect((e as HttpException).getStatus()).toBe(HttpStatus.SERVICE_UNAVAILABLE);
+      const response = (e as HttpException).getResponse() as any;
+      expect(response.database).toBe('disconnected');
+      expect(response.redis).toBe('disconnected');
+    }
   });
 });

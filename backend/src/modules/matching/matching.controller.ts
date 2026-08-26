@@ -1,7 +1,7 @@
 import { Controller, Get, Post, UseGuards, Req, Query, Body } from '@nestjs/common';
-import { Request } from 'express';
 import { MatchingService } from './matching.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthRequest } from '../auth/auth-request.interface';
 
 @Controller('matching')
 export class MatchingController {
@@ -9,8 +9,8 @@ export class MatchingController {
 
   @Get('my-jobs')
   @UseGuards(JwtAuthGuard)
-  async getMyMatches(@Req() req: Request) {
-    return this.matchingService.findMatchingJobs((req as any).user.sub);
+  async getMyMatches(@Req() req: AuthRequest) {
+    return this.matchingService.findMatchingJobs(req.user.sub);
   }
 
   @Get('search')
@@ -31,9 +31,9 @@ export class MatchingController {
 
   @Post('score')
   @UseGuards(JwtAuthGuard)
-  async scoreJob(@Req() req: Request, @Body('jobId') jobId: string) {
+  async scoreJob(@Req() req: AuthRequest, @Body('jobId') jobId: string) {
     const profile = await this.matchingService['prisma'].profile.findUnique({
-      where: { userId: (req as any).user.sub },
+      where: { userId: req.user.sub },
     });
     const job = await this.matchingService['prisma'].job.findUnique({
       where: { id: jobId },

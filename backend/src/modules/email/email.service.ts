@@ -38,7 +38,7 @@ export class EmailService {
 
     for (const pref of prefs) {
       try {
-        const user = (pref as any).user;
+        const user = pref.user;
         const profile = user?.profile;
         if (!profile) continue;
 
@@ -48,7 +48,7 @@ export class EmailService {
         const matchingJobs = await this.getMatchingJobs(profile);
         if (matchingJobs.length === 0) continue;
 
-        const userEmail = (pref as any).user?.email;
+        const userEmail = pref.user?.email;
         if (!userEmail) continue;
 
         const result = await this.sendEmail({
@@ -115,7 +115,7 @@ export class EmailService {
         await this.prisma.notificationLog.create({
           data: {
             userId, jobId,
-            type: (changeType ? 'CHANGE_ALERT' : 'INSTANT') as any,
+            type: (changeType ? 'CHANGE_ALERT' : 'INSTANT') as 'DIGEST' | 'INSTANT' | 'WELCOME' | 'CHANGE_ALERT' | 'VERIFICATION' | 'PASSWORD_RESET',
             subject,
           },
         });

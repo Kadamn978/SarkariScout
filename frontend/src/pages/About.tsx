@@ -3,15 +3,8 @@ import Navbar from '../components/Navbar'
 
 const STATS = [
   { value: '20+', label: 'Official Sources' },
-  { value: '10K+', label: 'Jobs Tracked' },
-  { value: '50K+', label: 'Users Served' },
+  { value: '96+', label: 'Jobs Tracked' },
   { value: '24/7', label: 'Monitoring' },
-]
-
-const TEAM = [
-  { role: 'Crawler Engineer', desc: 'Builds and maintains scrapers for 20+ government websites, ensuring data accuracy and freshness.' },
-  { role: 'Data Analyst', desc: 'Structures and validates job data, cross-references notifications, and flags inconsistencies.' },
-  { role: 'Product Designer', desc: 'Designs the user experience for job discovery, application tracking, and exam preparation.' },
 ]
 
 export default function About() {
@@ -29,7 +22,7 @@ export default function About() {
             SarkariScout was built to solve a simple problem: government job information in India is scattered across 20+ websites, and deadlines are easy to miss.
           </p>
           <p className="text-gray-600 leading-relaxed">
-            We aggregate notifications from SSC, UPSC, IBPS, RRB, state PSCs, and more — into a single, searchable dashboard. Our crawlers monitor these sites multiple times a day, so you get real-time updates without checking each site manually.
+            We aggregate notifications from SSC, UPSC, IBPS, RRB, state PSCs, and more — into a single, searchable dashboard. We monitor these sites multiple times a day, so you get real-time updates without checking each site manually.
           </p>
         </section>
 
@@ -37,7 +30,7 @@ export default function About() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">What We Offer</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
-              { title: 'Job Aggregation', desc: '20+ official sources crawled multiple times daily. Never miss a notification.' },
+              { title: 'Job Aggregation', desc: '20+ official sources monitored multiple times daily. Never miss a notification.' },
               { title: 'Smart Matching', desc: 'Jobs filtered by your qualification, state, age, and category. See only what is relevant.' },
               { title: 'Email Alerts', desc: 'Daily digest and instant alerts before deadlines. Track jobs and get notified of changes.' },
               { title: 'Application Tracker', desc: 'Mark jobs as applied, track stages, and see your progress on a personal dashboard.' },
@@ -67,33 +60,7 @@ export default function About() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Our Sources</h2>
           <div className="bg-white p-6 rounded-xl border border-gray-100">
-            <p className="text-gray-600 mb-4">We aggregate data from official government portals:</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-              {['SSC (ssc.gov.in)', 'UPSC (upsc.gov.in)', 'IBPS (ibps.in)', 'RRB (rrb.gov.in)', 'NCS (ncs.gov.in)', 'State PSCs', 'Defence (indianarmy.nic.in)', 'CRPF (crpf.gov.in)', 'DRDO (drdo.gov.in)', 'AIIMS (aiimsexams.ac.in)', 'GATE (gate.iitd.ac.in)', 'CTET (ctet.nic.in)'].map((s, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full shrink-0" />
-                  <span className="text-gray-700">{s}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Built with AI Agents</h2>
-          <div className="bg-white p-6 rounded-xl border border-gray-100">
-            <p className="text-gray-600 mb-4">SarkariScout uses a multi-agent architecture:</p>
-            <div className="space-y-3">
-              {TEAM.map((t, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">{t.role}</p>
-                    <p className="text-sm text-gray-600">{t.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <p className="text-gray-600 mb-4">We aggregate data from official government portals including SSC, UPSC, IBPS, RRB, state PSCs, and more.</p>
           </div>
         </section>
 

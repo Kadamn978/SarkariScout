@@ -6,11 +6,11 @@ const FAQ_ITEMS = [
   { q: 'What is SarkariScout?', a: 'SarkariScout is a free platform that aggregates government job notifications from 20+ official sources like SSC, UPSC, IBPS, RRB and more. We filter, categorize, and send you personalized alerts so you never miss a deadline.' },
   { q: 'Is SarkariScout free to use?', a: 'Yes, absolutely free. Browse jobs, take mock tests, download previous year papers, and get email alerts — all at zero cost. We may introduce premium features later, but core features will always remain free.' },
   { q: 'How do I get job alerts?', a: 'Register for a free account, set your preferences (qualification, state, category), and enable email notifications. We will send you a daily digest of new jobs and instant alerts for tracked jobs.' },
-  { q: 'How are jobs sourced?', a: 'Our crawlers monitor 20+ official sources including ssc.gov.in, upsc.gov.in, ibps.in, rrbcdg.gov.in, ncs.gov.in and more. We check for updates multiple times a day and notify you of changes.' },
+  { q: 'How are jobs sourced?', a: 'We monitor 20+ official sources including ssc.gov.in, upsc.gov.in, ibps.in, rrbcdg.gov.in, ncs.gov.in and more. We check for updates multiple times a day and notify you of changes.' },
   { q: 'Can I track my job applications?', a: 'Yes! Use the Application Tracker to mark jobs as Interested, Applied, Exam Prep, Exam Done, or Selected. View your dashboard to see stats and upcoming deadlines.' },
   { q: 'How do mock tests work?', a: 'Choose an exam family (SSC, UPSC, Banking etc.), pick a test, and attempt it within the time limit. After submission, you get instant scoring, correct answers, and a leaderboard ranking.' },
   { q: 'Are previous year papers free to download?', a: 'Yes. We provide direct links to official previous year question papers organized by exam family, year, and qualification level.' },
-  { q: 'How accurate is the job information?', a: 'We pull data directly from official government websites. Any changes or corrigendum are detected by our crawlers and flagged in the job details so you always have the latest information.' },
+  { q: 'How accurate is the job information?', a: 'We pull data directly from official government websites. Any changes or corrigendum are detected and flagged in the job details so you always have the latest information.' },
   { q: 'Can I report incorrect information?', a: 'Absolutely. Use the Report Bug feature or email us at support@sarakriradar.in. We review all reports within 24 hours and correct any discrepancies.' },
   { q: 'Is my data safe?', a: 'Yes. We use industry-standard encryption, do not share your data with third parties, and you can delete your account anytime. Read our Privacy Policy for full details.' },
 ]

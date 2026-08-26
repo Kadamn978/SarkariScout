@@ -145,7 +145,7 @@ export default function Landing() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
             <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/80 text-sm mb-8">
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              Live: Monitoring 20+ government sources
+              Live: Updates from official government portals
             </span>
           </motion.div>
 
@@ -212,7 +212,7 @@ export default function Landing() {
 
       {/* Expiring Soon — Urgency Banner */}
       {!loading && expiringJobs.length > 0 && (
-        <section className="relative -mt-16 z-20 px-4">
+        <section className="relative mt-0 z-20 px-4 pt-8">
           <ScrollReveal>
             <div className="max-w-6xl mx-auto">
               <div className="bg-white rounded-3xl shadow-2xl shadow-red-500/10 border border-red-100 p-6 sm:p-8">
@@ -259,8 +259,8 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {[
-              { icon: '🧠', title: 'AI-Matched Alerts', desc: 'We match jobs to YOUR profile — education, state, age, category. No noise, only relevance.', highlight: 'Other sites show 1000+ random jobs. We show 10 that matter.' },
-              { icon: '⚡', title: 'Real-Time Change Detection', desc: 'Our crawlers detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
+              { icon: '🧠', title: 'Smart Profile Matching', desc: 'We match jobs to YOUR profile — education, state, age, category. No noise, only relevance.', highlight: 'Other sites show 1000+ random jobs. We show 10 that matter.' },
+              { icon: '⚡', title: 'Real-Time Updates', desc: 'We detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
               { icon: '📊', title: 'Application Pipeline', desc: 'Track from Interested → Applied → Exam Prep → Result. Your personal recruitment CRM.', highlight: 'Others let you save. We let you manage.' },
               { icon: '📅', title: 'All Dates in One View', desc: 'Exam calendar, admit cards, results — every important date on a single timeline.', highlight: 'Others scatter dates. We consolidate them.' },
               { icon: '🎯', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Leaderboard to benchmark.', highlight: 'Others link to PDFs. We simulate the exam.' },
@@ -401,10 +401,12 @@ export default function Landing() {
             </div>
           </ScrollReveal>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link to="/jobs"
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover-lift">
-              All India
-            </Link>
+            <ScrollReveal>
+              <Link to="/jobs"
+                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover-lift">
+                All India
+              </Link>
+            </ScrollReveal>
             {INDIAN_STATES.map((state, i) => (
               <ScrollReveal key={state} delay={i * 40} direction="none">
                 <Link to={`/state/${state.toLowerCase().replace(/\s+/g, '-')}`}
@@ -414,39 +416,6 @@ export default function Landing() {
               </ScrollReveal>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Testimonials — Cards with Avatars */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
-        <ScrollReveal>
-          <div className="text-center mb-16">
-            <span className="text-sm font-semibold text-blue-600 uppercase tracking-widest">Testimonials</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mt-2">Trusted by Aspirants</h2>
-          </div>
-        </ScrollReveal>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TESTIMONIALS.map((t, i) => (
-            <ScrollReveal key={i} delay={i * 100}>
-              <div className="p-6 rounded-3xl bg-white border border-gray-100 hover:shadow-xl transition-all duration-500 hover-lift card-shine h-full flex flex-col">
-                <div className="flex items-center gap-1 mb-4">
-                  {[1,2,3,4,5].map((s) => (
-                    <svg key={s} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">{t.text}</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-sm font-bold">{t.avatar}</div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">{t.name}</p>
-                    <p className="text-xs text-gray-500">{t.exam}</p>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
         </div>
       </section>
 
@@ -509,10 +478,10 @@ export default function Landing() {
           </div>
           <div className="border-t border-gray-800/50 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} SarkariScout. All rights reserved.</p>
-            <div className="flex gap-4">
-              {['GitHub', 'Twitter', 'LinkedIn'].map((s) => (
-                <span key={s} className="text-sm text-gray-500 hover:text-white cursor-pointer transition-colors duration-300">{s}</span>
-              ))}
+            <div className="flex gap-6 text-sm text-gray-400">
+              <Link to="/privacy" className="hover:text-white transition">Privacy</Link>
+              <Link to="/terms" className="hover:text-white transition">Terms</Link>
+              <a href="mailto:support@sarakriradar.in" className="hover:text-white transition">Contact</a>
             </div>
           </div>
         </div>

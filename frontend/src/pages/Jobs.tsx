@@ -123,13 +123,13 @@ export default function Jobs() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
-        <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+        <nav className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-4" aria-label="Breadcrumb">
           <Link to="/" className="hover:text-blue-600 transition">Home</Link>
           <span>/</span>
-          <span className="text-gray-900">Jobs</span>
+          <span className="text-gray-900 dark:text-white">Jobs</span>
         </nav>
         <h1 className="text-2xl sm:text-3xl font-bold mb-4">Latest Government Jobs</h1>
 
@@ -142,21 +142,21 @@ export default function Jobs() {
               placeholder="Search by title, organization..."
               maxLength={200}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <select value={state} onChange={(e) => setState(e.target.value)}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
+            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white">
             <option value="">All States</option>
             {INDIAN_STATES.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
           <select value={category} onChange={(e) => setCategory(e.target.value)}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
+            className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white">
             <option value="">All Categories</option>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -175,8 +175,8 @@ export default function Jobs() {
           <div className="space-y-4">{[1, 2, 3, 4, 5].map((i) => <JobCardSkeleton key={i} />)}</div>
         ) : jobs.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No jobs found</p>
-            <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No jobs found</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">Try adjusting your search or filters</p>
           </div>
         ) : (
           <>
@@ -186,25 +186,25 @@ export default function Jobs() {
                 <Link
                   to={`/jobs/${job.id}`}
                   role="listitem"
-                  className="block p-5 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all duration-300 hover-lift card-shine focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block p-5 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all duration-300 hover-lift card-shine focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:border-gray-800"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h2 className="text-base sm:text-lg font-semibold text-gray-900">{job.title}</h2>
-                      <p className="text-gray-600 text-sm">{job.org}</p>
+                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{job.title}</h2>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{job.org}</p>
                     </div>
                     <button
                       onClick={(e) => handleTrack(job.id, e)}
                       className={`ml-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex-shrink-0 ${
                         trackedIds.has(job.id)
-                          ? 'bg-green-50 text-green-700 border border-green-200'
-                          : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
+                          ? 'bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800'
+                          : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/50'
                       }`}
                     >
                       {trackedIds.has(job.id) ? 'Tracked' : 'Track'}
                     </button>
                   </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                     <span>{job.state === 'ALL_IN' ? 'All India' : job.state}</span>
                     {job.totalVacancies && <span>{job.totalVacancies} vacancies</span>}
                     {job.applyEnd && <span>Deadline: {new Date(job.applyEnd).toLocaleDateString()}</span>}

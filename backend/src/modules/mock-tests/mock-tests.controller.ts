@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Param, Body, UseGuards, Req, Query } from '@nestjs/common';
-import { Request } from 'express';
 import { MockTestsService } from './mock-tests.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { AuthRequest } from '../auth/auth-request.interface';
 
 @Controller('mock-tests')
 export class MockTestsController {
@@ -30,31 +30,31 @@ export class MockTestsController {
 
   @Post(':id/start')
   @UseGuards(JwtAuthGuard)
-  async startAttempt(@Req() req: Request, @Param('id') testId: string) {
-    return this.mockTestsService.startAttempt((req as any).user.sub, testId);
+  async startAttempt(@Req() req: AuthRequest, @Param('id') testId: string) {
+    return this.mockTestsService.startAttempt(req.user.sub, testId);
   }
 
   @Put('attempts/:attemptId/submit')
   @UseGuards(JwtAuthGuard)
   async submitAttempt(
-    @Req() req: Request,
+    @Req() req: AuthRequest,
     @Param('attemptId') attemptId: string,
     @Body('answers') answers: Record<string, string>,
     @Body('timeTakenSec') timeTakenSec: number,
   ) {
-    return this.mockTestsService.submitAttempt((req as any).user.sub, attemptId, answers, timeTakenSec);
+    return this.mockTestsService.submitAttempt(req.user.sub, attemptId, answers, timeTakenSec);
   }
 
   @Get('attempts/:attemptId')
   @UseGuards(JwtAuthGuard)
-  async getAttemptDetail(@Req() req: Request, @Param('attemptId') attemptId: string) {
-    return this.mockTestsService.getAttemptDetail((req as any).user.sub, attemptId);
+  async getAttemptDetail(@Req() req: AuthRequest, @Param('attemptId') attemptId: string) {
+    return this.mockTestsService.getAttemptDetail(req.user.sub, attemptId);
   }
 
   @Get('user/stats')
   @UseGuards(JwtAuthGuard)
-  async getUserStats(@Req() req: Request) {
-    return this.mockTestsService.getUserStats((req as any).user.sub);
+  async getUserStats(@Req() req: AuthRequest) {
+    return this.mockTestsService.getUserStats(req.user.sub);
   }
 
   @Get(':id/leaderboard')

@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
@@ -5,60 +6,72 @@ import { ToastProvider } from './contexts/ToastContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import CustomCursor from './components/CustomCursor'
 import ProgressBar from './components/ProgressBar'
-import NoiseOverlay from './components/NoiseOverlay'
+
 import ContentProtection from './components/ContentProtection'
 import AdblockDetector from './components/AdblockDetector'
 import Footer from './components/Footer'
+
+// Eagerly loaded core pages (most common entry points)
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Profile from './pages/Profile'
-import Dashboard from './pages/Dashboard'
-import Jobs from './pages/Jobs'
-import JobDetail from './pages/JobDetail'
-import StateJobs from './pages/StateJobs'
-import QualJobs from './pages/QualJobs'
-import Documents from './pages/Documents'
-import BugReport from './pages/BugReport'
-import GoogleAuth from './pages/GoogleAuth'
-import VerifyEmail from './pages/VerifyEmail'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import MockTests from './pages/MockTests'
-import MockTestPlay from './pages/MockTestPlay'
-import Papers from './pages/Papers'
-import EmailPreferences from './pages/EmailPreferences'
-import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
-import Privacy from './pages/Privacy'
-import Terms from './pages/Terms'
-import ExamCalendar from './pages/ExamCalendar'
-import Results from './pages/Results'
-import AdmitCards from './pages/AdmitCards'
-import FAQ from './pages/FAQ'
-import About from './pages/About'
-import Leaderboard from './pages/Leaderboard'
-import Progress from './pages/Progress'
+
 import { usePageView } from './hooks/usePageView'
+
+// Lazy-loaded page groups
+const Jobs = React.lazy(() => import('./pages/Jobs'))
+const JobDetail = React.lazy(() => import('./pages/JobDetail'))
+const StateJobs = React.lazy(() => import('./pages/StateJobs'))
+const QualJobs = React.lazy(() => import('./pages/QualJobs'))
+
+const MockTests = React.lazy(() => import('./pages/MockTests'))
+const MockTestPlay = React.lazy(() => import('./pages/MockTestPlay'))
+
+const Papers = React.lazy(() => import('./pages/Papers'))
+
+const Dashboard = React.lazy(() => import('./pages/Dashboard'))
+const Profile = React.lazy(() => import('./pages/Profile'))
+const Documents = React.lazy(() => import('./pages/Documents'))
+const Progress = React.lazy(() => import('./pages/Progress'))
+const Leaderboard = React.lazy(() => import('./pages/Leaderboard'))
+const EmailPreferences = React.lazy(() => import('./pages/EmailPreferences'))
+
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'))
+
+const Privacy = React.lazy(() => import('./pages/Privacy'))
+const Terms = React.lazy(() => import('./pages/Terms'))
+const About = React.lazy(() => import('./pages/About'))
+const FAQ = React.lazy(() => import('./pages/FAQ'))
+const Contact = React.lazy(() => import('./pages/Contact'))
+
+const GoogleAuth = React.lazy(() => import('./pages/GoogleAuth'))
+const VerifyEmail = React.lazy(() => import('./pages/VerifyEmail'))
+const ForgotPassword = React.lazy(() => import('./pages/ForgotPassword'))
+const ResetPassword = React.lazy(() => import('./pages/ResetPassword'))
+
+const BugReport = React.lazy(() => import('./pages/BugReport'))
+const ExamCalendar = React.lazy(() => import('./pages/ExamCalendar'))
+const Results = React.lazy(() => import('./pages/Results'))
+const AdmitCards = React.lazy(() => import('./pages/AdmitCards'))
+
+const Loading = () => (
+  <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col items-center justify-center gap-4">
+    <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+    <p className="text-sm text-gray-400 font-medium">Loading...</p>
+  </div>
+)
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" role="status" aria-label="Loading">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-    </div>
-  )
+  if (loading) return <Loading />
   if (!user) return <Navigate to="/login" replace />
   return <>{children}</>
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-    </div>
-  )
+  if (loading) return <Loading />
   if (!user) return <Navigate to="/login" replace />
   if (user.role !== 'ADMIN') return <Navigate to="/dashboard" replace />
   return <>{children}</>
@@ -88,39 +101,39 @@ export default function App() {
           <PageViewTracker />
           <CustomCursor />
           <ProgressBar />
-          <NoiseOverlay />
           <ContentProtection />
           <AdblockDetector />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/jobs" element={<AppLayout><Jobs /></AppLayout>} />
-            <Route path="/jobs/:id" element={<AppLayout><JobDetail /></AppLayout>} />
-            <Route path="/state/:state" element={<AppLayout><StateJobs /></AppLayout>} />
-            <Route path="/qualifications/:qual" element={<AppLayout><QualJobs /></AppLayout>} />
-            <Route path="/mock-tests" element={<AppLayout><MockTests /></AppLayout>} />
-            <Route path="/mock-tests/:id" element={<ProtectedRoute><AppLayout><MockTestPlay /></AppLayout></ProtectedRoute>} />
-            <Route path="/papers" element={<AppLayout><Papers /></AppLayout>} />
-            <Route path="/exam-calendar" element={<AppLayout><ExamCalendar /></AppLayout>} />
-            <Route path="/results" element={<AppLayout><Results /></AppLayout>} />
-            <Route path="/admit-cards" element={<AppLayout><AdmitCards /></AppLayout>} />
-            <Route path="/documents" element={<ProtectedRoute><AppLayout><Documents /></AppLayout></ProtectedRoute>} />
-            <Route path="/email-preferences" element={<ProtectedRoute><AppLayout><EmailPreferences /></AppLayout></ProtectedRoute>} />
-            <Route path="/admin" element={<AdminRoute><AppLayout><AdminDashboard /></AppLayout></AdminRoute>} />
-            <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
-            <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
-            <Route path="/faq" element={<AppLayout><FAQ /></AppLayout>} />
-            <Route path="/about" element={<AppLayout><About /></AppLayout>} />
-            <Route path="/leaderboard" element={<AppLayout><Leaderboard /></AppLayout>} />
-            <Route path="/progress" element={<ProtectedRoute><AppLayout><Progress /></AppLayout></ProtectedRoute>} />
-            <Route path="/bug-report" element={<AppLayout><BugReport /></AppLayout>} />
-            <Route path="/auth/google" element={<GoogleAuth />} />
-            <Route path="/profile" element={<ProtectedRoute><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/jobs" element={<Suspense fallback={<Loading />}><AppLayout><Jobs /></AppLayout></Suspense>} />
+            <Route path="/jobs/:id" element={<Suspense fallback={<Loading />}><AppLayout><JobDetail /></AppLayout></Suspense>} />
+            <Route path="/state/:state" element={<Suspense fallback={<Loading />}><AppLayout><StateJobs /></AppLayout></Suspense>} />
+            <Route path="/qualifications/:qual" element={<Suspense fallback={<Loading />}><AppLayout><QualJobs /></AppLayout></Suspense>} />
+            <Route path="/mock-tests" element={<Suspense fallback={<Loading />}><AppLayout><MockTests /></AppLayout></Suspense>} />
+            <Route path="/mock-tests/:id" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><MockTestPlay /></AppLayout></Suspense></ProtectedRoute>} />
+            <Route path="/papers" element={<Suspense fallback={<Loading />}><AppLayout><Papers /></AppLayout></Suspense>} />
+            <Route path="/exam-calendar" element={<Suspense fallback={<Loading />}><AppLayout><ExamCalendar /></AppLayout></Suspense>} />
+            <Route path="/results" element={<Suspense fallback={<Loading />}><AppLayout><Results /></AppLayout></Suspense>} />
+            <Route path="/admit-cards" element={<Suspense fallback={<Loading />}><AppLayout><AdmitCards /></AppLayout></Suspense>} />
+            <Route path="/documents" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><Documents /></AppLayout></Suspense></ProtectedRoute>} />
+            <Route path="/email-preferences" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><EmailPreferences /></AppLayout></Suspense></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><Suspense fallback={<Loading />}><AppLayout><AdminDashboard /></AppLayout></Suspense></AdminRoute>} />
+            <Route path="/privacy" element={<Suspense fallback={<Loading />}><AppLayout><Privacy /></AppLayout></Suspense>} />
+            <Route path="/terms" element={<Suspense fallback={<Loading />}><AppLayout><Terms /></AppLayout></Suspense>} />
+            <Route path="/faq" element={<Suspense fallback={<Loading />}><AppLayout><FAQ /></AppLayout></Suspense>} />
+            <Route path="/about" element={<Suspense fallback={<Loading />}><AppLayout><About /></AppLayout></Suspense>} />
+            <Route path="/contact" element={<Suspense fallback={<Loading />}><AppLayout><Contact /></AppLayout></Suspense>} />
+            <Route path="/leaderboard" element={<Suspense fallback={<Loading />}><AppLayout><Leaderboard /></AppLayout></Suspense>} />
+            <Route path="/progress" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><Progress /></AppLayout></Suspense></ProtectedRoute>} />
+            <Route path="/bug-report" element={<Suspense fallback={<Loading />}><AppLayout><BugReport /></AppLayout></Suspense>} />
+            <Route path="/auth/google" element={<Suspense fallback={<Loading />}><GoogleAuth /></Suspense>} />
+            <Route path="/profile" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><Profile /></AppLayout></Suspense></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><Dashboard /></AppLayout></Suspense></ProtectedRoute>} />
+            <Route path="/verify-email" element={<Suspense fallback={<Loading />}><VerifyEmail /></Suspense>} />
+            <Route path="/forgot-password" element={<Suspense fallback={<Loading />}><ForgotPassword /></Suspense>} />
+            <Route path="/reset-password" element={<Suspense fallback={<Loading />}><ResetPassword /></Suspense>} />
             <Route path="*" element={<AppLayout><NotFound /></AppLayout>} />
           </Routes>
         </AuthProvider>

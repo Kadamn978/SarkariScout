@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Param, Query, UseGuards, Req, Body } from '@nestjs/common';
-import { Request } from 'express';
 import { JobsService } from './jobs.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthRequest } from '../auth/auth-request.interface';
 
 @Controller('jobs')
 export class JobsController {
@@ -42,39 +42,39 @@ export class JobsController {
   @Post(':id/track')
   @UseGuards(JwtAuthGuard)
   async trackJob(
-    @Req() req: Request,
+    @Req() req: AuthRequest,
     @Param('id') jobId: string,
     @Body('stage') stage?: string,
   ) {
-    return this.jobsService.trackJob((req as any).user.sub, jobId, stage);
+    return this.jobsService.trackJob(req.user.sub, jobId, stage);
   }
 
   @Delete(':id/track')
   @UseGuards(JwtAuthGuard)
-  async untrackJob(@Req() req: Request, @Param('id') jobId: string) {
-    return this.jobsService.untrackJob((req as any).user.sub, jobId);
+  async untrackJob(@Req() req: AuthRequest, @Param('id') jobId: string) {
+    return this.jobsService.untrackJob(req.user.sub, jobId);
   }
 
   @Put(':id/tracker')
   @UseGuards(JwtAuthGuard)
   async updateTracker(
-    @Req() req: Request,
+    @Req() req: AuthRequest,
     @Param('id') jobId: string,
     @Body('stage') stage: string,
     @Body('notes') notes?: string,
   ) {
-    return this.jobsService.updateTrackerStage((req as any).user.sub, jobId, stage, notes);
+    return this.jobsService.updateTrackerStage(req.user.sub, jobId, stage, notes);
   }
 
   @Get('user/tracked')
   @UseGuards(JwtAuthGuard)
-  async getTrackedJobs(@Req() req: Request) {
-    return this.jobsService.getTrackedJobs((req as any).user.sub);
+  async getTrackedJobs(@Req() req: AuthRequest) {
+    return this.jobsService.getTrackedJobs(req.user.sub);
   }
 
   @Get('user/tracker-stats')
   @UseGuards(JwtAuthGuard)
-  async getTrackerStats(@Req() req: Request) {
-    return this.jobsService.getTrackerStats((req as any).user.sub);
+  async getTrackerStats(@Req() req: AuthRequest) {
+    return this.jobsService.getTrackerStats(req.user.sub);
   }
 }

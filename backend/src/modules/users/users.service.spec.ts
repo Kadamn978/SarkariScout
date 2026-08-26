@@ -34,6 +34,12 @@ describe('UsersService', () => {
       prisma.profile.findUnique.mockResolvedValue(null);
       await expect(service.getProfile('missing')).rejects.toThrow(NotFoundException);
     });
+
+    it('should call findUnique with correct userId', async () => {
+      prisma.profile.findUnique.mockResolvedValue({ userId: 'abc' });
+      await service.getProfile('abc');
+      expect(prisma.profile.findUnique).toHaveBeenCalledWith({ where: { userId: 'abc' } });
+    });
   });
 
   describe('upsertProfile', () => {
@@ -60,6 +66,26 @@ describe('UsersService', () => {
         }),
       );
     });
+
+    it('should pass update data with dob as Date', async () => {
+      const dto = { dob: '1995-06-20' };
+      prisma.profile.upsert.mockResolvedValue({ userId: 'u1' });
+      await service.upsertProfile('u1', dto);
+      expect(prisma.profile.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          update: expect.objectContaining({ dob: new Date('1995-06-20') }),
+        }),
+      );
+    });
+
+    it('should pass all dto fields to create and update', async () => {
+      const dto = { state: 'Gujarat', category: 'OBC', qualification: 'Graduate' };
+      prisma.profile.upsert.mockResolvedValue({ userId: 'u1', ...dto });
+      await service.upsertProfile('u1', dto);
+      const call = prisma.profile.upsert.mock.calls[0][0];
+      expect(call.create).toMatchObject(dto);
+      expect(call.update).toMatchObject(dto);
+    });
   });
 
   describe('deleteAccount', () => {
@@ -68,6 +94,12 @@ describe('UsersService', () => {
       const result = await service.deleteAccount('u1');
       expect(result).toEqual({ message: 'Account deleted' });
       expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: 'u1' } });
+    });
+
+    it('should call delete with the correct user id', async () => {
+      prisma.user.delete.mockResolvedValue({});
+      await service.deleteAccount('user-xyz');
+      expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id: 'user-xyz' } });
     });
   });
 });

@@ -55,7 +55,7 @@ export class ChangeDetectorService {
 
     const data = changes.map((change) => ({
       jobId: change.jobId,
-      type: change.type as any,
+      type: change.type as 'EXAM_DATE' | 'VENUE' | 'DEADLINE' | 'CORRIGENDUM' | 'RESULT' | 'ADMIT_CARD',
       field: change.field,
       before: change.before || null,
       after: change.after,
@@ -83,7 +83,7 @@ export class ChangeDetectorService {
 
     let notified = 0;
     for (const tracker of trackers) {
-      const profile = (tracker.user as any).profile;
+      const profile = tracker.user.profile;
       if (!profile?.notifyInstant) continue;
 
       const changeTypes = [...new Set(changes.map((c) => c.type))];

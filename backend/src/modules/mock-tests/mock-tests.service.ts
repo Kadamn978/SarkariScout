@@ -73,7 +73,7 @@ export class MockTestsService {
 
     let correctCount = 0;
     let totalScore = 0;
-    const questions = (attempt.test as any).questions;
+    const questions = attempt.test.questions;
 
     for (const q of questions) {
       const userAnswer = answers[q.id];
@@ -114,7 +114,7 @@ export class MockTestsService {
     if (!attempt || attempt.userId !== userId) throw new NotFoundException('Attempt not found');
 
     const answers = attempt.answers ? JSON.parse(attempt.answers) : {};
-    const questions = (attempt.test as any).questions.map((q: any) => ({
+    const questions = attempt.test.questions.map((q) => ({
       id: q.id,
       questionText: q.questionText,
       optionA: q.optionA,
@@ -143,7 +143,7 @@ export class MockTestsService {
       ? attempts.reduce((sum, a) => sum + (a.score || 0), 0) / totalAttempts
       : 0;
     const avgPercentage = totalAttempts > 0
-      ? attempts.reduce((sum, a) => sum + ((a.score || 0) / ((a.test as any).totalMarks || 1)) * 100, 0) / totalAttempts
+      ? attempts.reduce((sum, a) => sum + ((a.score || 0) / (a.test.totalMarks || 1)) * 100, 0) / totalAttempts
       : 0;
 
     return {
@@ -153,11 +153,11 @@ export class MockTestsService {
       bestScore: attempts.length > 0 ? Math.max(...attempts.map((a) => a.score || 0)) : 0,
       recentAttempts: attempts.slice(0, 10).map((a) => ({
         id: a.id,
-        testTitle: (a.test as any).title,
-        examFamily: (a.test as any).examFamily,
+        testTitle: a.test.title,
+        examFamily: a.test.examFamily,
         score: a.score,
-        totalMarks: (a.test as any).totalMarks,
-        percentage: Math.round(((a.score || 0) / ((a.test as any).totalMarks || 1)) * 100),
+        totalMarks: a.test.totalMarks,
+        percentage: Math.round(((a.score || 0) / (a.test.totalMarks || 1)) * 100),
         timeTakenSec: a.timeTakenSec,
         createdAt: a.createdAt,
       })),

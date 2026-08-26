@@ -127,8 +127,8 @@ export class JobsService {
     });
 
     const now = new Date();
-    const active = trackers.filter((t) => (t as any).job?.status === 'OPEN');
-    const expired = trackers.filter((t) => (t as any).job?.applyEnd && (t as any).job.applyEnd < now);
+    const active = trackers.filter((t) => t.job?.status === 'OPEN');
+    const expired = trackers.filter((t) => t.job?.applyEnd && t.job.applyEnd < now);
     const stageStats = trackers.reduce((acc: Record<string, number>, t) => {
       acc[t.stage] = (acc[t.stage] || 0) + 1;
       return acc;

@@ -1,9 +1,9 @@
 import { Controller, Post, Get, Put, UseGuards, Req, Body, Param, Query } from '@nestjs/common';
-import { Request } from 'express';
 import { EmailService } from './email.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { AuthRequest } from '../auth/auth-request.interface';
 
 @Controller('email')
 export class EmailController {
@@ -18,23 +18,23 @@ export class EmailController {
 
   @Get('preferences')
   @UseGuards(JwtAuthGuard)
-  async getPreferences(@Req() req: Request) {
-    return this.emailService.getPreferences((req as any).user.sub);
+  async getPreferences(@Req() req: AuthRequest) {
+    return this.emailService.getPreferences(req.user.sub);
   }
 
   @Put('preferences')
   @UseGuards(JwtAuthGuard)
   async updatePreferences(
-    @Req() req: Request,
+    @Req() req: AuthRequest,
     @Body() prefs: { digestEnabled?: boolean; instantEnabled?: boolean; weeklyEnabled?: boolean; digestTime?: string },
   ) {
-    return this.emailService.updatePreferences((req as any).user.sub, prefs);
+    return this.emailService.updatePreferences(req.user.sub, prefs);
   }
 
   @Get('notifications')
   @UseGuards(JwtAuthGuard)
-  async getNotifications(@Req() req: Request, @Query('limit') limit?: string) {
-    return this.emailService.getNotificationLog((req as any).user.sub, limit ? parseInt(limit) : 50);
+  async getNotifications(@Req() req: AuthRequest, @Query('limit') limit?: string) {
+    return this.emailService.getNotificationLog(req.user.sub, limit ? parseInt(limit) : 50);
   }
 
   @Get('unsubscribe')
