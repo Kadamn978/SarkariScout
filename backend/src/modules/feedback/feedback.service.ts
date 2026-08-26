@@ -16,6 +16,7 @@ export class FeedbackService {
     return this.prisma.bugReport.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      take: 50,
     });
   }
 
@@ -25,6 +26,7 @@ export class FeedbackService {
     return this.prisma.bugReport.findMany({
       where,
       orderBy: { createdAt: 'desc' },
+      take: 100,
     });
   }
 

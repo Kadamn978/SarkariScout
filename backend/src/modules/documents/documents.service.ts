@@ -13,6 +13,7 @@ export class DocumentsService {
     return this.prisma.userDocument.findMany({
       where,
       orderBy: { createdAt: 'desc' },
+      take: 100,
     });
   }
 

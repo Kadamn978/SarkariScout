@@ -69,6 +69,7 @@ export class JobsService {
         applyEnd: { gte: new Date(), lte: deadline },
       },
       orderBy: { applyEnd: 'asc' },
+      take: 50,
     });
   }
 

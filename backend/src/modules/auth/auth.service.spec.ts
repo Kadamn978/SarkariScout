@@ -208,7 +208,7 @@ describe('AuthService', () => {
     });
 
     it('should throw ForbiddenException if token not in Redis', async () => {
-      mockJwt.verifyAsync.mockResolvedValue({ sub: '1', email: 'test@test.com', role: 'USER' });
+      mockJwt.verifyAsync.mockResolvedValue({ sub: '1', email: 'test@test.com', role: 'USER', type: 'refresh' });
       mockRedis.get.mockResolvedValue(null);
 
       await expect(service.refreshTokens('stale-token')).rejects.toThrow(ForbiddenException);

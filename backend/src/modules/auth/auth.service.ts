@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, ForbiddenException, NotFoundException, GoneException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, ForbiddenException, NotFoundException, GoneException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { timingSafeEqual, randomUUID } from 'crypto';
@@ -12,6 +12,7 @@ const FRONTEND_URL = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://local
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
@@ -29,7 +30,9 @@ export class AuthService {
     });
 
     // Send verification email (non-blocking)
-    this.sendVerificationEmail(user.id, user.email).catch(() => {});
+    this.sendVerificationEmail(user.id, user.email).catch((err) => {
+      this.logger.warn(`Failed to send verification email to ${user.email}: ${err.message}`);
+    });
 
     return this.generateTokens(user.id, user.email, user.role);
   }
@@ -61,6 +64,10 @@ export class AuthService {
   async refreshTokens(refreshToken: string) {
     try {
       const payload = await this.jwt.verifyAsync(refreshToken);
+
+      if (payload.type !== 'refresh') {
+        throw new UnauthorizedException('Invalid token type');
+      }
 
       const stored = await this.redis.get(`refresh:${payload.sub}`);
       if (!stored || !this.timingSafeCompare(stored, refreshToken)) {

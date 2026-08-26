@@ -31,6 +31,7 @@ import EmailPreferences from './pages/EmailPreferences'
 import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
 import ExamCalendar from './pages/ExamCalendar'
 import Results from './pages/Results'
 import AdmitCards from './pages/AdmitCards'
@@ -108,7 +109,7 @@ export default function App() {
             <Route path="/email-preferences" element={<ProtectedRoute><AppLayout><EmailPreferences /></AppLayout></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AppLayout><AdminDashboard /></AppLayout></AdminRoute>} />
             <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
-            <Route path="/terms" element={<AppLayout><Privacy /></AppLayout>} />
+            <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
             <Route path="/faq" element={<AppLayout><FAQ /></AppLayout>} />
             <Route path="/about" element={<AppLayout><About /></AppLayout>} />
             <Route path="/leaderboard" element={<AppLayout><Leaderboard /></AppLayout>} />
