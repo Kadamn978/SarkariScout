@@ -14,6 +14,7 @@ describe('ChangeDetectorService', () => {
       job: { findUnique: jest.fn() },
       jobChange: {
         create: jest.fn(),
+        createMany: jest.fn().mockResolvedValue({ count: 0 }),
         findMany: jest.fn().mockResolvedValue([]),
         updateMany: jest.fn(),
       },
@@ -53,7 +54,7 @@ describe('ChangeDetectorService', () => {
 
   it('records changes to database', async () => {
     await service.recordChanges([{ jobId: 'j1', type: 'DEADLINE', field: 'applyEnd', before: 'old', after: 'new' }]);
-    expect(prisma.jobChange.create).toHaveBeenCalled();
+    expect(prisma.jobChange.createMany).toHaveBeenCalled();
   });
 
   it('returns empty changes when job not found', async () => {

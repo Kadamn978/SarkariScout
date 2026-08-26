@@ -51,27 +51,28 @@ export class ChangeDetectorService {
   }
 
   async recordChanges(changes: JobChangeDetection[]): Promise<number> {
-    let recorded = 0;
-    for (const change of changes) {
-      try {
-        await this.prisma.jobChange.create({
-          data: {
-            jobId: change.jobId,
-            type: change.type as any,
-            field: change.field,
-            before: change.before || null,
-            after: change.after,
-            detectedAt: new Date(),
-            notified: false,
-          },
-        });
-        recorded++;
+    if (changes.length === 0) return 0;
+
+    const data = changes.map((change) => ({
+      jobId: change.jobId,
+      type: change.type as any,
+      field: change.field,
+      before: change.before || null,
+      after: change.after,
+      detectedAt: new Date(),
+      notified: false,
+    }));
+
+    try {
+      const result = await this.prisma.jobChange.createMany({ data, skipDuplicates: true });
+      for (const change of changes) {
         this.logger.log(`Change detected: ${change.field} on job ${change.jobId}: ${change.before} -> ${change.after}`);
-      } catch (e) {
-        this.logger.error(`Failed to record change: ${(e as Error).message}`);
       }
+      return result.count;
+    } catch (e) {
+      this.logger.error(`Failed to record changes: ${(e as Error).message}`);
+      return 0;
     }
-    return recorded;
   }
 
   async notifyTrackedUsers(jobId: string, changes: JobChangeDetection[]): Promise<number> {

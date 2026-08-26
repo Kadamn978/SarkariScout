@@ -34,6 +34,8 @@ export class EmailService {
     });
 
     let sent = 0, failed = 0;
+    const notifications: { userId: string; subject: string }[] = [];
+
     for (const pref of prefs) {
       try {
         const user = (pref as any).user;
@@ -57,13 +59,7 @@ export class EmailService {
 
         if (result) {
           sent++;
-          await this.prisma.notificationLog.create({
-            data: {
-              userId: pref.userId,
-              type: 'DIGEST',
-              subject: `Daily Digest: ${matchingJobs.length} jobs`,
-            },
-          });
+          notifications.push({ userId: pref.userId, subject: `Daily Digest: ${matchingJobs.length} jobs` });
         } else {
           failed++;
         }
@@ -71,6 +67,17 @@ export class EmailService {
         this.logger.error(`Digest failed for user ${pref.userId}: ${(e as Error).message}`);
         failed++;
       }
+    }
+
+    // Batch insert notification logs
+    if (notifications.length > 0) {
+      await this.prisma.notificationLog.createMany({
+        data: notifications.map(n => ({
+          userId: n.userId,
+          type: 'DIGEST' as const,
+          subject: n.subject,
+        })),
+      });
     }
 
     return { sent, failed, total: prefs.length };

@@ -11,7 +11,7 @@ describe('ChangeDetectorService — Full Run Scenarios', () => {
   beforeEach(async () => {
     prisma = {
       job: { findMany: jest.fn().mockResolvedValue([]), findUnique: jest.fn() },
-      jobChange: { create: jest.fn(), findMany: jest.fn().mockResolvedValue([]) },
+      jobChange: { create: jest.fn(), createMany: jest.fn().mockResolvedValue({ count: 0 }), findMany: jest.fn().mockResolvedValue([]) },
       userJob: { findMany: jest.fn().mockResolvedValue([]) },
     };
     email = { sendInstantAlert: jest.fn().mockResolvedValue(undefined) };
