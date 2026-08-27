@@ -73,18 +73,10 @@ infra/.env
 infra/phone-server/deploy.sh
 infra/phone-server/prisma.service.android.ts
 
-# Local backup scripts (contain paths/secrets)
+# Local backup scripts
 backups/
 
 # Temp files
 safe-push.bat
 safe-push.sh
 test-db.js
-
-# OpenCode local config (may contain API keys)
-.opencode/
-AGENTS.md
-opencode.json
-
-# Audit findings (internal)
-docs/AUDIT-FINDINGS.md
