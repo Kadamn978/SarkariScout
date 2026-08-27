@@ -16,10 +16,13 @@ async function main() {
       schedule: '0 */6 * * *',
       configJson: JSON.stringify({
         website: 'https://ssc.gov.in',
+        officialDomains: ['ssc.gov.in'],
+        rssUrl: 'https://ssc.gov.in/portal/Portal3/NoticeBoard.aspx',
+        postJobHours: [10, 11, 12, 13, 14], // Peak: 10am-2pm IST
         exams: ['CGL', 'CHSL', 'MTS', 'JE', 'Steno', 'GD Constable', 'Selection Post'],
         social: {
           youtube: 'https://youtube.com/@StaffSelectionCommission',
-          twitter: 'https://x.com/ABORGOES',
+          twitter: 'https://x.com/SSC_GoI',
           telegram: null,
         },
       }),
@@ -32,10 +35,14 @@ async function main() {
       schedule: '0 */6 * * *',
       configJson: JSON.stringify({
         website: 'https://upsc.gov.in',
+        officialDomains: ['upsc.gov.in', 'upsconline.nic.in'],
+        rssUrl: 'https://upsc.gov.in/examination-notifications',
+        postJobHours: [10, 11, 12, 13, 14],
         exams: ['Civil Services', 'CDS', 'NDA', 'IES/ISS', 'CMS', 'CPF', 'Engineering Services'],
         social: {
           youtube: 'https://youtube.com/@UPSCOfficial',
-          twitter: 'https://x.com/ABORGOES',
+          twitter: null,
+          linkedin: 'https://linkedin.com/company/official-union-public-service-commission',
           telegram: null,
         },
       }),
@@ -48,10 +55,12 @@ async function main() {
       schedule: '0 */6 * * *',
       configJson: JSON.stringify({
         website: 'https://ibps.in',
+        officialDomains: ['ibps.in'],
+        postJobHours: [10, 11, 12, 13, 14],
         exams: ['PO', 'Clerk', 'SO', 'RRB PO', 'RRB Clerk'],
         social: {
           youtube: null,
-          twitter: 'https://x.com/ABORGOES',
+          twitter: 'https://x.com/ibps_official',
           telegram: null,
         },
       }),
@@ -64,6 +73,8 @@ async function main() {
       schedule: '0 */6 * * *',
       configJson: JSON.stringify({
         website: 'https://rrbapply.gov.in',
+        officialDomains: ['rrbapply.gov.in', 'rrb.gov.in'],
+        postJobHours: [10, 11, 12, 13, 14],
         exams: ['NTPC', 'Group D', 'ALP', 'JE', 'Technician'],
         social: {
           youtube: null,

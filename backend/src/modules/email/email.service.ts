@@ -170,6 +170,30 @@ export class EmailService {
     });
   }
 
+  async sendJobDeletionNotice(email: string, name: string, jobTitle: string, org: string) {
+    await this.sendEmail({
+      to: email,
+      subject: `Job Removed: ${jobTitle}`,
+      html: `
+        <h2>Job Listing Removed</h2>
+        <p>Hi ${name},</p>
+        <p>A job you were tracking has been <strong>removed from the official source</strong>:</p>
+        <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:16px;margin:16px 0;border-radius:4px">
+          <p style="margin:0"><strong>${jobTitle}</strong></p>
+          <p style="margin:4px 0 0 0;color:#666">${org}</p>
+        </div>
+        <p>This usually means the application deadline has passed, the notification has been withdrawn, or the listing was temporary.</p>
+        <p><strong>What to do:</strong></p>
+        <ul>
+          <li>Visit the <a href="${this.baseUrl}/jobs">official source</a> to confirm</li>
+          <li>If you believe this is an error, <a href="${this.baseUrl}/feedback">contact support</a></li>
+          <li>You can also <a href="${this.baseUrl}/feedback">raise a bug report</a></li>
+        </ul>
+        <p>We automatically track job listings and notify you when they change.</p>
+      `,
+    });
+  }
+
   async sendEmail(opts: { to: string; subject: string; html: string }): Promise<boolean> {
     this.logger.log(`Email to ${opts.to}: ${opts.subject}`);
 
