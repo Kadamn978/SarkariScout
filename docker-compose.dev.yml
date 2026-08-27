@@ -1,0 +1,43 @@
+# Dev Docker Compose — connects to existing Laragon MySQL/Redis
+# Usage: docker compose -f docker-compose.dev.yml up --build
+# Requires: Docker Desktop installed, Laragon MySQL+Redis running on host
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: sarkari-backend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: mysql://root@host.docker.internal:3306/sarkariscout?connection_limit=10&pool_timeout=30
+      REDIS_URL: redis://host.docker.internal:6379
+      JWT_SECRET: sarkariscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
+      PORT: 3000
+      NODE_ENV: development
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:80
+      TZ: Asia/Kolkata
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: npx ts-node src/main.ts
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: sarkari-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: npx vite --host
