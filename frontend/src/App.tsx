@@ -4,23 +4,25 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider } from './contexts/ToastContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { Sentry } from './lib/sentry'
 import CustomCursor from './components/CustomCursor'
 import ProgressBar from './components/ProgressBar'
 
 import ContentProtection from './components/ContentProtection'
 import AdblockDetector from './components/AdblockDetector'
+import CookieConsent from './components/CookieConsent'
 import Footer from './components/Footer'
 
 // Eagerly loaded core pages (most common entry points)
-import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import NotFound from './pages/NotFound'
 
-import { usePageView } from './hooks/usePageView'
-
 // Lazy-loaded page groups
+const Landing = React.lazy(() => import('./pages/Landing'))
 const Jobs = React.lazy(() => import('./pages/Jobs'))
+
+import { usePageView } from './hooks/usePageView'
 const JobDetail = React.lazy(() => import('./pages/JobDetail'))
 const StateJobs = React.lazy(() => import('./pages/StateJobs'))
 const QualJobs = React.lazy(() => import('./pages/QualJobs'))
@@ -104,7 +106,7 @@ export default function App() {
           <ContentProtection />
           <AdblockDetector />
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<Suspense fallback={<Loading />}><Landing /></Suspense>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/jobs" element={<Suspense fallback={<Loading />}><AppLayout><Jobs /></AppLayout></Suspense>} />
@@ -140,6 +142,7 @@ export default function App() {
       </BrowserRouter>
       </ToastProvider>
       </ThemeProvider>
+      <CookieConsent />
     </ErrorBoundary>
   )
 }
