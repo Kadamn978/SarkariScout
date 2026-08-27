@@ -194,6 +194,28 @@ Run: `python crewai/run.py [research|security|feature|data|sprint]`
 - Facebook: 3 pages
 - Twitter/X: 6 accounts
 
+**Key insight:** Only SSC (@SSC_GoI) and IBPS (@ibps_official) actively post job notifications on X. Most government sources (80%+) rely on websites only — our web scraping is the PRIMARY discovery method.
+
+## Social Media Strategy (Aug 27)
+
+**SarkariScout accounts to create:**
+| Platform | Handle | Priority |
+|---|---|---|
+| X (Twitter) | @SarkariScout | P0 |
+| Telegram | @SarkariScout (Channel) | P0 |
+| WhatsApp | SarkariScout Channel | P0 |
+| Instagram | @sarkariscout | P1 |
+| YouTube | SarkariScout | P1 |
+| Facebook | SarkariScout | P1 |
+| LinkedIn | SarkariScout | P2 |
+
+**Social media monitoring:**
+- X: @SSC_GoI, @ibps_official, @indiannavy, @IAF_MCC, @DRDO_India
+- LinkedIn: UPSC official
+- YouTube: ADGPI-INDIAN ARMY, ISRO Official
+
+**Full strategy:** `docs/11-social-media-strategy.md`
+
 ## Revenue Strategy (Free First → Ads → Premium Later)
 
 **Core principle:** Keep everything free for 6-12 months. Build user base. Monetize with ads + affiliate. Premium comes AFTER trust is proven.
