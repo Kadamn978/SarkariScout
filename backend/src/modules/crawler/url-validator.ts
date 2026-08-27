@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import * as dns from 'dns';
 
 const logger = new Logger('URLValidator');
 

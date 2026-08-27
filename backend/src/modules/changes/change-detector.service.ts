@@ -122,6 +122,7 @@ export class ChangeDetectorService {
     return this.prisma.jobChange.findMany({
       where: { notified: false },
       orderBy: { detectedAt: 'asc' },
+      take: 1000,
       include: { job: { select: { title: true, org: true } } },
     });
   }

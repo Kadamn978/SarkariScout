@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ChangeDetectorService } from '../changes/change-detector.service';
 import * as crypto from 'crypto';
 import { validateUrl, validateHeaders, sanitizeError } from './url-validator';
+import { sleep, cleanHtml, extractOrgFromTitle } from './shared-utils';
 
 export interface CrawledJob {
   sourceUrl: string;
@@ -65,7 +66,7 @@ export class CrawlerService {
           const result = await this.upsertJob(job, source.id);
           if (result === 'created') added++; else updated++;
         } catch (e) {
-          const msg = (e as Error).message;
+          const msg = sanitizeError(e);
           if (!errors.includes(msg)) errors.push(msg);
         }
       }
@@ -113,7 +114,7 @@ export class CrawlerService {
 
     for (const s of sources) {
       results[s.id] = await this.crawlSource(s.id);
-      await this.sleep(2000);
+      await sleep(2000);
     }
 
     return results;
@@ -140,6 +141,11 @@ export class CrawlerService {
     });
   }
 
+  // Public method for RSS monitor to call
+  async upsertFromCrawledJob(job: CrawledJob, sourceId: string): Promise<'created' | 'updated'> {
+    return this.upsertJob(job, sourceId);
+  }
+
   private async fetchWithRetry(source: any, retries = 3): Promise<CrawledJob[]> {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
@@ -147,9 +153,10 @@ export class CrawlerService {
         return jobs;
       } catch (e) {
         this.logger.warn(`Attempt ${attempt}/${retries} failed for ${source.name}: ${(e as Error).message}`);
-        if (attempt < retries) await this.sleep(3000 * attempt);
+        if (attempt < retries) await sleep(3000 * attempt);
       }
     }
+    this.logger.error(`All ${retries} retries exhausted for ${source.name}`);
     return [];
   }
 
@@ -185,7 +192,7 @@ export class CrawlerService {
       const res = await fetch(source.baseUrl, {
         headers,
         signal: controller.signal,
-        redirect: 'manual', // Don't auto-follow redirects
+        redirect: 'manual',
       });
       clearTimeout(timeout);
 
@@ -197,7 +204,6 @@ export class CrawlerService {
           if (!redirectCheck.valid) {
             throw new Error(`Blocked unsafe redirect: ${redirectCheck.reason}`);
           }
-          // Follow safe redirect
           const redirectRes = await fetch(location, {
             headers,
             signal: AbortSignal.timeout(15000),
@@ -272,7 +278,7 @@ export class CrawlerService {
 
     let match;
     while ((match = titlePattern.exec(html)) !== null) {
-      const title = this.cleanHtml(match[1]);
+      const title = cleanHtml(match[1]);
       if (title.length < 15) continue;
       jobs.push({
         sourceUrl: source.baseUrl,
@@ -286,7 +292,7 @@ export class CrawlerService {
 
     while ((match = linkPattern.exec(html)) !== null) {
       const url = match[1].startsWith('http') ? match[1] : new URL(match[1], source.baseUrl).href;
-      const text = this.cleanHtml(match[0]);
+      const text = cleanHtml(match[0]);
       if (text.length < 15) continue;
       const exists = jobs.some((j) => j.title === text || j.sourceUrl === url);
       if (!exists) {
@@ -313,7 +319,7 @@ export class CrawlerService {
     for (const pattern of patterns) {
       let match;
       while ((match = pattern.exec(html)) !== null) {
-        const text = this.cleanHtml(match[1] || match[0]);
+        const text = cleanHtml(match[1] || match[0]);
         if (text.length < 15) continue;
 
         const url = match[1] ? (match[1].startsWith('http') ? match[1] : new URL(match[1], source.baseUrl).href) : source.baseUrl;
@@ -335,7 +341,7 @@ export class CrawlerService {
     const pattern = /<a[^>]+href=["']([^"']+)["'][^>]*>[^<]*(?:PO|clerk|SO|recruitment|IBPS)[^<]*<\/a>/gi;
     let match;
     while ((match = pattern.exec(html)) !== null) {
-      const text = this.cleanHtml(match[0]);
+      const text = cleanHtml(match[0]);
       if (text.length < 15) continue;
       const url = match[1].startsWith('http') ? match[1] : new URL(match[1], source.baseUrl).href;
       jobs.push({
@@ -355,7 +361,7 @@ export class CrawlerService {
     const pattern = /<a[^>]+href=["']([^"']+)["'][^>]*>[^<]*(?:NTPC|ALP|group D|recruitment|RRB)[^<]*<\/a>/gi;
     let match;
     while ((match = pattern.exec(html)) !== null) {
-      const text = this.cleanHtml(match[0]);
+      const text = cleanHtml(match[0]);
       if (text.length < 15) continue;
       const url = match[1].startsWith('http') ? match[1] : new URL(match[1], source.baseUrl).href;
       jobs.push({
@@ -385,16 +391,16 @@ export class CrawlerService {
       const descMatch = descPattern.exec(itemHtml);
 
       if (titleMatch) {
-        const title = this.cleanHtml(titleMatch[1]);
+        const title = cleanHtml(titleMatch[1]);
         if (title.length < 10) continue;
         jobs.push({
           sourceUrl: linkMatch ? linkMatch[1].trim() : source.baseUrl,
-          org: this.extractOrgFromTitle(title),
+          org: extractOrgFromTitle(title),
           title,
           postNames: [title],
           state: 'ALL_IN',
           category: 'GOVERNMENT',
-          eligibilityCriteria: descMatch ? this.cleanHtml(descMatch[1]).substring(0, 500) : undefined,
+          eligibilityCriteria: descMatch ? cleanHtml(descMatch[1]).substring(0, 500) : undefined,
         });
       }
     }
@@ -411,7 +417,7 @@ export class CrawlerService {
       if (text.length > 20 && /recruit|vacancy|examination|constable|inspector|clerk|officer|po\b|ibps|ssc|upsc|rrb/i.test(text)) {
         jobs.push({
           sourceUrl: url.startsWith('http') ? url : new URL(url, source.baseUrl).href,
-          org: this.extractOrgFromTitle(text),
+          org: extractOrgFromTitle(text),
           title: text,
           postNames: [text],
           state: 'ALL_IN',
@@ -422,59 +428,6 @@ export class CrawlerService {
     return jobs;
   }
 
-  private extractOrgFromTitle(title: string): string {
-    const orgMap: Record<string, string> = {
-      'SSC': 'Staff Selection Commission',
-      'UPSC': 'Union Public Service Commission',
-      'IBPS': 'Institute of Banking Personnel Selection',
-      'RRB': 'Railway Recruitment Boards',
-      'SBI': 'State Bank of India',
-      'MPSC': 'Maharashtra Public Service Commission',
-      'BPSC': 'Bihar Public Service Commission',
-      'DRDO': 'Defence Research and Development Organisation',
-      'ISRO': 'Indian Space Research Organisation',
-      'ONGC': 'Oil and Natural Gas Corporation',
-      'NTPC': 'National Thermal Power Corporation',
-      'BSF': 'Border Security Force',
-      'CRPF': 'Central Reserve Police Force',
-      'CISF': 'Central Industrial Security Force',
-      'ITBP': 'Indo-Tibetan Border Police',
-      'CBI': 'Central Bureau of Investigation',
-      'NTRO': 'National Technical Research Organisation',
-      'BARC': 'Bhabha Atomic Research Centre',
-      'IOCL': 'Indian Oil Corporation',
-      'BEL': 'Bharat Electronics Limited',
-      'HAL': 'Hindustan Aeronautics Limited',
-      'NIA': 'National Investigation Agency',
-      'NIOS': 'National Institute of Open Schooling',
-      'ESIC': 'Employees State Insurance Corporation',
-      'AIIMS': 'All India Institute of Medical Sciences',
-      'KVS': 'Kendriya Vidyalaya Sangathan',
-      'DSSSB': 'Delhi Subordinate Services Selection Board',
-      'TNPSC': 'Tamil Nadu Public Service Commission',
-      'KPSC': 'Karnataka Public Service Commission',
-      'WBPSC': 'West Bengal Public Service Commission',
-    };
-
-    for (const [abbr, full] of Object.entries(orgMap)) {
-      if (title.toUpperCase().includes(abbr)) return full;
-    }
-    return 'Government of India';
-  }
-
-  private cleanHtml(text: string): string {
-    return text
-      .replace(/<[^>]+>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#039;/g, "'")
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
   private generateFingerprint(job: CrawledJob): string {
     const data = `${job.org}|${job.title}|${job.sourceUrl}`.toLowerCase().replace(/\s+/g, ' ');
     return crypto.createHash('sha256').update(data).digest('hex').substring(0, 32);
@@ -482,54 +435,85 @@ export class CrawlerService {
 
   private async upsertJob(job: CrawledJob, sourceId: string): Promise<'created' | 'updated'> {
     const fingerprint = this.generateFingerprint(job);
-    const existing = await this.prisma.job.findUnique({ where: { fingerprint } });
 
-    const data: Record<string, any> = {
-      sourceId, sourceUrl: job.sourceUrl, org: job.org, title: job.title,
-      postNames: JSON.stringify(job.postNames),
-      totalVacancies: job.totalVacancies,
-      state: job.state || 'ALL_IN',
-      district: job.district,
-      qualificationText: job.qualificationText,
-      qualificationLevels: JSON.stringify(job.qualificationLevels || ['Graduate']),
-      ageMin: job.ageMin, ageMax: job.ageMax,
-      gender: job.gender,
-      generalFee: job.generalFee, obcFee: job.obcFee, scStFee: job.scStFee,
-      applyStart: job.applyStart, applyEnd: job.applyEnd,
-      feePaymentEnd: job.feePaymentEnd,
-      examDate: job.examDate,
-      applyUrl: job.applyUrl,
-      officialNotificationUrl: job.officialNotificationUrl,
-      eligibilityCriteria: job.eligibilityCriteria,
-      howToApply: job.howToApply,
-      selectionProcess: job.selectionProcess,
-      lastSeenAt: new Date(),
-    };
+    // Use Prisma upsert to avoid race condition
+    const result = await this.prisma.job.upsert({
+      where: { fingerprint },
+      create: {
+        fingerprint,
+        sourceId,
+        sourceUrl: job.sourceUrl,
+        org: job.org,
+        title: job.title,
+        status: 'OPEN',
+        category: (job.category as any) || 'GOVERNMENT',
+        postNames: JSON.stringify(job.postNames),
+        totalVacancies: job.totalVacancies,
+        state: job.state || 'ALL_IN',
+        district: job.district,
+        qualificationText: job.qualificationText,
+        qualificationLevels: JSON.stringify(job.qualificationLevels || ['Graduate']),
+        ageMin: job.ageMin,
+        ageMax: job.ageMax,
+        gender: job.gender,
+        generalFee: job.generalFee,
+        obcFee: job.obcFee,
+        scStFee: job.scStFee,
+        applyStart: job.applyStart,
+        applyEnd: job.applyEnd,
+        feePaymentEnd: job.feePaymentEnd,
+        examDate: job.examDate,
+        applyUrl: job.applyUrl,
+        officialNotificationUrl: job.officialNotificationUrl,
+        eligibilityCriteria: job.eligibilityCriteria,
+        howToApply: job.howToApply,
+        selectionProcess: job.selectionProcess,
+        lastSeenAt: new Date(),
+      },
+      update: {
+        sourceUrl: job.sourceUrl,
+        org: job.org,
+        title: job.title,
+        postNames: JSON.stringify(job.postNames),
+        totalVacancies: job.totalVacancies,
+        state: job.state || 'ALL_IN',
+        district: job.district,
+        qualificationText: job.qualificationText,
+        qualificationLevels: JSON.stringify(job.qualificationLevels || ['Graduate']),
+        ageMin: job.ageMin,
+        ageMax: job.ageMax,
+        gender: job.gender,
+        generalFee: job.generalFee,
+        obcFee: job.obcFee,
+        scStFee: job.scStFee,
+        applyStart: job.applyStart,
+        applyEnd: job.applyEnd,
+        feePaymentEnd: job.feePaymentEnd,
+        examDate: job.examDate,
+        applyUrl: job.applyUrl,
+        officialNotificationUrl: job.officialNotificationUrl,
+        eligibilityCriteria: job.eligibilityCriteria,
+        howToApply: job.howToApply,
+        selectionProcess: job.selectionProcess,
+        lastSeenAt: new Date(),
+      },
+    });
 
-    if (existing) {
-      const changes = await this.changeDetector.detectChanges(existing.id, data);
+    // Detect changes on update
+    if (result.id) {
+      const changes = await this.changeDetector.detectChanges(result.id, {
+        applyEnd: job.applyEnd,
+        examDate: job.examDate,
+        totalVacancies: job.totalVacancies,
+        applyUrl: job.applyUrl,
+        status: 'OPEN',
+      });
       if (changes.length > 0) {
         await this.changeDetector.recordChanges(changes);
-        await this.changeDetector.notifyTrackedUsers(existing.id, changes);
+        await this.changeDetector.notifyTrackedUsers(result.id, changes);
       }
-      await this.prisma.job.update({ where: { id: existing.id }, data });
-      return 'updated';
-    } else {
-      await this.prisma.job.create({
-        data: {
-          fingerprint,
-          org: job.org,
-          title: job.title,
-          status: 'OPEN',
-          category: (job.category as 'GOVERNMENT' | 'SEMI_GOVERNMENT' | 'PSU' | 'BANKING' | 'RAILWAY' | 'DEFENCE' | 'POLICE' | 'TEACHING' | 'MEDICAL' | 'ENGINEERING' | 'IT' | 'PRIVATE' | 'INTERNSHIP' | 'TRAINING' | 'CONTRACT') || 'GOVERNMENT',
-          ...data,
-        },
-      });
-      return 'created';
     }
-  }
 
-  private sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return result.createdAt === result.updatedAt ? 'created' : 'updated';
   }
 }

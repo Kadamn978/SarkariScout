@@ -178,7 +178,7 @@ model Job {
   id                      String    @id @default(uuid())
   fingerprint             String    @unique
   sourceId                String?
-  source                  Source?   @relation(fields: [sourceId], references: [id])
+  source                  Source?   @relation(fields: [sourceId], references: [id], onDelete: SetNull)
   sourceUrl               String?
   org                     String
   advtNo                  String?
@@ -241,6 +241,12 @@ model Job {
   @@index([category])
   @@index([examFamily])
   @@index([feePaymentEnd])
+  @@index([sourceId, createdAt])
+  @@index([status, applyEnd])
+  @@index([category, status])
+  @@index([status, state, applyEnd])
+  @@index([status, category, applyEnd])
+  @@index([status, examFamily])
   @@map("jobs")
 }
 
@@ -258,6 +264,7 @@ model JobChange {
 
   @@index([jobId])
   @@index([detectedAt])
+  @@index([notified, detectedAt])
   @@map("job_changes")
 }
 
@@ -278,6 +285,7 @@ model UserJob {
   @@unique([userId, jobId])
   @@index([userId])
   @@index([stage])
+  @@index([userId, stage])
   @@map("user_jobs")
 }
 
@@ -301,6 +309,8 @@ model NotificationLog {
   @@index([jobId])
   @@index([sentAt])
   @@index([type])
+  @@index([userId, sentAt])
+  @@index([userId, type, sentAt])
   @@map("notification_logs")
 }
 
@@ -351,6 +361,9 @@ model Subscription {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
   @@map("subscriptions")
 }
 

@@ -106,6 +106,7 @@ export class FakeSiteDetectorService {
 
       // Check 3: Is it a known fake pattern?
       for (const pattern of this.fakePatterns) {
+        pattern.lastIndex = 0; // Reset regex state
         if (pattern.test(hostname)) {
           return {
             url,

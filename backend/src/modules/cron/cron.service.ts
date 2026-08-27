@@ -5,12 +5,15 @@ import { AdaptiveSchedulerService } from '../crawler/adaptive-scheduler.service'
 import { JobDeletionDetectorService } from '../crawler/job-deletion-detector.service';
 import { RSSMonitorService } from '../crawler/rss-monitor.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { getIST } from '../crawler/shared-utils';
 
 @Injectable()
 export class CronService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CronService.name);
   private intervals: NodeJS.Timeout[] = [];
+  private timeouts: NodeJS.Timeout[] = [];
   private adaptiveLoopRunning = false;
+  private lastDigestSentDate: string = '';
 
   constructor(
     private crawler: CrawlerService,
@@ -37,22 +40,32 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
       setInterval(() => this.runDeletionCheck(), 6 * 60 * 60 * 1000),
     );
 
+    // Scheduler cleanup — runs every hour
+    this.intervals.push(
+      setInterval(() => this.adaptiveScheduler.cleanupStaleEntries(), 60 * 60 * 1000),
+    );
+
     // Digest check — every minute
     this.intervals.push(
       setInterval(() => this.checkDigestTime(), 60 * 1000),
     );
 
-    // Initial runs
-    setTimeout(() => this.runAdaptiveCrawler(), 10000);
-    setTimeout(() => this.runRSSMonitor(), 30000);
+    // Initial runs (tracked for cleanup)
+    this.timeouts.push(
+      setTimeout(() => this.runAdaptiveCrawler(), 10000),
+    );
+    this.timeouts.push(
+      setTimeout(() => this.runRSSMonitor(), 30000),
+    );
 
     this.logger.log(
-      'CronService initialized — adaptive crawler (5min check), RSS monitor (30min), deletion check (6h), digest (1min)',
+      'CronService initialized — adaptive crawler (5min), RSS monitor (30min), deletion check (6h), digest (1min)',
     );
   }
 
   onModuleDestroy() {
     this.intervals.forEach(clearInterval);
+    this.timeouts.forEach(clearTimeout);
   }
 
   private async runAdaptiveCrawler() {
@@ -119,8 +132,11 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async checkDigestTime() {
-    const ist = this.getIST();
-    if (ist.getHours() === 9 && ist.getMinutes() === 5) {
+    const ist = getIST();
+    const today = ist.toISOString().split('T')[0];
+
+    if (ist.getHours() === 9 && ist.getMinutes() === 5 && this.lastDigestSentDate !== today) {
+      this.lastDigestSentDate = today;
       this.logger.log('Triggering daily digest (IST 9:05 AM)');
       try {
         const result = await this.email.sendDailyDigest();
@@ -129,11 +145,5 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
         this.logger.error(`Daily digest failed: ${(err as Error).message}`);
       }
     }
-  }
-
-  private getIST(): Date {
-    const now = new Date();
-    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
-    return new Date(utcMs + 5.5 * 60 * 60 * 1000);
   }
 }
