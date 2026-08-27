@@ -10,12 +10,11 @@ build/
 .nuxt/
 .output/
 
-# Environment files
+# Environment files — NEVER commit these
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+!.env.*.example
 
 # IDE
 .vscode/
@@ -55,8 +54,6 @@ __pycache__/
 *.pyo
 .pytest_cache/
 *.egg-info/
-crewai/.env
-.env.local
 
 # Misc
 *.tgz
@@ -71,7 +68,23 @@ prompt for teh ai we used in earies sisi.md
 improvement in the project.md
 API Key Free Tire Nilesh.txt
 
-# Security - never commit credentials
+# Security — credentials, secrets, phone server files
 infra/.env
 infra/phone-server/deploy.sh
 infra/phone-server/prisma.service.android.ts
+
+# Local backup scripts (contain paths/secrets)
+backups/
+
+# Temp files
+safe-push.bat
+safe-push.sh
+test-db.js
+
+# OpenCode local config (may contain API keys)
+.opencode/
+AGENTS.md
+opencode.json
+
+# Audit findings (internal)
+docs/AUDIT-FINDINGS.md

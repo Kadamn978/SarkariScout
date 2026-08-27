@@ -22,23 +22,23 @@ export default function About() {
         <section className="mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">About SarkariScout</h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-            SarkariScout is a government job notification aggregator built for Indian aspirants. We monitor 20+ official government portals — including SSC, UPSC, IBPS, RRB, and state PSCs — to bring you real-time updates on new notifications, deadline changes, and exam schedules.
+            Government job information in India is a mess. It's spread across 20+ websites — SSC, UPSC, IBPS, RRB, state PSCs — and every one of them updates on their own schedule. If you're a serious aspirant, you're probably checking three or four of these daily just to stay on top of things.
           </p>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-            Our platform is designed to solve a real problem: government job information in India is scattered across dozens of websites, and it is easy to miss a deadline. SarkariScout consolidates these sources into a single, searchable dashboard so you can focus on preparation instead of hunting for notifications.
+            SarkariScout fixes that. We pull notifications from all these sources into one place, filter by what matters to you, and let you know when deadlines are approaching or something changes. That way you can spend your time actually preparing instead of hunting for notifications.
           </p>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">What We Offer</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">What we actually do</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
-              { title: 'Job Aggregation', desc: '20+ official sources monitored multiple times daily. Notifications, corrigendum, and deadline changes — all captured automatically.' },
-              { title: 'Smart Matching', desc: 'Filter jobs by qualification, state, age, and category. See only the opportunities that match your profile.' },
-              { title: 'Email Alerts', desc: 'Daily digest of new jobs plus instant alerts before deadlines. Never miss an application window.' },
-              { title: 'Application Tracker', desc: 'Track jobs from interest to selection. Get notified of status changes and deadline updates for your tracked applications.' },
-              { title: 'Exam Calendar', desc: 'All important dates — application deadlines, exam dates, admit cards, and results — on a single timeline.' },
-              { title: 'Mock Tests & Papers', desc: 'Practice with exam-pattern tests and download previous year question papers organized by exam family and year.' },
+              { title: 'Job aggregation', desc: 'We monitor 20+ official sites multiple times a day. New notification? We catch it. Deadline extended? We catch that too.' },
+              { title: 'Smart matching', desc: 'Set your qualification, state, category, and age. We show you jobs that actually fit — not a random list of 500 openings.' },
+              { title: 'Email alerts', desc: 'Daily digest of new jobs plus instant alerts when deadlines are near. You set the preferences, we do the watching.' },
+              { title: 'Application tracker', desc: 'Mark jobs as applied, track them through each stage, get notified when things change. Your entire job search in one dashboard.' },
+              { title: 'Exam calendar', desc: 'All the dates — application deadlines, exam dates, admit cards, results — on a single timeline. No more spreadsheets.' },
+              { title: 'Mock tests and papers', desc: 'Practice with tests that follow real exam patterns. Download previous year papers organized by exam and year.' },
             ].map((item, i) => (
               <div key={i} className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-800">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{item.title}</h3>
@@ -49,25 +49,29 @@ export default function About() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Our Sources</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Where we get our data</h2>
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">We aggregate data from official government portals including SSC, UPSC, IBPS, RRB, state PSCs, DRDO, ISRO, and more. All data is sourced from publicly available government websites and official notifications.</p>
-            <p className="text-gray-600 dark:text-gray-400">Our servers are located in India, and all user data is stored domestically in compliance with the Digital Personal Data Protection Act 2023.</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Everything comes from official government websites — SSC, UPSC, IBPS, RRB, state PSCs, DRDO, ISRO, and others. We don't make up data, we don't guess, and we don't copy from other job sites. It's all sourced directly from official notifications.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Your data stays in India. All our servers are located domestically, in line with the DPDP Act 2023. We don't send your information outside the country.
+            </p>
           </div>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Our Approach</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Who we are</h2>
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              SarkariScout is built and maintained by a small team of developers who understand the challenges faced by government job aspirants. We believe that access to timely, accurate job notifications should not depend on manually checking multiple websites every day. Our platform automates this process and presents the information in a clean, organized format.
+              A small team that's been on the other side — as aspirants who spent too much time checking multiple websites for job notifications. We built SarkariScout because we wanted something better, and figured other people might want it too. It's still early days, but we're building this properly, one feature at a time.
             </p>
           </div>
         </section>
 
         <div className="text-center bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-8">
-          <h2 className="text-2xl font-bold mb-2">Get Started</h2>
-          <p className="text-blue-100 mb-6">Create a free account to set up personalized job alerts and start tracking applications.</p>
+          <h2 className="text-2xl font-bold mb-2">Get started</h2>
+          <p className="text-blue-100 mb-6">Free account. Personalized alerts. No spam.</p>
           <Link to="/register"
             className="inline-flex items-center px-8 py-3 bg-white text-blue-700 rounded-lg font-semibold hover:bg-blue-50 transition">
             Create Free Account

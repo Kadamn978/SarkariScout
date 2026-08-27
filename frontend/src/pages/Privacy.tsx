@@ -5,10 +5,10 @@ import { useSEO } from '../hooks/useSEO'
 export default function Privacy() {
   useSEO({
     title: 'Privacy Policy',
-    description: 'SarkariScout Privacy Policy. Learn how we collect, use, and protect your personal data in compliance with the Digital Personal Data Protection Act 2023.',
+    description: 'How SarkariScout handles your data. Short version: we don\'t sell it, we store it in India, and you can delete it anytime.',
     canonical: 'https://sarkariscout.in/privacy',
     ogTitle: 'Privacy Policy | SarkariScout',
-    ogDescription: 'How SarkariScout handles your personal data. DPDP Act compliant.',
+    ogDescription: 'How SarkariScout handles your personal data.',
   })
 
   return (
@@ -26,132 +26,126 @@ export default function Privacy() {
           </div>
 
           <div className="p-6 sm:p-10 space-y-8 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">1. Introduction</h2>
-              <p>SarkariScout ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website (sarkariscout.in) and related services (collectively, the "Platform").</p>
-              <p className="mt-2">By using the Platform, you consent to the practices described in this policy. If you do not agree, please discontinue use of the Platform.</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">1. The short version</h2>
+              <p>We don't sell your data. We don't share it with advertisers. We don't run creepy tracking scripts. We collect what we need to send you job alerts and make the site work, and that's it. Your data lives on servers in India, and you can delete everything anytime.</p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">2. Information We Collect</h2>
-              <h3 className="font-medium text-gray-900 dark:text-white mt-4 mb-2">2.1 Information You Provide</h3>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">2. What we collect</h2>
+              <h3 className="font-medium text-gray-900 dark:text-white mt-4 mb-2">Stuff you give us</h3>
               <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Account Information:</strong> Name, email address, and password (hashed) when you register.</li>
-                <li><strong>Profile Data:</strong> Education level, state, category, age, and job preferences — provided optionally to enable personalized job matching.</li>
-                <li><strong>Application Data:</strong> Job tracking information, application status updates, and notes you add to tracked jobs.</li>
-                <li><strong>Communications:</strong> Messages you send us via contact forms, bug reports, or email.</li>
+                <li><strong>Name and email</strong> — when you sign up</li>
+                <li><strong>Profile info</strong> — education, state, category, age (all optional, but helps us show you relevant jobs)</li>
+                <li><strong>Job tracking data</strong> — the jobs you're following, your application status</li>
+                <li><strong>Messages</strong> — anything you send us through contact forms or bug reports</li>
               </ul>
 
-              <h3 className="font-medium text-gray-900 dark:text-white mt-4 mb-2">2.2 Information Collected Automatically</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white mt-4 mb-2">Stuff we collect automatically</h3>
               <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Usage Data:</strong> Pages visited, features used, search queries, and interaction patterns — collected to improve the Platform.</li>
-                <li><strong>Device Information:</strong> Browser type, operating system, screen resolution, and device identifiers.</li>
-                <li><strong>Log Data:</strong> IP address, access times, and referring URLs — retained for security and diagnostic purposes.</li>
+                <li><strong>Usage data</strong> — which pages you visit, what you search for, how you use the site</li>
+                <li><strong>Device info</strong> — browser type, operating system, screen size</li>
+                <li><strong>Log data</strong> — IP address, when you visited, where you came from</li>
               </ul>
 
-              <h3 className="font-medium text-gray-900 dark:text-white mt-4 mb-2">2.3 Cookies and Similar Technologies</h3>
-              <p>We use essential cookies for authentication and session management. Analytics and advertising cookies are loaded only with your explicit consent through our cookie consent banner. You may modify your preferences at any time.</p>
+              <h3 className="font-medium text-gray-900 dark:text-white mt-4 mb-2">Cookies</h3>
+              <p>We use cookies to keep you logged in and remember your preferences. That's it. Analytics and ad cookies only load if you say yes in the cookie banner. You can change your mind anytime.</p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">3. How We Use Your Information</h2>
-              <p>We use the information we collect for the following purposes:</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">3. Why we collect it</h2>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li><strong>Service Delivery:</strong> To provide job alerts, personalized recommendations, mock tests, and application tracking.</li>
-                <li><strong>Communication:</strong> To send job notifications, deadline reminders, and service updates via email (with opt-out available).</li>
-                <li><strong>Platform Improvement:</strong> To analyze usage patterns, debug issues, and develop new features.</li>
-                <li><strong>Security:</strong> To detect and prevent fraud, abuse, and unauthorized access.</li>
-                <li><strong>Legal Compliance:</strong> To comply with applicable laws, regulations, and legal processes.</li>
+                <li><strong>To run the site</strong> — job alerts, recommendations, tracking, mock tests</li>
+                <li><strong>To keep in touch</strong> — deadline reminders, new job notifications, service updates (you can opt out)</li>
+                <li><strong>To make it better</strong> — figuring out what's broken, what's slow, what people actually use</li>
+                <li><strong>To keep it safe</strong> — catching abuse, fraud, and unauthorized access</li>
+                <li><strong>Because the law says so</strong> — tax records, legal compliance, that kind of thing</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">4. Data Sharing and Disclosure</h2>
-              <p>We do not sell, rent, or trade your personal information. We may share data in the following limited circumstances:</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">4. Who we share it with</h2>
+              <p>We don't sell your data. Period. Here's the only times we'd share anything:</p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li><strong>Service Providers:</strong> Third-party vendors who assist with email delivery, hosting, and analytics — bound by contractual obligations to protect your data.</li>
-                <li><strong>Legal Requirements:</strong> When required by law, court order, or governmental authority.</li>
-                <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets — with prior notice to users.</li>
-                <li><strong>Aggregated Data:</strong> Anonymized, non-identifiable data may be shared for research or statistical purposes.</li>
+                <li><strong>Email providers</strong> — the companies that send our emails on our behalf (they can't use your data for anything else)</li>
+                <li><strong>If the law makes us</strong> — court orders, government requests, that sort of thing</li>
+                <li><strong>If we get bought</strong> — which isn't in the plans, but if it happens, you'll know before your data moves</li>
+                <li><strong>Anonymous stats</strong> — things like "40% of users search for SSC jobs" — no way to trace it back to you</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">5. Data Security</h2>
-              <p>We implement industry-standard security measures to protect your data, including:</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">5. How we protect it</h2>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li>All data is encrypted in transit (HTTPS) and at rest</li>
+                <li>Passwords are hashed with argon2id — we can't see them, even we can't</li>
+                <li>We run security audits and fix vulnerabilities as we find them</li>
+                <li>Access to user data is restricted to what's needed to run the service</li>
+              </ul>
+              <p className="mt-2">Is it perfect? No system is. But we take this seriously and do what makes sense for a project our size.</p>
+            </section>
+
+            <section>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">6. How long we keep it</h2>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li><strong>Account data</strong> — until you delete your account, then gone within 30 days</li>
+                <li><strong>Usage logs</strong> — 90 days, then deleted</li>
+                <li><strong>Job tracking data</strong> — as long as your account exists</li>
+                <li><strong>Emails you send us</strong> — 12 months, so we have a support history</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">7. Your rights</h2>
+              <p>You can:</p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li>Encryption of data in transit (TLS/HTTPS) and at rest</li>
-                <li>Secure password hashing (argon2id)</li>
-                <li>Regular security audits and vulnerability assessments</li>
-                <li>Access controls and authentication mechanisms</li>
-                <li>Automated threat detection and monitoring</li>
+                <li>Ask us what data we have on you</li>
+                <li>Fix anything that's wrong</li>
+                <li>Download your data</li>
+                <li>Delete your account and all associated data</li>
+                <li>Unsubscribe from emails (there's a link in every one)</li>
+                <li>Withdraw consent for anything you previously agreed to</li>
               </ul>
-              <p className="mt-2">While we strive to protect your information, no method of electronic transmission or storage is 100% secure. We cannot guarantee absolute security.</p>
+              <p className="mt-2">Email <a href="mailto:privacy@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@sarkariscout.in</a> to exercise any of these. We'll respond within 30 days.</p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">6. Data Retention</h2>
-              <p>We retain your personal data only for as long as necessary to provide our services or as required by law:</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">8. Kids</h2>
+              <p>SarkariScout isn't for anyone under 18. We don't knowingly collect data from minors. If we find out we have, we'll delete it immediately. Parents — if your kid somehow signed up, let us know and we'll handle it.</p>
+            </section>
+
+            <section>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">9. India's DPDP Act 2023</h2>
+              <p>We follow India's Digital Personal Data Protection Act. Here's what that means practically:</p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li><strong>Account Data:</strong> Retained until you delete your account, plus 30 days for backup purposes.</li>
-                <li><strong>Usage Logs:</strong> Retained for 90 days for security and diagnostic purposes.</li>
-                <li><strong>Application Tracking Data:</strong> Retained as long as your account is active.</li>
-                <li><strong>Communications:</strong> Retained for 12 months to maintain support history.</li>
+                <li><strong>We're the data fiduciary</strong> — that's legal-speak for "we're responsible for your data"</li>
+                <li><strong>We only collect with your consent</strong> — you agreed when you signed up, and you can withdraw anytime</li>
+                <li><strong>Purpose-limited</strong> — we only use your data for job alerts, matching, and running the site</li>
+                <li><strong>Stored in India</strong> — your data never leaves the country</li>
+                <li><strong>You can complain</strong> — email <a href="mailto:dpo@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@sarkariscout.in</a> if you have concerns. We'll respond within 30 days</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">7. Your Rights</h2>
-              <p>Under applicable data protection laws, you have the following rights:</p>
-              <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
-                <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data.</li>
-                <li><strong>Deletion:</strong> Request deletion of your account and associated data.</li>
-                <li><strong>Portability:</strong> Request your data in a structured, machine-readable format.</li>
-                <li><strong>Withdrawal of Consent:</strong> Withdraw consent for data processing at any time (where processing is based on consent).</li>
-                <li><strong>Opt-Out:</strong> Unsubscribe from marketing emails via the link in each email or through your account settings.</li>
-              </ul>
-              <p className="mt-2">To exercise these rights, contact us at <a href="mailto:privacy@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@sarkariscout.in</a>. We will respond within 30 days.</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">10. External links</h2>
+              <p>Our site links to government websites and other external services. We're not responsible for what they do with your data. Check their privacy policies too.</p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">8. Children's Privacy</h2>
-              <p>The Platform is not intended for users under the age of 18. We do not knowingly collect personal data from children. If we become aware that a child has provided us with personal information, we will take steps to delete such information promptly. If you are a parent or guardian and believe your child has provided us with personal data, please contact us.</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">11. Changes to this policy</h2>
+              <p>If we make significant changes, we'll let you know by email or a notice on the site. Keep using the site after changes go live and that means you're okay with them.</p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">9. Digital Personal Data Protection Act 2023 (DPDP)</h2>
-              <p>In compliance with India's Digital Personal Data Protection Act 2023:</p>
-              <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li><strong>Data Fiduciary:</strong> SarkariScout (sarkariscout.in)</li>
-                <li><strong>Consent Notice:</strong> We collect your personal data only with your explicit consent for the purpose of providing government job alerts and related services.</li>
-                <li><strong>Purpose Limitation:</strong> Your data is used solely for sending job notifications, matching eligibility, and improving our services.</li>
-                <li><strong>Data Principal Rights:</strong> You have the right to access, correct, erase, and seek grievance redressal regarding your personal data.</li>
-                <li><strong>Data Retention:</strong> We retain your data only as long as necessary for the stated purpose or until you exercise your right to erasure.</li>
-                <li><strong>Cross-Border Transfer:</strong> Your data is stored on servers located within India and is not transferred outside the country.</li>
-                <li><strong>Grievance Redressal:</strong> For data-related concerns, contact our Data Protection Officer at <a href="mailto:dpo@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@sarkariscout.in</a>. We will respond within 30 days.</li>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Get in touch</h2>
+              <ul className="list-disc pl-5 space-y-1.5">
+                <li>General questions: <a href="mailto:privacy@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@sarkariscout.in</a></li>
+                <li>Data protection officer: <a href="mailto:dpo@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@sarkariscout.in</a></li>
+                <li>Other stuff: <a href="mailto:support@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">support@sarkariscout.in</a></li>
               </ul>
             </section>
 
-            <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">10. Third-Party Links</h2>
-              <p>The Platform may contain links to external government websites and third-party services. We are not responsible for the privacy practices of these external sites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">11. Changes to This Policy</h2>
-              <p>We may update this Privacy Policy from time to time. Material changes will be communicated via email or a prominent notice on the Platform. Your continued use of the Platform after changes are posted constitutes acceptance of the revised policy.</p>
-            </section>
-
-            <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Contact Us</h2>
-              <p>For questions or concerns about this Privacy Policy:</p>
-              <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li><strong>Email:</strong> <a href="mailto:privacy@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@sarkariscout.in</a></li>
-                <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@sarkariscout.in</a></li>
-                <li><strong>General Support:</strong> <a href="mailto:support@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">support@sarkariscout.in</a></li>
-              </ul>
-            </section>
           </div>
         </div>
       </main>

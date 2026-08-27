@@ -1,9 +1,61 @@
 import { PrismaClient } from '@prisma/client';
+import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding job sources and sample jobs...');
+  console.log('Seeding admin user, job sources and sample jobs...');
+
+  // Create admin user
+  const adminEmail = 'admin@sarkariscout.in';
+  const adminPassword = 'Admin@12345';
+  const passwordHash = await argon2.hash(adminPassword);
+
+  const admin = await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {},
+    create: {
+      email: adminEmail,
+      passwordHash,
+      name: 'Nilesh Admin',
+      role: 'ADMIN',
+      emailVerifiedAt: new Date(),
+    },
+  });
+  console.log('Admin user:', admin.email, '(password: Admin@12345)');
+
+  // Create a test regular user
+  const testEmail = 'test@sarkariscout.in';
+  const testPassword = 'Test@12345';
+  const testHash = await argon2.hash(testPassword);
+
+  const testUser = await prisma.user.upsert({
+    where: { email: testEmail },
+    update: {},
+    create: {
+      email: testEmail,
+      passwordHash: testHash,
+      name: 'Test User',
+      role: 'USER',
+      emailVerifiedAt: new Date(),
+    },
+  });
+  console.log('Test user:', testUser.email, '(password: Test@12345)');
+
+  // Create profile for test user
+  await prisma.profile.upsert({
+    where: { userId: testUser.id },
+    update: {},
+    create: {
+      userId: testUser.id,
+      educationLevel: 'Graduate',
+      state: 'Maharashtra',
+      category: 'OBC',
+      gender: 'Male',
+      dob: new Date('1998-05-15'),
+    },
+  });
+  console.log('Test user profile created');
 
   // Job sources — 15 sources covering all major Indian govt job portals
   const sources = [
