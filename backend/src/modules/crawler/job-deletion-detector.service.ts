@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
+import { validateUrl, sanitizeError } from './url-validator';
 
 export interface DeletionCheckResult {
   sourceId: string;
@@ -147,6 +148,13 @@ export class JobDeletionDetectorService {
   private async checkUrlAlive(url: string): Promise<boolean> {
     if (!url || url === 'about:blank') return false;
 
+    // Validate URL before fetching
+    const urlCheck = validateUrl(url);
+    if (!urlCheck.valid) {
+      this.logger.warn(`Blocked invalid URL for deletion check: ${urlCheck.reason}`);
+      return true; // Assume alive if URL is invalid (don't false-positive delete)
+    }
+
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
@@ -155,7 +163,7 @@ export class JobDeletionDetectorService {
         method: 'HEAD',
         headers: { 'User-Agent': this.USER_AGENT },
         signal: controller.signal,
-        redirect: 'follow',
+        redirect: 'manual', // Don't auto-follow redirects
       });
       clearTimeout(timeout);
 

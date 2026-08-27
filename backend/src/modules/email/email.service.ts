@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as crypto from 'crypto';
+import { escapeHtml, sanitizeEmailSubject } from '../crawler/url-validator';
 
 @Injectable()
 export class EmailService {
@@ -173,14 +174,14 @@ export class EmailService {
   async sendJobDeletionNotice(email: string, name: string, jobTitle: string, org: string) {
     await this.sendEmail({
       to: email,
-      subject: `Job Removed: ${jobTitle}`,
+      subject: sanitizeEmailSubject(`Job Removed: ${jobTitle}`),
       html: `
         <h2>Job Listing Removed</h2>
-        <p>Hi ${name},</p>
+        <p>Hi ${escapeHtml(name)},</p>
         <p>A job you were tracking has been <strong>removed from the official source</strong>:</p>
         <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:16px;margin:16px 0;border-radius:4px">
-          <p style="margin:0"><strong>${jobTitle}</strong></p>
-          <p style="margin:4px 0 0 0;color:#666">${org}</p>
+          <p style="margin:0"><strong>${escapeHtml(jobTitle)}</strong></p>
+          <p style="margin:4px 0 0 0;color:#666">${escapeHtml(org)}</p>
         </div>
         <p>This usually means the application deadline has passed, the notification has been withdrawn, or the listing was temporary.</p>
         <p><strong>What to do:</strong></p>

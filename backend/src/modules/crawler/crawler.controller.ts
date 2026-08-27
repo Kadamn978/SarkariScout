@@ -1,4 +1,5 @@
 import { Controller, Post, Param, UseGuards, Get, Query } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CrawlerService } from './crawler.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -11,12 +12,14 @@ export class CrawlerController {
 
   @Post('crawl/:sourceId')
   @Roles('ADMIN')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async crawlSource(@Param('sourceId') sourceId: string) {
     return this.crawlerService.crawlSource(sourceId);
   }
 
   @Post('crawl-all')
   @Roles('ADMIN')
+  @Throttle({ default: { limit: 2, ttl: 300000 } })
   async crawlAll() {
     return this.crawlerService.crawlAll();
   }
@@ -30,6 +33,8 @@ export class CrawlerController {
   @Get('history/:sourceId')
   @Roles('ADMIN')
   async getHistory(@Param('sourceId') sourceId: string, @Query('limit') limit?: string) {
-    return this.crawlerService.getCrawlHistory(sourceId, limit ? parseInt(limit) : 20);
+    const parsed = parseInt(limit || '20');
+    const safeLimit = isNaN(parsed) ? 20 : Math.min(Math.max(parsed, 1), 100);
+    return this.crawlerService.getCrawlHistory(sourceId, safeLimit);
   }
 }

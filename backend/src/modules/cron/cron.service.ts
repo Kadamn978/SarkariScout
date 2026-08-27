@@ -4,6 +4,7 @@ import { EmailService } from '../email/email.service';
 import { AdaptiveSchedulerService } from '../crawler/adaptive-scheduler.service';
 import { JobDeletionDetectorService } from '../crawler/job-deletion-detector.service';
 import { RSSMonitorService } from '../crawler/rss-monitor.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class CronService implements OnModuleInit, OnModuleDestroy {
@@ -17,6 +18,7 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
     private adaptiveScheduler: AdaptiveSchedulerService,
     private deletionDetector: JobDeletionDetectorService,
     private rssMonitor: RSSMonitorService,
+    private prisma: PrismaService,
   ) {}
 
   onModuleInit() {
@@ -58,7 +60,7 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
     this.adaptiveLoopRunning = true;
 
     try {
-      const sources = await this.crawler['prisma'].source.findMany({ where: { enabled: true } });
+      const sources = await this.prisma.source.findMany({ where: { enabled: true } });
       const sourcesToCrawl = sources.filter((s: any) => this.adaptiveScheduler.shouldCrawl(s.id));
 
       if (sourcesToCrawl.length === 0) {

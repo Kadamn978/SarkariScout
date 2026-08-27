@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ChangeDetectorService } from '../changes/change-detector.service';
 import * as crypto from 'crypto';
+import { validateUrl, validateHeaders, sanitizeError } from './url-validator';
 
 export interface CrawledJob {
   sourceUrl: string;
@@ -84,9 +85,9 @@ export class CrawlerService {
         },
       });
     } catch (e) {
-      const msg = (e as Error).message;
+      const msg = sanitizeError(e);
       errors.push(msg);
-      this.logger.error(`Crawl failed for ${source.name}: ${msg}`);
+      this.logger.error(`Crawl failed for ${source.name}: ${(e as Error).message}`);
 
       await this.prisma.source.update({
         where: { id: sourceId },
@@ -153,12 +154,28 @@ export class CrawlerService {
   }
 
   private async fetchJobs(source: any): Promise<CrawledJob[]> {
+    // Validate source URL
+    const urlCheck = validateUrl(source.baseUrl);
+    if (!urlCheck.valid) {
+      throw new Error(`Invalid source URL: ${urlCheck.reason}`);
+    }
+
+    // Parse and validate headers
+    let safeHeaders: Record<string, string> = {};
+    if (source.headersJson) {
+      const headerCheck = validateHeaders(source.headersJson);
+      if (headerCheck.blocked.length > 0) {
+        this.logger.warn(`Blocked dangerous headers for ${source.name}: ${headerCheck.blocked.join(', ')}`);
+      }
+      safeHeaders = headerCheck.safe;
+    }
+
     const headers: Record<string, string> = {
       'User-Agent': USER_AGENT,
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'en-US,en;q=0.9',
       'Accept-Encoding': 'gzip, deflate',
-      ...(source.headersJson ? JSON.parse(source.headersJson) : {}),
+      ...safeHeaders,
     };
 
     const controller = new AbortController();
@@ -168,9 +185,28 @@ export class CrawlerService {
       const res = await fetch(source.baseUrl, {
         headers,
         signal: controller.signal,
-        redirect: 'follow',
+        redirect: 'manual', // Don't auto-follow redirects
       });
       clearTimeout(timeout);
+
+      // Check if redirect target is safe
+      if (res.status >= 300 && res.status < 400) {
+        const location = res.headers.get('location');
+        if (location) {
+          const redirectCheck = validateUrl(location);
+          if (!redirectCheck.valid) {
+            throw new Error(`Blocked unsafe redirect: ${redirectCheck.reason}`);
+          }
+          // Follow safe redirect
+          const redirectRes = await fetch(location, {
+            headers,
+            signal: AbortSignal.timeout(15000),
+          });
+          if (!redirectRes.ok) throw new Error(`HTTP ${redirectRes.status}`);
+          const html = await redirectRes.text();
+          return this.parseHtmlSource(html, source);
+        }
+      }
 
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 
@@ -441,7 +477,7 @@ export class CrawlerService {
 
   private generateFingerprint(job: CrawledJob): string {
     const data = `${job.org}|${job.title}|${job.sourceUrl}`.toLowerCase().replace(/\s+/g, ' ');
-    return crypto.createHash('md5').update(data).digest('hex');
+    return crypto.createHash('sha256').update(data).digest('hex').substring(0, 32);
   }
 
   private async upsertJob(job: CrawledJob, sourceId: string): Promise<'created' | 'updated'> {
