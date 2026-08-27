@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Profile, Job } from '@prisma/client';
 
 export interface MatchResult {
   jobId: string;
@@ -30,6 +31,7 @@ export class MatchingService {
     const jobs = await this.prisma.job.findMany({
       where: { status: 'OPEN', applyEnd: { gte: new Date() } },
       orderBy: { applyEnd: 'asc' },
+      take: 500,
     });
 
     const results = jobs.map((job) => this.matchJob(profile, job));
@@ -46,7 +48,7 @@ export class MatchingService {
     page?: number;
     limit?: number;
   }) {
-    const where: any = { status: 'OPEN', applyEnd: { gte: new Date() } };
+    const where: Record<string, unknown> = { status: 'OPEN', applyEnd: { gte: new Date() } };
 
     if (filters.state && filters.state !== 'ALL_IN') {
       where.OR = [
@@ -65,7 +67,7 @@ export class MatchingService {
 
     if (filters.search) {
       where.OR = [
-        ...(where.OR || []),
+        ...(Array.isArray(where.OR) ? where.OR : []),
         { title: { contains: filters.search } },
         { org: { contains: filters.search } },
         { postNames: { contains: filters.search } },
@@ -92,7 +94,7 @@ export class MatchingService {
     };
   }
 
-  matchJob(profile: any, job: any): MatchResult {
+  matchJob(profile: Profile, job: Job): MatchResult {
     const reasons: string[] = [];
     const breakdown = {
       education: 0,
@@ -136,7 +138,7 @@ export class MatchingService {
     return { jobId: job.id, matchScore, eligible, reasons, breakdown };
   }
 
-  private checkEducation(profile: any, job: any): { score: number; reason?: string; blocked?: boolean } {
+  private checkEducation(profile: Profile, job: Job): { score: number; reason?: string; blocked?: boolean } {
     if (!profile.educationLevel) return { score: 15 };
 
     const userLevel = AGE_LEVELS.indexOf(profile.educationLevel);
@@ -160,14 +162,14 @@ export class MatchingService {
     };
   }
 
-  private checkState(profile: any, job: any): { score: number; reason?: string } {
+  private checkState(profile: Profile, job: Job): { score: number; reason?: string } {
     if (!profile.state) return { score: 15 };
     if (job.state === 'ALL_IN') return { score: 25 };
     if (profile.state === job.state) return { score: 25 };
     return { score: 0, reason: `This job is for ${job.state} only` };
   }
 
-  private checkCategory(profile: any, job: any): { score: number; reason?: string } {
+  private checkCategory(profile: Profile, job: Job): { score: number; reason?: string } {
     if (!profile.category) return { score: 10 };
     if (!job.categoryFeesJson) return { score: 10 };
 
@@ -178,7 +180,7 @@ export class MatchingService {
     return { score: 5, reason: `Fee ₹${fee} for ${profile.category} category` };
   }
 
-  private checkAge(profile: any, job: any): { score: number; reason?: string; blocked?: boolean } {
+  private checkAge(profile: Profile, job: Job): { score: number; reason?: string; blocked?: boolean } {
     if (!profile.dob) return { score: 15 };
 
     const dob = new Date(profile.dob);
@@ -206,7 +208,7 @@ export class MatchingService {
     };
   }
 
-  private checkGender(profile: any, job: any): { score: number; reason?: string; blocked?: boolean } {
+  private checkGender(profile: Profile, job: Job): { score: number; reason?: string; blocked?: boolean } {
     if (!profile.gender) return { score: 10 };
     if (!job.gender || job.gender === 'ALL') return { score: 15 };
     if (profile.gender === job.gender) return { score: 15 };
@@ -217,7 +219,7 @@ export class MatchingService {
     };
   }
 
-  private checkQualificationText(profile: any, job: any): { score: number; reason?: string } {
+  private checkQualificationText(profile: Profile, job: Job): { score: number; reason?: string } {
     if (!job.qualificationText) return { score: 10 };
     if (!profile.degrees) return { score: 10 };
 

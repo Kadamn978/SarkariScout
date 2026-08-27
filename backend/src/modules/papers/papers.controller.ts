@@ -48,7 +48,11 @@ export class PapersController {
   @Post('admin/create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createPaper(@Body() data: any) {
+  async createPaper(@Body() data: {
+    title: string; examFamily: string; year: number;
+    qualification?: string; fileUrl?: string; externalUrl?: string;
+    description?: string;
+  }) {
     return this.papersService.createPaper(data);
   }
 }

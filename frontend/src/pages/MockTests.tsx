@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../lib/api'
+import { useSEO } from '../hooks/useSEO'
 
 interface MockTest {
   id: string; title: string; description: string; examFamily: string;
@@ -11,6 +12,14 @@ interface MockTest {
 const EXAM_FAMILIES = ['SSC', 'UPSC', 'Banking', 'Railway', 'Engineering', 'Medical', 'Defence', 'State PSC']
 
 export default function MockTests() {
+  useSEO({
+    title: 'Free Mock Tests for Government Exams',
+    description: 'Practice with free mock tests for SSC, UPSC, Banking, Railway, Engineering exams. Instant scoring, correct answers, and leaderboard ranking.',
+    canonical: 'https://sarkariscout.in/mock-tests',
+    ogTitle: 'Free Mock Tests | SarkariScout',
+    ogDescription: 'Free mock tests for SSC, UPSC, Banking, Railway exams with instant scoring.',
+  })
+
   const [tests, setTests] = useState<MockTest[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('')
@@ -37,17 +46,17 @@ export default function MockTests() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mock Tests</h1>
-          <p className="text-gray-600 mt-2">Practice with real exam patterns. Score yourself and track improvement.</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Mock Tests</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Practice with real exam patterns. Score yourself and track improvement.</p>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
           <button
             onClick={() => { setFilter(''); setPage(1) }}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${!filter ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border hover:bg-gray-50'}`}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition ${!filter ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700'}`}
           >
             All
           </button>
@@ -55,7 +64,7 @@ export default function MockTests() {
             <button
               key={f}
               onClick={() => { setFilter(f); setPage(1) }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition ${filter === f ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border hover:bg-gray-50'}`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${filter === f ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700'}`}
             >
               {f}
             </button>
@@ -65,17 +74,17 @@ export default function MockTests() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl p-6 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-3" />
-                <div className="h-3 bg-gray-200 rounded w-1/2 mb-4" />
-                <div className="flex gap-4"><div className="h-3 bg-gray-200 rounded w-20" /><div className="h-3 bg-gray-200 rounded w-20" /></div>
+              <div key={i} className="bg-white rounded-xl p-6 animate-pulse dark:bg-gray-900">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3" />
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4" />
+                <div className="flex gap-4"><div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20" /><div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20" /></div>
               </div>
             ))}
           </div>
         ) : tests.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl">
-            <p className="text-gray-500 text-lg">No mock tests available yet.</p>
-            <p className="text-gray-400 mt-2">Tests will appear here once created by admins.</p>
+          <div className="text-center py-16 bg-white rounded-xl dark:bg-gray-900">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No mock tests available yet.</p>
+            <p className="text-gray-400 dark:text-gray-500 mt-2">Tests will appear here once created by admins.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -83,18 +92,18 @@ export default function MockTests() {
               <Link
                 key={test.id}
                 to={`/mock-tests/${test.id}`}
-                className="bg-white rounded-xl p-6 hover:shadow-lg transition border border-gray-100 group"
+                className="bg-white rounded-xl p-6 hover:shadow-lg transition border border-gray-100 group dark:bg-gray-900 dark:border-gray-800"
               >
                 <div className="flex items-start justify-between mb-3">
                   <span className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">{test.examFamily}</span>
-                  <span className="text-xs text-gray-400">{test.durationMinutes} min</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{test.durationMinutes} min</span>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 mb-2">{test.title}</h3>
-                {test.description && <p className="text-sm text-gray-500 mb-4 line-clamp-2">{test.description}</p>}
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 mb-2">{test.title}</h3>
+                {test.description && <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{test.description}</p>}
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                   <span>{test.totalQuestions} Qs</span>
                   <span>{test.totalMarks} marks</span>
-                  <span>{test.attemptCount} attempts</span>
+                  {test.attemptCount > 0 && <span>{test.attemptCount} attempts</span>}
                 </div>
               </Link>
             ))}
@@ -104,10 +113,10 @@ export default function MockTests() {
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 mt-8">
             <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-              className="px-4 py-2 rounded-lg bg-white border text-sm disabled:opacity-50">Prev</button>
-            <span className="px-4 py-2 text-sm text-gray-600">Page {page} of {totalPages}</span>
+              className="px-4 py-2 rounded-lg bg-white border text-sm disabled:opacity-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">Prev</button>
+            <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">Page {page} of {totalPages}</span>
             <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages}
-              className="px-4 py-2 rounded-lg bg-white border text-sm disabled:opacity-50">Next</button>
+              className="px-4 py-2 rounded-lg bg-white border text-sm disabled:opacity-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">Next</button>
           </div>
         )}
       </div>

@@ -70,3 +70,8 @@ backend/nodemailer/
 prompt for teh ai we used in earies sisi.md
 improvement in the project.md
 API Key Free Tire Nilesh.txt
+
+# Security - never commit credentials
+infra/.env
+infra/phone-server/deploy.sh
+infra/phone-server/prisma.service.android.ts

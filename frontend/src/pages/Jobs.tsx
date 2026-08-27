@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { useToast } from '../contexts/ToastContext'
+import { useSEO } from '../hooks/useSEO'
 import { JobCardSkeleton } from '../components/Skeleton'
 import ScrollReveal from '../components/ScrollReveal'
 import TiltCard from '../components/TiltCard'
@@ -41,6 +42,14 @@ const QUALIFICATIONS = ['10th Pass', '12th Pass', 'Graduate', 'Engineering', 'Di
 const PAGE_SIZE = 20
 
 export default function Jobs() {
+  useSEO({
+    title: 'Latest Government Jobs',
+    description: 'Browse latest government jobs from SSC, UPSC, IBPS, RRB, State PSCs. Filter by state, category, and qualification. Apply before deadlines.',
+    canonical: 'https://sarkariscout.in/jobs',
+    ogTitle: 'Latest Government Jobs | SarkariScout',
+    ogDescription: 'Browse and apply for latest government jobs. Filter by state, category, qualification.',
+  })
+
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -215,14 +224,14 @@ export default function Jobs() {
               ))}
             </div>
             <div ref={observerRef} className="h-4" />
-            {loadingMore && <div className="text-center py-4 text-sm text-gray-500">Loading more...</div>}
+            {loadingMore && <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400">Loading more...</div>}
           </>
         )}
           </div>
 
           <aside className="w-full lg:w-72 space-y-4">
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="font-semibold text-gray-900 mb-3 text-sm">Jobs by State</h3>
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">Jobs by State</h3>
               <div className="space-y-1">
                 {INDIAN_STATES.filter(s => s !== 'ALL_IN').slice(0, 8).map((s) => (
                   <Link key={s} to={`/state/${s}`} className="block text-sm text-blue-600 hover:underline">{s.replace(/_/g, ' ')}</Link>
@@ -230,8 +239,8 @@ export default function Jobs() {
                 <Link to="/state/ALL_IN" className="block text-sm text-blue-600 hover:underline font-medium">View All States</Link>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="font-semibold text-gray-900 mb-3 text-sm">Jobs by Qualification</h3>
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 dark:bg-gray-900 dark:border-gray-800">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">Jobs by Qualification</h3>
               <div className="space-y-1">
                 {QUALIFICATIONS.map((q) => (
                   <Link key={q} to={`/qualifications/${q.toLowerCase().replace(/\s+/g, '-')}`} className="block text-sm text-blue-600 hover:underline">{q} Pass</Link>

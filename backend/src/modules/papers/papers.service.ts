@@ -11,7 +11,7 @@ export class PapersService {
     const limit = Math.min(filters?.limit || 20, 50);
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (filters?.examFamily) where.examFamily = filters.examFamily;
     if (filters?.year) where.year = filters.year;
     if (filters?.qualification) where.qualification = filters.qualification;

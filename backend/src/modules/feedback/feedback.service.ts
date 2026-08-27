@@ -21,7 +21,7 @@ export class FeedbackService {
   }
 
   async getAllBugReports(status?: BugStatus) {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (status) where.status = status;
     return this.prisma.bugReport.findMany({
       where,
@@ -31,7 +31,7 @@ export class FeedbackService {
   }
 
   async updateBugStatus(id: string, status: BugStatus, adminNotes?: string) {
-    const update: any = { status };
+    const update: Record<string, unknown> = { status };
     if (adminNotes) update.adminNotes = adminNotes;
     if (status === 'RESOLVED') update.resolvedAt = new Date();
     return this.prisma.bugReport.update({ where: { id }, data: update });

@@ -2,7 +2,9 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import * as compression from 'compression';
 import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from './common/logger/logger.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -52,6 +54,7 @@ async function bootstrap() {
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
+        frameAncestors: ["'none'"],
       },
     },
     crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -60,6 +63,8 @@ async function bootstrap() {
     noSniff: true,
     xssFilter: true,
   }));
+
+  app.use(compression());
 
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5173'],
@@ -78,6 +83,35 @@ async function bootstrap() {
       disableErrorMessages: process.env.NODE_ENV === 'production',
     }),
   );
+
+  // Swagger API Documentation — only enabled in development, behind basic auth
+  if (!isProd) {
+    const config = new DocumentBuilder()
+      .setTitle('SarkariScout API')
+      .setDescription('Government job notification aggregator API')
+      .setVersion('0.1.0')
+      .addBearerAuth()
+      .addTag('auth', 'Authentication endpoints')
+      .addTag('jobs', 'Job listings and tracking')
+      .addTag('users', 'User profile management')
+      .addTag('matching', 'Job matching and search')
+      .addTag('documents', 'Document management')
+      .addTag('email', 'Email preferences and notifications')
+      .addTag('feedback', 'Bug reports and feedback')
+      .addTag('analytics', 'Usage analytics')
+      .addTag('mock-tests', 'Mock test management')
+      .addTag('papers', 'Previous year papers')
+      .addTag('health', 'Health check')
+      .build()
+    const document = SwaggerModule.createDocument(app, config)
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
+      customSiteTitle: 'SarkariScout API Docs',
+    })
+    logger.log('Swagger API docs enabled at /docs (dev only)')
+  }
 
   app.enableShutdownHooks();
 

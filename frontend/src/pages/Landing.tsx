@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import api from '../lib/api'
+import { useSEO } from '../hooks/useSEO'
 import MagneticButton from '../components/MagneticButton'
 import AnimatedCounter from '../components/AnimatedCounter'
 import ScrollReveal from '../components/ScrollReveal'
@@ -40,15 +41,63 @@ const FEATURES = [
   { icon: '⏰', title: 'Deadline Tracker', desc: 'Never miss an application deadline. Get alerts before time runs out.', gradient: 'from-orange-500 to-red-500' },
   { icon: '📝', title: 'Mock Tests', desc: 'Practice with real exam patterns. Score yourself and track improvement.', gradient: 'from-green-500 to-emerald-500' },
   { icon: '📄', title: 'Previous Papers', desc: 'Download previous year question papers for all major exams.', gradient: 'from-indigo-500 to-violet-500' },
-  { icon: '📋', title: 'Application Tracker', desc: 'Track your journey from interest to selection on your dashboard.', gradient: 'from-pink-500 to-rose-500' },
+  { icon: '📋', title: 'Application Tracker', desc: 'Track every job you apply for — from Interest to Applied to Exam to Result. Get notified of deadline changes and status updates.', gradient: 'from-pink-500 to-rose-500' },
 ]
 
-const TESTIMONIALS = [
-  { name: 'Rahul K.', exam: 'SSC CGL 2025', text: 'Got my admit card date alert just in time. Would have missed the SSC CGL deadline without SarkariScout.', avatar: 'RK' },
-  { name: 'Priya M.', exam: 'IBPS PO', text: 'The mock tests helped me crack IBPS PO. Practice papers are exactly like the real exam pattern.', avatar: 'PM' },
-  { name: 'Amit S.', exam: 'UPSC Prelims', text: 'Best platform for government job prep. Daily digests keep me updated without checking 10 different websites.', avatar: 'AS' },
-  { name: 'Neha G.', exam: 'RRB NTPC', text: 'The exam calendar feature is a lifesaver. I planned my entire preparation schedule around it.', avatar: 'NG' },
-]
+function daysUntilDate(d: string) { return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) }
+
+function ExpiringSlider({ jobs }: { jobs: Job[] }) {
+  const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setInterval>>()
+
+  const next = useCallback(() => setCurrent((c) => (c + 1) % jobs.length), [jobs.length])
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + jobs.length) % jobs.length), [jobs.length])
+
+  useEffect(() => {
+    if (paused || jobs.length <= 4) return
+    timerRef.current = setInterval(next, 3000)
+    return () => clearInterval(timerRef.current)
+  }, [paused, next, jobs.length])
+
+  const visible = jobs.length <= 4 ? jobs : jobs.slice(current, current + 4).concat(jobs.slice(0, Math.max(0, current + 4 - jobs.length)))
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {visible.map((job, i) => (
+          <Link key={`${job.id}-${i}`} to={`/jobs/${job.id}`}
+            className="block p-4 rounded-2xl bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-100 dark:border-red-800/50 hover:shadow-lg hover:border-red-200 dark:hover:border-red-700 transition-all duration-300 hover-lift card-shine">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 mb-1">{job.title}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-1">{job.org}</p>
+            <span className={`text-xs font-bold px-3 py-1 rounded-full ${daysUntilDate(job.applyEnd!) <= 3 ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'}`}>
+              {daysUntilDate(job.applyEnd!)} days left
+            </span>
+          </Link>
+        ))}
+      </div>
+      {jobs.length > 4 && (
+        <div className="flex justify-center gap-2 mt-4">
+          <button onClick={prev} className="p-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition" aria-label="Previous">
+            <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div className="flex items-center gap-1.5">
+            {jobs.map((_, i) => (
+              <span key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? 'bg-red-500 w-4' : 'bg-gray-300 dark:bg-gray-600'}`} />
+            ))}
+          </div>
+          <button onClick={next} className="p-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition" aria-label="Next">
+            <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 function HeroParticles() {
   return (
@@ -79,6 +128,26 @@ export default function Landing() {
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
 
+  useSEO({
+    title: 'Government Job Alerts, Mock Tests & Previous Papers',
+    description: 'Get personalized government job alerts for SSC, UPSC, IBPS, RRB & more. Free mock tests, previous year papers, and application tracker for Indian aspirants.',
+    canonical: 'https://sarkariscout.in',
+    ogTitle: 'SarkariScout - Government Job Alerts & Preparation',
+    ogDescription: 'Never miss a Sarkari Naukri. Free alerts, mock tests, and papers for SSC, UPSC, IBPS, RRB.',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      'name': 'SarkariScout',
+      'url': 'https://sarkariscout.in',
+      'description': 'Government job alerts, mock tests, and previous year papers for SSC, UPSC, IBPS, RRB.',
+      'potentialAction': {
+        '@type': 'SearchAction',
+        'target': 'https://sarkariscout.in/jobs?search={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  })
+
   useEffect(() => { loadData() }, [])
 
   async function loadData() {
@@ -95,10 +164,10 @@ export default function Landing() {
     finally { setLoading(false) }
   }
 
-  function daysUntil(d: string) { return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) }
+  function daysUntil(d: string) { return daysUntilDate(d) }
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-950 overflow-hidden">
       {/* Animated Nav */}
       <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 left-0 right-0 z-50 glass">
@@ -119,7 +188,7 @@ export default function Landing() {
               </MagneticButton>
             ) : (
               <>
-                <Link to="/login" className="text-sm text-gray-600 hover:text-blue-600 px-3 py-2 hidden sm:block">Login</Link>
+                <Link to="/login" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 px-3 py-2 hidden sm:block">Login</Link>
                 <MagneticButton className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40">
                   <Link to="/register">Get Started</Link>
                 </MagneticButton>
@@ -173,20 +242,18 @@ export default function Landing() {
                 </svg>
               </Link>
             </MagneticButton>
-            <Link to="/jobs"
-              className="px-10 py-4 border-2 border-white/30 text-white rounded-2xl text-lg font-semibold hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
-              Browse {stats?.openJobs || '200+'} Jobs
-            </Link>
+              <Link to="/jobs"
+                className="px-10 py-4 border-2 border-white/30 text-white rounded-2xl text-lg font-semibold hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
+                Browse Jobs
+              </Link>
           </motion.div>
 
           {/* Animated Stats */}
           {stats && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.2 }}
-              className="flex justify-center gap-8 sm:gap-16 mt-16 sm:mt-20">
+              className="flex justify-center gap-16 sm:gap-24 mt-16 sm:mt-20">
               {[
                 { value: stats.openJobs, label: 'Open Jobs', suffix: '+' },
-                { value: 20, label: 'Sources', suffix: '+' },
-                { value: 22, label: 'Mock Tests', suffix: '' },
                 { value: stats.expiringSoon, label: 'Expiring Soon', suffix: '' },
               ].map((s, i) => (
                 <div key={i} className="text-center">
@@ -210,33 +277,20 @@ export default function Landing() {
         </motion.div>
       </motion.section>
 
-      {/* Expiring Soon — Urgency Banner */}
+      {/* Expiring Soon — Auto-slider */}
       {!loading && expiringJobs.length > 0 && (
         <section className="relative mt-0 z-20 px-4 pt-8">
           <ScrollReveal>
             <div className="max-w-6xl mx-auto">
-              <div className="bg-white rounded-3xl shadow-2xl shadow-red-500/10 border border-red-100 p-6 sm:p-8">
+              <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl shadow-red-500/10 border border-red-100 dark:border-red-900/50 p-6 sm:p-8">
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
                     <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                    <h2 className="text-lg font-bold text-gray-900">Expiring Soon — Apply Before It's Too Late</h2>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">Expiring Soon — Apply Before It's Too Late</h2>
                   </div>
-                  <Link to="/jobs" className="text-sm text-blue-600 hover:text-blue-700 font-medium hidden sm:block">View All →</Link>
+                  <Link to="/jobs" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium hidden sm:block">See All →</Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {expiringJobs.slice(0, 4).map((job, i) => (
-                    <ScrollReveal key={job.id} delay={i * 100}>
-                      <Link to={`/jobs/${job.id}`}
-                        className="block p-4 rounded-2xl bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 hover:shadow-lg hover:border-red-200 transition-all duration-300 hover-lift card-shine">
-                        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-1">{job.title}</h3>
-                        <p className="text-xs text-gray-500 mb-3">{job.org}</p>
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${daysUntil(job.applyEnd!) <= 3 ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-100 text-orange-700'}`}>
-                          {daysUntil(job.applyEnd!)} days left
-                        </span>
-                      </Link>
-                    </ScrollReveal>
-                  ))}
-                </div>
+                <ExpiringSlider jobs={expiringJobs.slice(0, 10)} />
               </div>
             </div>
           </ScrollReveal>
@@ -261,9 +315,9 @@ export default function Landing() {
             {[
               { icon: '🧠', title: 'Smart Profile Matching', desc: 'We match jobs to YOUR profile — education, state, age, category. No noise, only relevance.', highlight: 'Other sites show 1000+ random jobs. We show 10 that matter.' },
               { icon: '⚡', title: 'Real-Time Updates', desc: 'We detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
-              { icon: '📊', title: 'Application Pipeline', desc: 'Track from Interested → Applied → Exam Prep → Result. Your personal recruitment CRM.', highlight: 'Others let you save. We let you manage.' },
+              { icon: '📊', title: 'Application Tracker', desc: 'Update the status of jobs you applied for — from Interest to Selection. We send you deadline alerts and change notifications so you never miss an update.', highlight: 'Track what matters. Get notified of changes.' },
               { icon: '📅', title: 'All Dates in One View', desc: 'Exam calendar, admit cards, results — every important date on a single timeline.', highlight: 'Others scatter dates. We consolidate them.' },
-              { icon: '🎯', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Leaderboard to benchmark.', highlight: 'Others link to PDFs. We simulate the exam.' },
+              { icon: '🎯', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Track your progress over time.', highlight: 'Others link to PDFs. We simulate the exam.' },
               { icon: '🚫', title: 'Zero Noise, Zero Spam', desc: 'No pop-ups, no fake urgency, no affiliate clutter. Clean. Focused. Free.', highlight: 'Others monetize your attention. We respect it.' },
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 80}>
@@ -303,9 +357,9 @@ export default function Landing() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
         <ScrollReveal>
           <div className="text-center mb-16">
-            <span className="text-sm font-semibold text-blue-600 uppercase tracking-widest">Features</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mt-3 mb-4">Everything You Need</h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-lg">One platform for your entire government job preparation journey.</p>
+            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Features</span>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-3 mb-4">Everything You Need</h2>
+            <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-lg">One platform for your entire government job preparation journey.</p>
           </div>
         </ScrollReveal>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -315,8 +369,8 @@ export default function Landing() {
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${f.gradient} flex items-center justify-center text-2xl mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                   {f.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{f.title}</h3>
-                <p className="text-gray-500 leading-relaxed">{f.desc}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{f.title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -325,13 +379,13 @@ export default function Landing() {
 
       {/* Latest Jobs — Masonry Grid */}
       {!loading && latestJobs.length > 0 && (
-        <section className="relative bg-gray-50/80 backdrop-blur-sm">
+        <section className="relative bg-gray-50/80 dark:bg-gray-900/50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
             <ScrollReveal>
               <div className="flex items-end justify-between mb-12">
                 <div>
-                  <span className="text-sm font-semibold text-blue-600 uppercase tracking-widest">Latest</span>
-                  <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mt-2">Fresh Opportunities</h2>
+                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Latest</span>
+                  <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-2">Fresh Opportunities</h2>
                 </div>
                 <MagneticButton className="px-6 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 shadow-lg shadow-blue-500/25 hidden sm:block">
                   <Link to="/jobs" className="flex items-center gap-2">View All Jobs →</Link>
@@ -342,19 +396,19 @@ export default function Landing() {
               {latestJobs.map((job, i) => (
                 <ScrollReveal key={job.id} delay={i * 80}>
                   <Link to={`/jobs/${job.id}`}
-                    className="block group p-6 rounded-3xl bg-white border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-200 transition-all duration-500 hover-lift card-shine">
+                    className="block group p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-500 hover-lift card-shine">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 text-xs font-semibold rounded-lg">{job.category}</span>
+                      <span className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-lg">{job.category}</span>
                     </div>
-                    <h3 className="font-bold text-gray-900 text-base mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">{job.title}</h3>
-                    <p className="text-sm text-gray-500 mb-4">{job.org}</p>
-                    <div className="flex items-center justify-between text-xs text-gray-400">
+                    <h3 className="font-bold text-gray-900 dark:text-white text-base mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{job.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{job.org}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
                       <span className="flex items-center gap-1">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
                         {job.state === 'ALL_IN' ? 'All India' : job.state}
                       </span>
                       {job.applyEnd && (
-                        <span className="text-orange-500 font-medium">
+                        <span className="text-orange-500 dark:text-orange-400 font-medium">
                           Due {new Date(job.applyEnd).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                         </span>
                       )}
@@ -371,19 +425,19 @@ export default function Landing() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
         <ScrollReveal>
           <div className="text-center mb-12">
-            <span className="text-sm font-semibold text-blue-600 uppercase tracking-widest">Categories</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mt-2">Browse by Exam</h2>
+            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Categories</span>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-2">Browse by Exam</h2>
           </div>
         </ScrollReveal>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {EXAM_FAMILIES.map((fam, i) => (
             <ScrollReveal key={fam.name} delay={i * 60}>
               <Link to={`/jobs?search=${fam.name}`}
-                className="group flex flex-col items-center p-6 rounded-3xl bg-white border border-gray-100 hover:shadow-2xl hover:border-blue-200 transition-all duration-500 hover-lift card-shine">
+                className="group flex flex-col items-center p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-500 hover-lift card-shine">
                 <span className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${fam.color} flex items-center justify-center text-2xl mb-3 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                   {fam.icon}
                 </span>
-                <span className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{fam.name}</span>
+                <span className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{fam.name}</span>
               </Link>
             </ScrollReveal>
           ))}
@@ -391,13 +445,13 @@ export default function Landing() {
       </section>
 
       {/* State-wise — Tags */}
-      <section className="relative bg-gradient-to-br from-blue-50 to-indigo-50">
+      <section className="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <span className="text-sm font-semibold text-blue-600 uppercase tracking-widest">Location</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mt-2">State-wise Jobs</h2>
-              <p className="text-gray-500 mt-3 text-lg">Find opportunities in your state</p>
+              <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Location</span>
+              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-2">State-wise Jobs</h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-3 text-lg">Find opportunities in your state</p>
             </div>
           </ScrollReveal>
           <div className="flex flex-wrap justify-center gap-3">
@@ -410,7 +464,7 @@ export default function Landing() {
             {INDIAN_STATES.map((state, i) => (
               <ScrollReveal key={state} delay={i * 40} direction="none">
                 <Link to={`/state/${state.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="px-5 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-all duration-300 hover-lift">
+                  className="px-5 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-300 hover-lift">
                   {state}
                 </Link>
               </ScrollReveal>
@@ -451,8 +505,15 @@ export default function Landing() {
             <div>
               <h4 className="text-white font-semibold mb-4 text-sm">Quick Links</h4>
               <ul className="space-y-2.5 text-sm">
-                {['Jobs', 'Exam Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Previous Papers'].map((l) => (
-                  <li key={l}><Link to={`/${l.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-white transition-colors duration-300">{l}</Link></li>
+                {[
+                  { label: 'Jobs', path: '/jobs' },
+                  { label: 'Exam Calendar', path: '/exam-calendar' },
+                  { label: 'Results', path: '/results' },
+                  { label: 'Admit Cards', path: '/admit-cards' },
+                  { label: 'Mock Tests', path: '/mock-tests' },
+                  { label: 'Previous Year Papers', path: '/papers' },
+                ].map((l) => (
+                  <li key={l.path}><Link to={l.path} className="hover:text-white transition-colors duration-300">{l.label}</Link></li>
                 ))}
               </ul>
             </div>
@@ -471,17 +532,17 @@ export default function Landing() {
                 <li><Link to="/faq" className="hover:text-white transition-colors duration-300">FAQ</Link></li>
                 <li><Link to="/privacy" className="hover:text-white transition-colors duration-300">Privacy Policy</Link></li>
                 <li><Link to="/terms" className="hover:text-white transition-colors duration-300">Terms</Link></li>
-                <li><Link to="/bug-report" className="hover:text-white transition-colors duration-300">Report Bug</Link></li>
-                <li><a href="mailto:support@sarakriradar.in" className="hover:text-white transition-colors duration-300">Contact</a></li>
+                <li><Link to="/bug-report" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition-colors duration-300">Report Bug</Link></li>
+                <li><Link to="/contact" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition-colors duration-300">Contact</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800/50 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} SarkariScout. All rights reserved.</p>
             <div className="flex gap-6 text-sm text-gray-400">
-              <Link to="/privacy" className="hover:text-white transition">Privacy</Link>
-              <Link to="/terms" className="hover:text-white transition">Terms</Link>
-              <a href="mailto:support@sarakriradar.in" className="hover:text-white transition">Contact</a>
+              <Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Privacy</Link>
+              <Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Terms</Link>
+              <Link to="/contact" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Contact</Link>
             </div>
           </div>
         </div>

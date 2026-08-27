@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
+import { useSEO } from '../hooks/useSEO'
 import { JobCardSkeleton } from '../components/Skeleton'
 import AdBanner from '../components/AdBanner'
 import AffiliateCard from '../components/AffiliateCard'
@@ -41,6 +42,12 @@ const STATE_NAMES: Record<string, string> = {
 
 export default function StateJobs() {
   const { state } = useParams()
+  useSEO({
+    title: `Government Jobs in ${state?.replace(/_/g, ' ') || ''}`,
+    description: `Browse latest government jobs in ${state?.replace(/_/g, ' ') || ''}. Filter by category and qualification.`,
+    canonical: state ? `https://sarkariscout.in/state/${state}` : undefined,
+  })
+
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
@@ -60,7 +67,7 @@ export default function StateJobs() {
   }, [state])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
         <Link to="/jobs" className="inline-flex items-center text-blue-600 hover:underline text-sm mb-4">
@@ -69,7 +76,7 @@ export default function StateJobs() {
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-bold mb-2">{stateName} Government Jobs 2026</h1>
-        <p className="text-gray-600 mb-6">{total} active vacancies in {stateName}</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">{total} active vacancies in {stateName}</p>
 
         <AdBanner slot="XXXXXXXXXX" format="horizontal" className="mb-6" />
 
@@ -78,8 +85,8 @@ export default function StateJobs() {
             {loading ? (
               <div className="space-y-3">{[1, 2, 3, 4, 5].map((i) => <JobCardSkeleton key={i} />)}</div>
             ) : jobs.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg">
-                <p className="text-gray-500 text-lg">No jobs found for {stateName}</p>
+              <div className="text-center py-12 bg-white rounded-lg dark:bg-gray-900">
+                <p className="text-gray-500 dark:text-gray-400 text-lg">No jobs found for {stateName}</p>
                 <Link to="/jobs" className="text-blue-600 hover:underline mt-2 inline-block">View all India jobs</Link>
               </div>
             ) : (
@@ -88,11 +95,10 @@ export default function StateJobs() {
                   <Link
                     key={job.id}
                     to={`/jobs/${job.id}`}
-                    className="block p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all"
-                  >
-                    <h2 className="text-base sm:text-lg font-semibold text-gray-900">{job.title}</h2>
-                    <p className="text-gray-600 text-sm">{job.org}</p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500">
+                    className="block p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all dark:bg-gray-900 dark:border-gray-800">
+                      <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{job.title}</h2>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm">{job.org}</p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                       {job.totalVacancies && <span>{job.totalVacancies} vacancies</span>}
                       {job.applyEnd && <span>Deadline: {new Date(job.applyEnd).toLocaleDateString()}</span>}
                     </div>

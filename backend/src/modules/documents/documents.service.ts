@@ -8,7 +8,7 @@ export class DocumentsService {
   constructor(private prisma: PrismaService) {}
 
   async getUserDocuments(userId: string, type?: DocumentType) {
-    const where: any = { userId };
+    const where: Record<string, unknown> = { userId };
     if (type) where.type = type;
     return this.prisma.userDocument.findMany({
       where,

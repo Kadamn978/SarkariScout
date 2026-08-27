@@ -204,25 +204,25 @@ export default function Dashboard() {
             <div className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-100 dark:border-gray-800">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Quick Links</h3>
               <div className="space-y-2">
-                <Link to="/mock-tests" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
+                <Link to="/mock-tests" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm">
                   <span className="text-lg">📝</span>
                   <div>
-                    <p className="font-medium text-gray-900">Take a Mock Test</p>
-                    <p className="text-xs text-gray-500">11 tests available</p>
+                    <p className="font-medium text-gray-900 dark:text-white">Take a Mock Test</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">11 tests available</p>
                   </div>
                 </Link>
-                <Link to="/papers" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
+                <Link to="/papers" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm">
                   <span className="text-lg">📄</span>
                   <div>
-                    <p className="font-medium text-gray-900">Practice Papers</p>
-                    <p className="text-xs text-gray-500">20 previous year papers</p>
+                    <p className="font-medium text-gray-900 dark:text-white">Practice Papers</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">20 previous year papers</p>
                   </div>
                 </Link>
-                <Link to="/profile" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition text-sm">
+                <Link to="/profile" className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition text-sm">
                   <span className="text-lg">👤</span>
                   <div>
-                    <p className="font-medium text-gray-900">Complete Your Profile</p>
-                    <p className="text-xs text-gray-500">Get better job matches</p>
+                    <p className="font-medium text-gray-900 dark:text-white">Complete Your Profile</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Get better job matches</p>
                   </div>
                 </Link>
               </div>

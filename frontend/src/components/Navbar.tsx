@@ -79,9 +79,7 @@ export default function Navbar() {
             <>
               <Link to="/dashboard" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Dashboard</Link>
               <Link to="/progress" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>My Progress</Link>
-              <Link to="/leaderboard" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Leaderboard</Link>
               <Link to="/profile" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Profile</Link>
-              <Link to="/documents" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Documents</Link>
               <Link to="/email-preferences" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600" onClick={() => setMenuOpen(false)}>Email Settings</Link>
               {user.role === 'ADMIN' && <Link to="/admin" className="block py-2.5 text-purple-600 font-medium" onClick={() => setMenuOpen(false)}>Admin Panel</Link>}
               <hr className="my-2 border-gray-100 dark:border-gray-800" />

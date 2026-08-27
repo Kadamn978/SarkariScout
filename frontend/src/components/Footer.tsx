@@ -28,7 +28,7 @@ export default function Footer() {
               <li><Link to="/results" onClick={scrollToTop} className="hover:text-white transition">Results</Link></li>
               <li><Link to="/admit-cards" onClick={scrollToTop} className="hover:text-white transition">Admit Cards</Link></li>
               <li><Link to="/mock-tests" onClick={scrollToTop} className="hover:text-white transition">Mock Tests</Link></li>
-              <li><Link to="/papers" onClick={scrollToTop} className="hover:text-white transition">Previous Papers</Link></li>
+              <li><Link to="/papers" onClick={scrollToTop} className="hover:text-white transition">Previous Year Papers</Link></li>
             </ul>
           </div>
           <div>
@@ -54,7 +54,6 @@ export default function Footer() {
               <ul className="space-y-2 text-sm">
                 <li><Link to="/dashboard" onClick={scrollToTop} className="hover:text-white transition">Dashboard</Link></li>
                 <li><Link to="/profile" onClick={scrollToTop} className="hover:text-white transition">Profile</Link></li>
-                <li><Link to="/documents" onClick={scrollToTop} className="hover:text-white transition">Documents</Link></li>
                 <li><Link to="/email-preferences" onClick={scrollToTop} className="hover:text-white transition">Email Settings</Link></li>
                 <li><Link to="/bug-report" onClick={scrollToTop} className="hover:text-white transition">Report Bug</Link></li>
               </ul>

@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RedisService } from '../../common/redis/redis.service';
+import { JobStatus, TrackerStage } from '@prisma/client';
 
 @Injectable()
 export class JobsService {
   private readonly logger = new Logger(JobsService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private redis: RedisService,
+  ) {}
 
   async findAll(filters?: {
     state?: string;
@@ -19,8 +24,14 @@ export class JobsService {
     const limit = Math.min(filters?.limit || 20, 100);
     const skip = (page - 1) * limit;
 
-    const where: any = {
-      status: (filters?.status as any) || 'OPEN',
+    const cacheKey = `jobs:list:${JSON.stringify(filters || {})}`;
+    const cached = await this.redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const where: Record<string, unknown> = {
+      status: (filters?.status as JobStatus) || 'OPEN',
     };
 
     if (filters?.state && filters.state !== 'ALL_IN') {
@@ -36,7 +47,7 @@ export class JobsService {
           { postNames: { contains: filters.search } },
         ],
       };
-      where.OR = [...(where.OR || []), ...searchWhere.OR];
+      where.OR = [...(Array.isArray(where.OR) ? where.OR : []), ...searchWhere.OR];
     }
 
     const [jobs, total] = await Promise.all([
@@ -44,26 +55,45 @@ export class JobsService {
       this.prisma.job.count({ where }),
     ]);
 
-    return {
+    const result = {
       jobs, total, page, limit,
       totalPages: Math.ceil(total / limit),
       hasNext: page * limit < total,
       hasPrev: page > 1,
     };
+
+    await this.redis.set(cacheKey, JSON.stringify(result), 60);
+
+    return result;
   }
 
   async findOne(id: string) {
+    const cacheKey = `jobs:detail:${id}`;
+    const cached = await this.redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const job = await this.prisma.job.findUnique({
       where: { id },
       include: { changes: { orderBy: { detectedAt: 'desc' }, take: 10 } },
     });
     if (!job) throw new NotFoundException('Job not found');
+
+    await this.redis.set(cacheKey, JSON.stringify(job), 300);
+
     return job;
   }
 
   async getUpcomingDeadlines(days = 7) {
+    const cacheKey = `jobs:deadlines:${days}`;
+    const cached = await this.redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const deadline = new Date(Date.now() + days * 86400000);
-    return this.prisma.job.findMany({
+    const jobs = await this.prisma.job.findMany({
       where: {
         status: 'OPEN',
         applyEnd: { gte: new Date(), lte: deadline },
@@ -71,22 +101,36 @@ export class JobsService {
       orderBy: { applyEnd: 'asc' },
       take: 50,
     });
+
+    await this.redis.set(cacheKey, JSON.stringify(jobs), 120);
+
+    return jobs;
   }
 
   async getRecentJobs(limit = 20) {
-    return this.prisma.job.findMany({
+    const cacheKey = `jobs:recent:${limit}`;
+    const cached = await this.redis.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const jobs = await this.prisma.job.findMany({
       where: { status: 'OPEN' },
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
+
+    await this.redis.set(cacheKey, JSON.stringify(jobs), 60);
+
+    return jobs;
   }
 
   async trackJob(userId: string, jobId: string, stage?: string) {
     await this.findOne(jobId);
     return this.prisma.userJob.upsert({
       where: { userId_jobId: { userId, jobId } },
-      create: { userId, jobId, stage: (stage as any) || 'APPLIED' },
-      update: { stage: stage as any },
+      create: { userId, jobId, stage: (stage as TrackerStage) || 'APPLIED' },
+      update: { stage: stage as TrackerStage },
     });
   }
 
@@ -116,7 +160,7 @@ export class JobsService {
 
     return this.prisma.userJob.update({
       where: { id: tracker.id },
-      data: { stage: stage as any },
+      data: { stage: stage as TrackerStage },
     });
   }
 

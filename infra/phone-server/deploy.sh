@@ -8,9 +8,9 @@
 # =============================================================================
 set -euo pipefail
 
-PHONE_HOST="127.0.0.1"
-PHONE_PORT="8022"
-PHONE_USER="127.0.0.1"
+PHONE_HOST="${PHONE_HOST:-127.0.0.1}"
+PHONE_PORT="${PHONE_PORT:-8022}"
+PHONE_USER="${PHONE_USER:-127.0.0.1}"
 REPO_DIR="$HOME/SarkariScout"
 BACKEND_DIR="$REPO_DIR/backend"
 LOG_DIR="$BACKEND_DIR/logs"
@@ -103,18 +103,25 @@ run_cmd "cd $BACKEND_DIR && grep -q 'driverAdapters' prisma/schema.prisma || sed
 # 3c. Add dotenv import to main.ts (loads .env before modules)
 run_cmd "cd $BACKEND_DIR && grep -q \"import 'dotenv/config'\" src/main.ts || sed -i \"1i import 'dotenv/config';\" src/main.ts"
 
-# 3d. Update PrismaService with MariaDB adapter
+# 3d. Update PrismaService with MariaDB adapter (uses environment variables)
 run_cmd "cd $BACKEND_DIR && cat > src/prisma/prisma.service.ts << 'PRISMA_EOF'
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
+// Read credentials from environment variables (never hardcode!)
+const DB_HOST = process.env.DB_HOST || '127.0.0.1';
+const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
+const DB_USER = process.env.DB_USER || 'sarkari';
+const DB_PASSWORD = process.env.DB_PASSWORD || '';
+const DB_NAME = process.env.DB_NAME || 'sarkariscout';
+
 const ADAPTER = new PrismaMariaDb({
-  host: '127.0.0.1',
-  port: 3306,
-  user: 'sarkari',
-  password: 'sarkari123',
-  database: 'sarkariscout',
+  host: DB_HOST,
+  port: DB_PORT,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
   connectionLimit: 5,
 });
 

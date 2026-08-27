@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { MockQuestion } from '@prisma/client';
 
 @Injectable()
 export class MockTestsService {
@@ -11,7 +12,7 @@ export class MockTestsService {
     const limit = Math.min(filters?.limit || 20, 50);
     const skip = (page - 1) * limit;
 
-    const where: any = { isPublished: true };
+    const where: Record<string, unknown> = { isPublished: true };
     if (filters?.examFamily) where.examFamily = filters.examFamily;
     if (filters?.qualification) where.qualification = filters.qualification;
 
@@ -97,8 +98,8 @@ export class MockTestsService {
     return {
       ...updated,
       totalQuestions: questions.length,
-      totalMarks: questions.reduce((sum: number, q: any) => sum + q.marks, 0),
-      percentage: Math.round((totalScore / questions.reduce((sum: number, q: any) => sum + q.marks, 0)) * 100),
+      totalMarks: questions.reduce((sum: number, q: MockQuestion) => sum + q.marks, 0),
+      percentage: Math.round((totalScore / questions.reduce((sum: number, q: MockQuestion) => sum + q.marks, 0)) * 100),
     };
   }
 

@@ -58,9 +58,9 @@ const Results = React.lazy(() => import('./pages/Results'))
 const AdmitCards = React.lazy(() => import('./pages/AdmitCards'))
 
 const Loading = () => (
-  <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col items-center justify-center gap-4">
-    <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
-    <p className="text-sm text-gray-400 font-medium">Loading...</p>
+  <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center gap-4">
+    <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Loading...</p>
   </div>
 )
 
@@ -127,7 +127,7 @@ export default function App() {
             <Route path="/faq" element={<Suspense fallback={<Loading />}><AppLayout><FAQ /></AppLayout></Suspense>} />
             <Route path="/about" element={<Suspense fallback={<Loading />}><AppLayout><About /></AppLayout></Suspense>} />
             <Route path="/contact" element={<Suspense fallback={<Loading />}><AppLayout><Contact /></AppLayout></Suspense>} />
-            <Route path="/leaderboard" element={<Suspense fallback={<Loading />}><AppLayout><Leaderboard /></AppLayout></Suspense>} />
+            <Route path="/leaderboard" element={<Navigate to="/dashboard" replace />} />
             <Route path="/progress" element={<ProtectedRoute><Suspense fallback={<Loading />}><AppLayout><Progress /></AppLayout></Suspense></ProtectedRoute>} />
             <Route path="/bug-report" element={<Suspense fallback={<Loading />}><AppLayout><BugReport /></AppLayout></Suspense>} />
             <Route path="/auth/google" element={<Suspense fallback={<Loading />}><GoogleAuth /></Suspense>} />

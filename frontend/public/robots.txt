@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /documents
+Disallow: /progress
+Disallow: /email-preferences
+Disallow: /auth/
+
+Sitemap: https://sarkariscout.in/sitemap.xml
