@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { useTheme } from '../contexts/ThemeContext'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import api from '../lib/api'
 import { useSEO } from '../hooks/useSEO'
 import MagneticButton from '../components/MagneticButton'
@@ -119,10 +120,12 @@ function HeroParticles() {
 
 export default function Landing() {
   const { user } = useAuth()
+  const { dark, toggle } = useTheme()
   const [latestJobs, setLatestJobs] = useState<Job[]>([])
   const [expiringJobs, setExpiringJobs] = useState<Job[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [menuOpen, setMenuOpen] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll()
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95])
@@ -164,8 +167,6 @@ export default function Landing() {
     finally { setLoading(false) }
   }
 
-  function daysUntil(d: string) { return daysUntilDate(d) }
-
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 overflow-hidden">
       {/* Animated Nav */}
@@ -194,8 +195,50 @@ export default function Landing() {
                 </MagneticButton>
               </>
             )}
+            <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-base" aria-label="Toggle dark mode">
+              {dark ? '☀️' : '🌙'}
+            </button>
+            <button
+              className="lg:hidden p-2 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={menuOpen}
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                {menuOpen ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
+              </svg>
+            </button>
           </div>
         </div>
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-3 space-y-1 bg-white dark:bg-gray-900 overflow-hidden"
+            >
+              {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers', 'FAQ', 'About'].map((l) => (
+                <Link key={l} to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium"
+                  onClick={() => setMenuOpen(false)}>
+                  {l}
+                </Link>
+              ))}
+              <div className="border-t border-gray-100 dark:border-gray-800 pt-2 mt-2">
+                {user ? (
+                  <Link to="/dashboard" className="block py-2.5 text-blue-600 font-semibold" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+                ) : (
+                  <>
+                    <Link to="/login" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Login</Link>
+                    <Link to="/register" className="block py-2.5 text-blue-600 font-semibold" onClick={() => setMenuOpen(false)}>Register</Link>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
       {/* HERO — Awwwards Level */}

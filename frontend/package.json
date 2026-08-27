@@ -11,6 +11,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@playwright/test": "^1.62.1",
+    "@sentry/react": "^10.71.0",
     "axios": "^1.7.0",
     "framer-motion": "^13.1.1",
     "react": "^18.3.0",

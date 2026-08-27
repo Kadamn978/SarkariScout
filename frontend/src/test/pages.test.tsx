@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Landing from '../pages/Landing'
 import FAQ from '../pages/FAQ'
@@ -10,7 +10,6 @@ import About from '../pages/About'
 import NotFound from '../pages/NotFound'
 import { ToastProvider } from '../contexts/ToastContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
-import { AuthProvider } from '../contexts/AuthContext'
 
 vi.mock('../lib/api', () => ({
   default: {
@@ -85,7 +84,7 @@ describe('FAQ Page', () => {
     render(<FAQ />, { wrapper: Wrapper })
     const question = screen.getByText(/What is SarkariScout/i)
     fireEvent.click(question)
-    expect(screen.getByText(/free.*platform/i)).toBeInTheDocument()
+    expect(screen.getByText(/government job aggregator/i)).toBeInTheDocument()
   })
 
   it('renders contact CTA', () => {

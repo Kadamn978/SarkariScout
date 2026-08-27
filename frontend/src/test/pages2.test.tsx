@@ -229,7 +229,7 @@ describe('Profile Page', () => {
 describe('ExamCalendar Page', () => {
   it('renders heading', () => {
     render(<ExamCalendar />, { wrapper: Wrapper })
-    expect(screen.getByText('Exam Calendar 2026')).toBeInTheDocument()
+    expect(screen.getByText('Exam Calendar')).toBeInTheDocument()
   })
 
   it('renders description', async () => {

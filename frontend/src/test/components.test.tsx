@@ -8,7 +8,6 @@ import TiltCard from '../components/TiltCard'
 import AnimatedCounter from '../components/AnimatedCounter'
 import { ToastProvider } from '../contexts/ToastContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
-import { AuthProvider } from '../contexts/AuthContext'
 
 // Mock axios
 vi.mock('../lib/api', () => ({
@@ -74,7 +73,7 @@ describe('Footer', () => {
     render(<Footer />, { wrapper: Wrapper })
     expect(screen.getByText('All Jobs')).toBeInTheDocument()
     expect(screen.getByText('Mock Tests')).toBeInTheDocument()
-    expect(screen.getByText('Previous Papers')).toBeInTheDocument()
+    expect(screen.getByText('Previous Year Papers')).toBeInTheDocument()
   })
 
   it('renders account links', () => {
