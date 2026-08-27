@@ -109,13 +109,17 @@ Single source of truth. Read this file first at the start of every session.
 | Sprint 30| Notification bell — Deadline alerts dropdown, unread count, auto-refresh                 | Done   |
 | Sprint 31| Progress analytics — Pipeline visualization, animated counters, study streak             | Done   |
 | Sprint 32| Revenue strategy — Free first, ads + affiliate, premium later documentation             | Done   |
+| Sprint 33| Competitor tracking — Scrape rivals, map 34 gov sources, social channels               | Done   |
 
 ## Testing
 
-- Jest + ts-jest unit tests (50 tests, 8 suites — all passing)
-- Auth: 22 tests (timing-safe, rotation, reuse, generic errors)
-- Users: 3 tests, Jobs: 7 tests, Health: 4 tests
-- E2E infrastructure ready (supertest not installed)
+- Backend: 194 tests across 22 spec files (all passing)
+- Frontend: 63 tests across 3 files (vitest + @testing-library)
+- **Total: 257 tests**
+- Auth: 22, Jobs: 9+17, Email: 7+14, Matching: 2+8, Crawler: 10+2
+- Change-detector: 5+4, Users: 9, Health: 5, Feedback: 9, Documents: 7
+- Mock-tests: 10, Papers: 9, Analytics: 9, Audit: 9, Error-log: 7, Cron: 8
+- Frontend: Components 15, Pages 23, Pages2 25
 
 ## Auth & User Management
 
@@ -154,6 +158,41 @@ Run: `python crewai/run.py [research|security|feature|data|sprint]`
 - Affiliate cards on job detail (Amazon, coaching)
 - Competitive analysis document (7 competitors analyzed)
 - Seed data: 14 diverse jobs across 8 categories
+- **Competitor feature tracking** (SarkariResult, FreeJobAlert, Testbook, Adda247)
+- **34 government sources cataloged** with official social channels
+- **Social media monitoring** (YouTube, Telegram, WhatsApp, Instagram, Facebook, Twitter)
+
+## Competitor Analysis (Updated Aug 27)
+
+| Competitor | Est. | Monthly Visitors | Key Differentiator |
+|---|---|---|---|
+| SarkariResult.com | 2012 | 50M+ | One-page summaries, mobile apps |
+| FreeJobAlert.com | 2011 | 10M+ | State-wise filtering, PDF tools |
+| Testbook | 2014 | 40M+ | Mock tests, live classes |
+| Adda247 | 2016 | 30M+ | Study material, bilingual |
+| **SarkariScout** | 2026 | — | **Eligibility matching + tracker + change detection** |
+
+**Our unique advantages:**
+1. Automated eligibility matching (competitors don't have this)
+2. Application tracker with stage management
+3. Change detection for tracked jobs
+4. AI-powered job recommendations
+5. Government source transparency
+
+## Government Sources (34 Mapped)
+
+**Central (14):** SSC, UPSC, IBPS, RRB, India Post, Indian Army/Navy/Air Force, DRDO, ISRO, SBI, RBI, IRDA, ICMR, NIC, FCI
+**State PSCs (12):** UPPSC, UPSSSC, BPSC, MPSC, RPSC, MPPSC, DSSSB, HSSC, KPSC, TNPSC, Karnataka PSC, Gujarat PSC
+**Teaching (3):** CBSE, KVS, NVS
+**Other (5):** RSSB, NHAI, and more
+
+**Social channels mapped:**
+- YouTube: 8 channels monitored
+- Telegram: 5 channels
+- WhatsApp: 2 channels
+- Instagram: 4 accounts
+- Facebook: 3 pages
+- Twitter/X: 6 accounts
 
 ## Revenue Strategy (Free First → Ads → Premium Later)
 

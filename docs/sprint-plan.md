@@ -121,16 +121,61 @@
 
 ---
 
+## Sprint 6 — Competitor Tracking & Government Sources ✅
+**Goal:** Map competitor features, catalog government sources + social channels
+**Completed:** Aug 27, 2026
+
+| # | Task | Priority | Status |
+|---|---|---|---|
+| 6.1 | Scrape SarkariResult.com — features, channels, layout analysis | P0 | ✅ Done |
+| 6.2 | Scrape FreeJobAlert.com — features, channels, tools | P0 | ✅ Done |
+| 6.3 | Catalog Testbook, Adda247, Gradeup feature sets | P1 | ✅ Done |
+| 6.4 | Create 34-source government directory (central + state) | P0 | ✅ Done |
+| 6.5 | Map social channels: YouTube, Telegram, WhatsApp, Instagram, Facebook, Twitter | P0 | ✅ Done |
+| 6.6 | Identify competitor posting patterns across platforms | P1 | ✅ Done |
+| 6.7 | Document priority sources for initial crawl (Top 20) | P0 | ✅ Done |
+| 6.8 | Update sprint plan + PROGRESS.md | P0 | ✅ Done |
+
+### Competitor Feature Matrix
+
+| Feature | SarkariResult | FreeJobAlert | Testbook | Adda247 | **SarkariScout** |
+|---|---|---|---|---|---|
+| Job notifications | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Eligibility matching | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Daily email digest | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Instant alerts | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Mock tests | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Previous papers | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Application tracker | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Change detection | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Dark mode | ❌ | ❌ | ✅ | ❌ | ✅ |
+| Mobile app | ✅ | ❌ | ✅ | ✅ | ❌ (PWA) |
+| Premium content | ❌ | ❌ | ✅ | ✅ | ✅ (phase 2) |
+| PDF tools | ❌ | ✅ | ❌ | ❌ | ❌ (planned) |
+
+### Key Differentiator
+**SarkariScout is the ONLY platform offering:**
+- Automated eligibility matching (zero noise)
+- Application tracker with stage management
+- Change detection for tracked jobs
+- AI-powered job recommendations
+- Government source transparency
+
+---
+
 ## Final Stats
 
 | Metric | Value |
 |---|---|
 | Database tables | 21 |
 | Backend API endpoints | 55+ |
-| Backend tests | 145 (18 files) |
+| Backend tests | 194 (22 files) |
 | Frontend pages | 30+ |
-| Frontend tests | 38 (2 files) |
-| Total tests | **183** |
+| Frontend tests | 63 (3 files) |
+| Total tests | **257** |
 | Seeded jobs | 200+ |
 | Mock tests | 22 (220+ questions) |
 | Previous papers | 20+ |
+| Government sources mapped | 34 |
+| Competitor features tracked | 12 |
+| Social platforms monitored | 6 |
