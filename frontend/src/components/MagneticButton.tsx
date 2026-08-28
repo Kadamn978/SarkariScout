@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react'
 
 export default function MagneticButton({ children, className = '', ...props }: any) {
-  const ref = useRef<HTMLButtonElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const el = ref.current
@@ -17,9 +17,9 @@ export default function MagneticButton({ children, className = '', ...props }: a
   }, [])
 
   return (
-    <button ref={ref} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
-      className={`magnetic-btn ${className}`} {...props}>
+    <div ref={ref} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
+      className={`magnetic-btn inline-block ${className}`} {...props}>
       {children}
-    </button>
+    </div>
   )
 }

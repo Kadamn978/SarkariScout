@@ -4,9 +4,9 @@ import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import { useToast } from '../contexts/ToastContext'
 import { useSEO } from '../hooks/useSEO'
+import { useAuth } from '../contexts/AuthContext'
 import { JobCardSkeleton } from '../components/Skeleton'
 import ScrollReveal from '../components/ScrollReveal'
-import TiltCard from '../components/TiltCard'
 import AdBanner from '../components/AdBanner'
 import AffiliateCard from '../components/AffiliateCard'
 
@@ -42,6 +42,7 @@ const QUALIFICATIONS = ['10th Pass', '12th Pass', 'Graduate', 'Engineering', 'Di
 const PAGE_SIZE = 20
 
 export default function Jobs() {
+  const { user } = useAuth()
   useSEO({
     title: 'Latest Government Jobs',
     description: 'Browse latest government jobs from SSC, UPSC, IBPS, RRB, State PSCs. Filter by state, category, and qualification. Apply before deadlines.',
@@ -108,11 +109,12 @@ export default function Jobs() {
   }, [page, search, state, hasMore, loading, loadingMore, fetchJobs])
 
   useEffect(() => {
+    if (!user) return
     api.get('/jobs/user/tracked').then((res) => {
       const ids = new Set<string>(res.data.map((t: any) => t.jobId))
       setTrackedIds(ids)
     }).catch(() => {})
-  }, [])
+  }, [user])
 
   const handleSearch = (val: string) => {
     clearTimeout(searchTimerRef.current)
