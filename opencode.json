@@ -29,6 +29,15 @@
     "paths": [".opencode/skills"],
     "browser-tester": {
       "description": "Use when performing live browser testing, E2E testing, visual regression, or taking screenshots. Uses Playwright MCP to control a real Chromium browser."
+    },
+    "awwwards-designer": {
+      "description": "Use when building Awwwards-level websites. 5-phase pipeline: Brief → Invention Gate → Stitch MCP → Animation Layer → Quality Gate. Targets SOTD/SOTM/SOTY."
+    },
+    "awwwards-skill": {
+      "description": "Elite frontend orchestrator for jaw-dropping UI. 9-phase pipeline: Brief → Palette → Inspiration → Composition → Motion → Implementation → Video → Polish → Verification. Uses Framer Motion + anime.js + Three.js."
+    },
+    "awwwards-ui-design": {
+      "description": "Use for premium Awwwards-level UI design. WebGL, smooth scrolling, custom cursors, curated color palettes. Requires self-audit with UI-Max Scorecard (88/100 minimum)."
     }
   },
 
