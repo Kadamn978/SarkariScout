@@ -11,8 +11,13 @@ interface Props {
 export default function ScrollReveal({ children, className = '', delay = 0, direction = 'up', once = true }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
+  const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
+    if (prefersReduced) {
+      setVisible(true)
+      return
+    }
     const el = ref.current
     if (!el) return
     const obs = new IntersectionObserver(
@@ -21,20 +26,22 @@ export default function ScrollReveal({ children, className = '', delay = 0, dire
     )
     obs.observe(el)
     return () => obs.disconnect()
-  }, [once])
+  }, [once, prefersReduced])
 
   const dirStyles: Record<string, string> = {
-    up: 'translate-y-8',
-    down: '-translate-y-8',
-    left: 'translate-x-8',
-    right: '-translate-x-8',
+    up: 'translate-y-12',
+    down: '-translate-y-12',
+    left: 'translate-x-12',
+    right: '-translate-x-12',
     none: '',
   }
 
   return (
-    <div ref={ref}
-      className={`transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-x-0 translate-y-0' : `opacity-0 ${dirStyles[direction]}`} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}>
+    <div
+      ref={ref}
+      className={`transition-all duration-[800ms] [cubic-bezier(0.22,1,0.36,1)] ${visible ? 'opacity-100 translate-x-0 translate-y-0' : `opacity-0 ${dirStyles[direction]}`} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
       {children}
     </div>
   )

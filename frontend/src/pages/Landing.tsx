@@ -102,7 +102,7 @@ function ExpiringSlider({ jobs }: { jobs: Job[] }) {
 
 function HeroParticles() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {[...Array(20)].map((_, i) => (
         <div key={i} className="absolute rounded-full bg-white/5 animate-float"
           style={{
@@ -213,30 +213,55 @@ export default function Landing() {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="lg:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-3 space-y-1 bg-white dark:bg-gray-900 overflow-hidden"
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="lg:hidden fixed inset-y-0 right-0 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl z-50 px-6 py-20 space-y-1 border-l border-gray-200/50 dark:border-gray-700/50"
             >
-              {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers', 'FAQ', 'About'].map((l) => (
-                <Link key={l} to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium"
-                  onClick={() => setMenuOpen(false)}>
-                  {l}
-                </Link>
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                aria-label="Close menu"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers', 'FAQ', 'About'].map((l, i) => (
+                <motion.div
+                  key={l}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="block py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium text-lg border-b border-gray-100 dark:border-gray-800"
+                    onClick={() => setMenuOpen(false)}>
+                    {l}
+                  </Link>
+                </motion.div>
               ))}
-              <div className="border-t border-gray-100 dark:border-gray-800 pt-2 mt-2">
+              <div className="pt-4 space-y-2">
                 {user ? (
-                  <Link to="/dashboard" className="block py-2.5 text-blue-600 font-semibold" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+                  <Link to="/dashboard" className="block py-3 text-blue-600 font-semibold text-lg" onClick={() => setMenuOpen(false)}>Dashboard</Link>
                 ) : (
                   <>
-                    <Link to="/login" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Login</Link>
-                    <Link to="/register" className="block py-2.5 text-blue-600 font-semibold" onClick={() => setMenuOpen(false)}>Register</Link>
+                    <Link to="/login" className="block py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium text-lg" onClick={() => setMenuOpen(false)}>Login</Link>
+                    <Link to="/register" className="block py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg text-center rounded-xl" onClick={() => setMenuOpen(false)}>Register Free</Link>
                   </>
                 )}
               </div>
             </motion.div>
+          )}
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              onClick={() => setMenuOpen(false)}
+            />
           )}
         </AnimatePresence>
       </motion.nav>
@@ -245,12 +270,16 @@ export default function Landing() {
       <motion.section ref={heroRef} style={{ scale: heroScale, opacity: heroOpacity }}
         className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 animate-gradient" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 animate-gradient" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" aria-hidden="true" />
         <HeroParticles />
 
+        {/* Grain Texture Overlay */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-[1]" aria-hidden="true"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")` }} />
+
         {/* Mesh Gradient Overlay */}
-        <div className="absolute inset-0 opacity-30"
+        <div className="absolute inset-0 opacity-30" aria-hidden="true"
           style={{ backgroundImage: 'radial-gradient(at 40% 20%, rgba(59,130,246,0.4) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(147,51,234,0.3) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(236,72,153,0.2) 0px, transparent 50%)' }} />
 
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
@@ -261,12 +290,24 @@ export default function Landing() {
             </span>
           </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }}
+          <motion.h1
             className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tight mb-6">
-            Never Miss a<br />
-            <span className="bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent">
+            <motion.span
+              initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="block"
+            >
+              Never Miss a
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="block bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent"
+            >
               Sarkari Naukri
-            </span>
+            </motion.span>
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }}

@@ -1,12 +1,13 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { ToastProvider } from './contexts/ToastContext'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { Sentry } from './lib/sentry'
 import CustomCursor from './components/CustomCursor'
 import ProgressBar from './components/ProgressBar'
+import SmoothScroll from './components/SmoothScroll'
+import LoadingScreen from './components/LoadingScreen'
 
 import ContentProtection from './components/ContentProtection'
 import AdblockDetector from './components/AdblockDetector'
@@ -36,7 +37,6 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard'))
 const Profile = React.lazy(() => import('./pages/Profile'))
 const Documents = React.lazy(() => import('./pages/Documents'))
 const Progress = React.lazy(() => import('./pages/Progress'))
-const Leaderboard = React.lazy(() => import('./pages/Leaderboard'))
 const EmailPreferences = React.lazy(() => import('./pages/EmailPreferences'))
 
 const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'))
@@ -94,18 +94,27 @@ function PageViewTracker() {
 }
 
 export default function App() {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1800)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
       <ToastProvider>
       <BrowserRouter>
         <AuthProvider>
-          <PageViewTracker />
-          <CustomCursor />
-          <ProgressBar />
-          <ContentProtection />
-          <AdblockDetector />
-          <Routes>
+          <SmoothScroll>
+            {loading && <LoadingScreen />}
+            <PageViewTracker />
+            <CustomCursor />
+            <ProgressBar />
+            <ContentProtection />
+            <AdblockDetector />
+            <Routes>
             <Route path="/" element={<Suspense fallback={<Loading />}><Landing /></Suspense>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -137,7 +146,8 @@ export default function App() {
             <Route path="/forgot-password" element={<Suspense fallback={<Loading />}><ForgotPassword /></Suspense>} />
             <Route path="/reset-password" element={<Suspense fallback={<Loading />}><ResetPassword /></Suspense>} />
             <Route path="*" element={<AppLayout><NotFound /></AppLayout>} />
-          </Routes>
+            </Routes>
+          </SmoothScroll>
         </AuthProvider>
       </BrowserRouter>
       </ToastProvider>

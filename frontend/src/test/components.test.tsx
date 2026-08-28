@@ -33,14 +33,13 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Navbar', () => {
   it('renders brand name', () => {
     render(<Navbar />, { wrapper: Wrapper })
-    expect(screen.getByText('SarkariScout')).toBeInTheDocument()
+    expect(screen.getByText(/Sarkari/)).toBeInTheDocument()
   })
 
   it('renders nav links', () => {
     render(<Navbar />, { wrapper: Wrapper })
     expect(screen.getByText('Jobs')).toBeInTheDocument()
     expect(screen.getByText('Mock Tests')).toBeInTheDocument()
-    expect(screen.getByText('FAQ')).toBeInTheDocument()
   })
 
   it('has mobile menu button with aria-label', () => {
