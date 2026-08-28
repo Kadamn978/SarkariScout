@@ -11,7 +11,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[ErrorBoundary]', error, info.componentStack)
+    // console.error('[ErrorBoundary]', error, info.componentStack)
   }
 
   handleTryAgain = () => {

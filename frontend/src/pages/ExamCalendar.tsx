@@ -40,7 +40,7 @@ export default function ExamCalendar() {
     try {
       const res = await api.get('/jobs?limit=200&status=OPEN')
       setJobs(Array.isArray(res.data.jobs) ? res.data.jobs : [])
-    } catch (e) { console.error(e) }
+    } catch (e) { /* console.error(e) */ }
     finally { setLoading(false) }
   }
 

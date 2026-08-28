@@ -30,7 +30,7 @@ export default function AdmitCards() {
     try {
       const res = await api.get('/jobs?limit=100&status=OPEN')
       setJobs(res.data.jobs.filter((j: AdmitCardJob) => j.admitCardDate))
-    } catch { console.error('Failed') }
+    } catch { /* console.error('Failed') */ }
     finally { setLoading(false) }
   }
 

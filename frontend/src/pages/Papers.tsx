@@ -40,7 +40,7 @@ export default function Papers() {
       const res = await api.get('/papers/families')
       setFamilies(res.data)
     } catch (e) {
-      console.error('Failed to load families', e)
+      /* console.error('Failed to load families', e) */
     }
   }
 
@@ -54,7 +54,7 @@ export default function Papers() {
       setPapers(res.data.papers)
       setTotalPages(res.data.pagination.totalPages)
     } catch (e) {
-      console.error('Failed to load papers', e)
+      /* console.error('Failed to load papers', e) */
     } finally {
       setLoading(false)
     }

@@ -51,7 +51,7 @@ export default function MockTestPlay() {
       setTest(res.data)
       setTimeLeft(res.data.durationMinutes * 60)
     } catch (e) {
-      console.error('Failed to load test', e)
+      /* console.error('Failed to load test', e) */
     }
   }
 
@@ -61,7 +61,7 @@ export default function MockTestPlay() {
       setAttemptId(res.data.id)
       setStarted(true)
     } catch (e) {
-      console.error('Failed to start test', e)
+      /* console.error('Failed to start test', e) */
     }
   }
 
@@ -76,7 +76,7 @@ export default function MockTestPlay() {
       })
       setResult(res.data)
     } catch (e) {
-      console.error('Failed to submit', e)
+      /* console.error('Failed to submit', e) */
     } finally {
       setSubmitting(false)
     }

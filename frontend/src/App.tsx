@@ -8,6 +8,7 @@ import CustomCursor from './components/CustomCursor'
 import ProgressBar from './components/ProgressBar'
 import SmoothScroll from './components/SmoothScroll'
 import LoadingScreen from './components/LoadingScreen'
+import SkipToContent from './components/SkipToContent'
 
 import ContentProtection from './components/ContentProtection'
 import AdblockDetector from './components/AdblockDetector'
@@ -103,6 +104,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
+      <SkipToContent />
       <ThemeProvider>
       <ToastProvider>
       <BrowserRouter>

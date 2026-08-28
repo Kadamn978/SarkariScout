@@ -40,7 +40,7 @@ export default function EmailPreferences() {
       setPrefs(prefsRes.data || { digestEnabled: true, instantEnabled: false, weeklyEnabled: true, digestTime: '09:05' })
       setNotifications(notifRes.data || [])
     } catch (e) {
-      console.error('Failed to load', e)
+      /* console.error('Failed to load', e) */
     } finally {
       setLoading(false)
     }
@@ -56,7 +56,7 @@ export default function EmailPreferences() {
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (e) {
-      console.error('Failed to save', e)
+      /* console.error('Failed to save', e) */
       setPrefs(prefs)
     } finally {
       setSaving(false)

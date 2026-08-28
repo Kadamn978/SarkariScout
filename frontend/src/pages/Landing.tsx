@@ -10,6 +10,7 @@ import AnimatedCounter from '../components/AnimatedCounter'
 import ScrollReveal from '../components/ScrollReveal'
 import TextScramble from '../components/TextScramble'
 import FeatureCube from '../components/FeatureCube'
+import Icon from '../components/Icon'
 
 interface Job {
   id: string; title: string; org: string; state: string;
@@ -26,25 +27,25 @@ const INDIAN_STATES = [
 ]
 
 const EXAM_FAMILIES = [
-  { name: 'SSC', color: 'from-blue-500 to-cyan-400', icon: '📘' },
-  { name: 'UPSC', color: 'from-purple-500 to-pink-400', icon: '🏛️' },
-  { name: 'Banking', color: 'from-green-500 to-emerald-400', icon: '🏦' },
-  { name: 'Railway', color: 'from-orange-500 to-yellow-400', icon: '🚄' },
-  { name: 'Engineering', color: 'from-red-500 to-rose-400', icon: '⚙️' },
-  { name: 'Defence', color: 'from-amber-500 to-orange-400', icon: '🎖️' },
-  { name: 'Police', color: 'from-indigo-500 to-blue-400', icon: '👮' },
-  { name: 'Medical', color: 'from-teal-500 to-green-400', icon: '🏥' },
-  { name: 'Teaching', color: 'from-violet-500 to-purple-400', icon: '📚' },
-  { name: 'IT', color: 'from-sky-500 to-blue-400', icon: '💻' },
+  { name: 'SSC', color: 'from-blue-500 to-cyan-400', icon: 'file' },
+  { name: 'UPSC', color: 'from-purple-500 to-pink-400', icon: 'building' },
+  { name: 'Banking', color: 'from-green-500 to-emerald-400', icon: 'briefcase' },
+  { name: 'Railway', color: 'from-orange-500 to-yellow-400', icon: 'train' },
+  { name: 'Engineering', color: 'from-red-500 to-rose-400', icon: 'cog' },
+  { name: 'Defence', color: 'from-amber-500 to-orange-400', icon: 'shield' },
+  { name: 'Police', color: 'from-indigo-500 to-blue-400', icon: 'police' },
+  { name: 'Medical', color: 'from-teal-500 to-green-400', icon: 'hospital' },
+  { name: 'Teaching', color: 'from-violet-500 to-purple-400', icon: 'graduation' },
+  { name: 'IT', color: 'from-sky-500 to-blue-400', icon: 'code' },
 ]
 
 const FEATURES = [
-  { icon: '🔔', title: 'Smart Alerts', desc: 'Personalized notifications based on your education, state, and category.', gradient: 'from-blue-500 to-cyan-500' },
-  { icon: '🌐', title: '30+ Sources', desc: 'SSC, UPSC, Railways, IBPS, State PSCs — all monitored 24/7.', gradient: 'from-purple-500 to-pink-500' },
-  { icon: '⏰', title: 'Deadline Tracker', desc: 'Never miss an application deadline. Get alerts before time runs out.', gradient: 'from-orange-500 to-red-500' },
-  { icon: '📝', title: 'Mock Tests', desc: 'Practice with real exam patterns. Score yourself and track improvement.', gradient: 'from-green-500 to-emerald-500' },
-  { icon: '📄', title: 'Previous Papers', desc: 'Download previous year question papers for all major exams.', gradient: 'from-indigo-500 to-violet-500' },
-  { icon: '📋', title: 'Application Tracker', desc: 'Track every job you apply for — from Interest to Applied to Exam to Result. Get notified of deadline changes and status updates.', gradient: 'from-pink-500 to-rose-500' },
+  { icon: 'bell', title: 'Smart Alerts', desc: 'Personalized notifications based on your education, state, and category.', gradient: 'from-blue-500 to-cyan-500' },
+  { icon: 'globe', title: '30+ Sources', desc: 'SSC, UPSC, Railways, IBPS, State PSCs — all monitored 24/7.', gradient: 'from-purple-500 to-pink-500' },
+  { icon: 'clock', title: 'Deadline Tracker', desc: 'Never miss an application deadline. Get alerts before time runs out.', gradient: 'from-orange-500 to-red-500' },
+  { icon: 'edit', title: 'Mock Tests', desc: 'Practice with real exam patterns. Score yourself and track improvement.', gradient: 'from-green-500 to-emerald-500' },
+  { icon: 'file', title: 'Previous Papers', desc: 'Download previous year question papers for all major exams.', gradient: 'from-indigo-500 to-violet-500' },
+  { icon: 'clipboard', title: 'Application Tracker', desc: 'Track every job you apply for — from Interest to Applied to Exam to Result. Get notified of deadline changes and status updates.', gradient: 'from-pink-500 to-rose-500' },
 ]
 
 function daysUntilDate(d: string) { return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) }
@@ -168,7 +169,7 @@ export default function Landing() {
       setLatestJobs(latestRes.data)
       setExpiringJobs(expiringRes.data)
       setStats(statsRes.data)
-    } catch (e) { console.error(e) }
+    } catch (e) { /* console.error(e) */ }
     finally { setLoading(false) }
   }
 
@@ -200,8 +201,16 @@ export default function Landing() {
                 </MagneticButton>
               </>
             )}
-            <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-base" aria-label="Toggle dark mode">
-              {dark ? '☀️' : '🌙'}
+            <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Toggle dark mode">
+              {dark ? (
+                <svg className="w-5 h-5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
             </button>
             <button
               className="lg:hidden p-2 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
@@ -415,16 +424,18 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {[
-              { icon: '🧠', title: 'Smart Profile Matching', desc: 'We match jobs to YOUR profile — education, state, age, category. No noise, only relevance.', highlight: 'Other sites show 1000+ random jobs. We show 10 that matter.' },
-              { icon: '⚡', title: 'Real-Time Updates', desc: 'We detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
-              { icon: '📊', title: 'Application Tracker', desc: 'Update the status of jobs you applied for — from Interest to Selection. We send you deadline alerts and change notifications so you never miss an update.', highlight: 'Track what matters. Get notified of changes.' },
-              { icon: '📅', title: 'All Dates in One View', desc: 'Exam calendar, admit cards, results — every important date on a single timeline.', highlight: 'Others scatter dates. We consolidate them.' },
-              { icon: '🎯', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Track your progress over time.', highlight: 'Others link to PDFs. We simulate the exam.' },
-              { icon: '🚫', title: 'Zero Noise, Zero Spam', desc: 'No pop-ups, no fake urgency, no affiliate clutter. Clean. Focused. Free.', highlight: 'Others monetize your attention. We respect it.' },
+              { icon: 'brain', title: 'Smart Profile Matching', desc: 'We match jobs to YOUR profile — education, state, age, category. No noise, only relevance.', highlight: 'Other sites show 1000+ random jobs. We show 10 that matter.' },
+              { icon: 'lightning', title: 'Real-Time Updates', desc: 'We detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
+              { icon: 'chart', title: 'Application Tracker', desc: 'Update the status of jobs you applied for — from Interest to Selection. We send you deadline alerts and change notifications so you never miss an update.', highlight: 'Track what matters. Get notified of changes.' },
+              { icon: 'calendar', title: 'All Dates in One View', desc: 'Exam calendar, admit cards, results — every important date on a single timeline.', highlight: 'Others scatter dates. We consolidate them.' },
+              { icon: 'target', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Track your progress over time.', highlight: 'Others link to PDFs. We simulate the exam.' },
+              { icon: 'ban', title: 'Zero Noise, Zero Spam', desc: 'No pop-ups, no fake urgency, no affiliate clutter. Clean. Focused. Free.', highlight: 'Others monetize your attention. We respect it.' },
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 80}>
                 <div className="group p-6 rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-500 h-full flex flex-col">
-                  <span className="text-3xl mb-4 block group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Icon name={item.icon} size={24} className="text-blue-400" />
+                  </div>
                   <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
                   <p className="text-blue-200/60 text-sm leading-relaxed mb-4 flex-1">{item.desc}</p>
                   <div className="pt-3 border-t border-white/10">
@@ -467,12 +478,12 @@ export default function Landing() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {FEATURES.map((f, i) => (
             <ScrollReveal key={f.title} delay={i * 100}>
-              <div className="group relative p-8 rounded-3xl glass-card card-shine cursor-default">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${f.gradient} flex items-center justify-center text-2xl mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  {f.icon}
+              <div className="group relative p-8 rounded-3xl glass-card card-shine cursor-default h-full flex flex-col">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon name={f.icon} size={28} className="text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{f.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed flex-1">{f.desc}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -537,8 +548,8 @@ export default function Landing() {
             <ScrollReveal key={fam.name} delay={i * 60}>
               <Link to={`/jobs?search=${fam.name}`}
                 className="group flex flex-col items-center p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-500 hover-lift card-shine snap-start min-w-[140px] lg:min-w-0">
-                <span className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${fam.color} flex items-center justify-center text-2xl mb-3 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                  {fam.icon}
+                <span className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${fam.color} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                  <Icon name={fam.icon} size={28} className="text-white" />
                 </span>
                 <span className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-sm">{fam.name}</span>
               </Link>

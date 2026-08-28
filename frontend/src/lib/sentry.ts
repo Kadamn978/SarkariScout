@@ -4,7 +4,7 @@ const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
 export function initSentry() {
   if (!SENTRY_DSN) {
-    console.warn('Sentry DSN not configured — error tracking disabled');
+    // console.warn('Sentry DSN not configured — error tracking disabled');
     return;
   }
 

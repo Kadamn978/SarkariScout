@@ -39,7 +39,7 @@ export default function MockTests() {
       setTests(res.data.tests)
       setTotalPages(res.data.pagination.totalPages)
     } catch (e) {
-      console.error('Failed to load tests', e)
+      /* console.error('Failed to load tests', e) */
     } finally {
       setLoading(false)
     }
