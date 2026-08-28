@@ -520,18 +520,19 @@ export default function Landing() {
         <ScrollReveal>
           <div className="text-center mb-12">
             <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Categories</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-2">Browse by Exam</h2>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-2"><TextScramble text="Browse by Exam" trigger="hover" /></h2>
           </div>
         </ScrollReveal>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {/* Horizontal scroll on mobile, grid on desktop */}
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide lg:grid lg:grid-cols-5 lg:overflow-visible lg:pb-0">
           {EXAM_FAMILIES.map((fam, i) => (
             <ScrollReveal key={fam.name} delay={i * 60}>
               <Link to={`/jobs?search=${fam.name}`}
-                className="group flex flex-col items-center p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-500 hover-lift card-shine">
+                className="group flex flex-col items-center p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-2xl hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-500 hover-lift card-shine snap-start min-w-[140px] lg:min-w-0">
                 <span className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${fam.color} flex items-center justify-center text-2xl mb-3 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                   {fam.icon}
                 </span>
-                <span className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{fam.name}</span>
+                <span className="font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-sm">{fam.name}</span>
               </Link>
             </ScrollReveal>
           ))}
