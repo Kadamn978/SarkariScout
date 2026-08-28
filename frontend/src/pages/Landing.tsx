@@ -9,6 +9,7 @@ import MagneticButton from '../components/MagneticButton'
 import AnimatedCounter from '../components/AnimatedCounter'
 import ScrollReveal from '../components/ScrollReveal'
 import TextScramble from '../components/TextScramble'
+import FeatureCube from '../components/FeatureCube'
 
 interface Job {
   id: string; title: string; org: string; state: string;
@@ -402,6 +403,13 @@ export default function Landing() {
                 <TextScramble text="Not Just Another Job Site" trigger="hover" />
               </h2>
               <p className="text-blue-200/60 max-w-xl mx-auto text-lg">We don't just list jobs. We think, match, and alert — so you never miss what matters.</p>
+            </div>
+          </ScrollReveal>
+
+          {/* 3D Feature Cube */}
+          <ScrollReveal delay={200}>
+            <div className="mb-16 hidden lg:block">
+              <FeatureCube />
             </div>
           </ScrollReveal>
 
