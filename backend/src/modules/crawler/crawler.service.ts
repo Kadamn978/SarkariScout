@@ -147,16 +147,29 @@ export class CrawlerService {
   }
 
   private async fetchWithRetry(source: any, retries = 3): Promise<CrawledJob[]> {
+    const errors: string[] = [];
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         const jobs = await this.fetchJobs(source);
         return jobs;
       } catch (e) {
-        this.logger.warn(`Attempt ${attempt}/${retries} failed for ${source.name}: ${(e as Error).message}`);
+        const msg = sanitizeError(e);
+        errors.push(msg);
+        this.logger.warn(`Attempt ${attempt}/${retries} failed for ${source.name}: ${msg}`);
         if (attempt < retries) await sleep(3000 * attempt);
       }
     }
     this.logger.error(`All ${retries} retries exhausted for ${source.name}`);
+    // Record dead-letter in error log
+    try {
+      await this.prisma.errorLog.create({
+        data: {
+          level: 'error',
+          message: `${source.name}: ${retries} retries exhausted`,
+          meta: JSON.stringify({ errors, sourceId: source.id, sourceName: source.name }),
+        },
+      });
+    } catch { /* don't fail if logging fails */ }
     return [];
   }
 
@@ -192,27 +205,9 @@ export class CrawlerService {
       const res = await fetch(source.baseUrl, {
         headers,
         signal: controller.signal,
-        redirect: 'manual',
+        redirect: 'follow',
       });
       clearTimeout(timeout);
-
-      // Check if redirect target is safe
-      if (res.status >= 300 && res.status < 400) {
-        const location = res.headers.get('location');
-        if (location) {
-          const redirectCheck = validateUrl(location);
-          if (!redirectCheck.valid) {
-            throw new Error(`Blocked unsafe redirect: ${redirectCheck.reason}`);
-          }
-          const redirectRes = await fetch(location, {
-            headers,
-            signal: AbortSignal.timeout(15000),
-          });
-          if (!redirectRes.ok) throw new Error(`HTTP ${redirectRes.status}`);
-          const html = await redirectRes.text();
-          return this.parseHtmlSource(html, source);
-        }
-      }
 
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 
@@ -261,11 +256,15 @@ export class CrawlerService {
   }
 
   private parseHtmlSource(html: string, source: any): CrawledJob[] {
-    switch (source.name) {
+    const name = source.name || '';
+    // RRB zone sources all use the same parser
+    if (name.startsWith('RRB') || name.toLowerCase().includes('rrb')) {
+      return this.parseRRB(html, source);
+    }
+    switch (name) {
       case 'SSC': return this.parseSSC(html, source);
       case 'UPSC': return this.parseUPSC(html, source);
       case 'IBPS': return this.parseIBPS(html, source);
-      case 'RRB': return this.parseRRB(html, source);
       case 'Employment News': return this.parseRSS(html, source);
       default: return this.parseGeneric(html, source);
     }
@@ -358,7 +357,9 @@ export class CrawlerService {
 
   private parseRRB(html: string, source: any): CrawledJob[] {
     const jobs: CrawledJob[] = [];
-    const pattern = /<a[^>]+href=["']([^"']+)["'][^>]*>[^<]*(?:NTPC|ALP|group D|recruitment|RRB)[^<]*<\/a>/gi;
+    const config = source.configJson ? JSON.parse(source.configJson) : {};
+    const state = config.state || 'ALL_IN';
+    const pattern = /<a[^>]+href=["']([^"']+)["'][^>]*>[^<]*(?:NTPC|ALP|group D|recruitment|RRB|technician|assistant loco pilot|je\b|scientist|staff nurse)[^<]*<\/a>/gi;
     let match;
     while ((match = pattern.exec(html)) !== null) {
       const text = cleanHtml(match[0]);
@@ -366,10 +367,11 @@ export class CrawlerService {
       const url = match[1].startsWith('http') ? match[1] : new URL(match[1], source.baseUrl).href;
       jobs.push({
         sourceUrl: url,
-        org: 'Railway Recruitment Boards',
+        org: `Railway Recruitment Board (${source.name.replace('RRB ', '')})`,
         title: text,
         postNames: [text],
-        state: 'ALL_IN',
+        state,
+        district: source.name.replace('RRB ', ''),
         category: 'RAILWAY',
       });
     }

@@ -108,3 +108,12 @@ export function sanitizeEmailSubject(subject: string): string {
   // Strip newlines and carriage returns to prevent header injection
   return subject.replace(/[\r\n]/g, '').substring(0, 200);
 }
+
+export function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***@***';
+  const maskedLocal = local.length > 2
+    ? local[0] + '***' + local[local.length - 1]
+    : '***';
+  return `${maskedLocal}@${domain}`;
+}

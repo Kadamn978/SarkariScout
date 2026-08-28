@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import ScrollReveal from '../components/ScrollReveal'
@@ -14,7 +13,6 @@ interface Progress {
 }
 
 export default function Progress() {
-  const { user } = useAuth()
   const [progress, setProgress] = useState<Progress | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -77,7 +75,7 @@ export default function Progress() {
               <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-8">
                 <h2 className="font-semibold text-gray-900 mb-6">Application Pipeline</h2>
                 <div className="flex items-center justify-between gap-2 sm:gap-4">
-                  {stages.map((s, i) => (
+                  {stages.map((s) => (
                     <div key={s.label} className="flex-1 text-center">
                       <div className="relative mb-3">
                         <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl ${s.color} bg-opacity-10 flex items-center justify-center text-2xl sm:text-3xl`}>

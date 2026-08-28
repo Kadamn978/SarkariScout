@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { CrawlerService } from './crawler.service';
 import { CrawlerController } from './crawler.controller';
 import { ChangesModule } from '../changes/changes.module';
+import { EmailModule } from '../email/email.module';
 import { AdaptiveSchedulerService } from './adaptive-scheduler.service';
 import { JobDeletionDetectorService } from './job-deletion-detector.service';
 import { RSSMonitorService } from './rss-monitor.service';
 import { FakeSiteDetectorService } from './fake-site-detector.service';
 
 @Module({
-  imports: [ChangesModule],
+  imports: [ChangesModule, EmailModule],
   controllers: [CrawlerController],
   providers: [
     CrawlerService,

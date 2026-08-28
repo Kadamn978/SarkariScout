@@ -1,5 +1,3 @@
-interface Props { className?: string; count?: number; type?: 'card' | 'text' | 'avatar' | 'image' }
-
 export function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse ${className}`} />
 }

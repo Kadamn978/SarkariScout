@@ -336,6 +336,25 @@ export class EmailService {
     `;
   }
 
+  async getNotificationLog(userId: string, limit = 50) {
+    return this.prisma.notificationLog.findMany({
+      where: { userId },
+      orderBy: { sentAt: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        type: true,
+        channel: true,
+        subject: true,
+        sentAt: true,
+        status: true,
+        openedAt: true,
+        clickedAt: true,
+        jobId: true,
+      },
+    });
+  }
+
   private buildWelcomeHtml(name: string, unsubToken: string): string {
     return `
       <!DOCTYPE html>

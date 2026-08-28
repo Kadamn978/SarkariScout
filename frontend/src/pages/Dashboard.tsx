@@ -37,9 +37,6 @@ export default function Dashboard() {
     return diff
   }
 
-  const appliedJobs = trackedJobs.filter((t) => t.stage === 'APPLIED' || t.stage === 'EXAM_PREP' || t.stage === 'EXAM_DONE' || t.stage === 'SELECTED')
-  const interestedJobs = trackedJobs.filter((t) => !t.stage || t.stage === 'APPLIED')
-
   const stageColors: Record<string, string> = {
     INTERESTED: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
     APPLIED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',

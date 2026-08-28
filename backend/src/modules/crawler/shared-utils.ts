@@ -111,7 +111,7 @@ export async function parallelLimit<T>(
 ): Promise<{ results: any[]; errors: { item: T; error: Error }[] }> {
   const results: any[] = [];
   const errors: { item: T; error: Error }[] = [];
-  const executing: Promise<void>[] = [];
+  const executing: Promise<any>[] = [];
 
   for (const item of items) {
     const p = fn(item)

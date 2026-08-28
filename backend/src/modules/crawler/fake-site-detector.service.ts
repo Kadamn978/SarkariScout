@@ -51,7 +51,7 @@ export class FakeSiteDetectorService {
   };
 
   // Known fake/phishing domains (pattern matching)
-  private readonly fakePatterns: string[] = [
+  private readonly fakePatterns: RegExp[] = [
     /sscresult/gi,
     /upscresult/gi,
     /ibpsresult/gi,

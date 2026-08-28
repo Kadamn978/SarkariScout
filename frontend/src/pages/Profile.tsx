@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import ScrollReveal from '../components/ScrollReveal'
@@ -18,7 +17,6 @@ const CATEGORIES = ['General','OBC','SC','ST','EWS','PwD']
 const LANGUAGES = ['Hindi','English','Marathi','Tamil','Telugu','Bengali','Gujarati','Kannada','Malayalam','Punjabi','Urdu','Assamese','Odia']
 
 export default function Profile() {
-  const { user } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     education: '', state: '', category: 'General', languages: [] as string[], dateOfBirth: '',
