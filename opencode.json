@@ -26,7 +26,10 @@
   },
 
   "skills": {
-    "paths": [".opencode/skills"]
+    "paths": [".opencode/skills"],
+    "browser-tester": {
+      "description": "Use when performing live browser testing, E2E testing, visual regression, or taking screenshots. Uses Playwright MCP to control a real Chromium browser."
+    }
   },
 
   "agent": {

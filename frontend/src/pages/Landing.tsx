@@ -38,7 +38,7 @@ const EXAM_FAMILIES = [
 
 const FEATURES = [
   { icon: '🔔', title: 'Smart Alerts', desc: 'Personalized notifications based on your education, state, and category.', gradient: 'from-blue-500 to-cyan-500' },
-  { icon: '🌐', title: '20+ Sources', desc: 'SSC, UPSC, Railways, IBPS, State PSCs — all monitored 24/7.', gradient: 'from-purple-500 to-pink-500' },
+  { icon: '🌐', title: '30+ Sources', desc: 'SSC, UPSC, Railways, IBPS, State PSCs — all monitored 24/7.', gradient: 'from-purple-500 to-pink-500' },
   { icon: '⏰', title: 'Deadline Tracker', desc: 'Never miss an application deadline. Get alerts before time runs out.', gradient: 'from-orange-500 to-red-500' },
   { icon: '📝', title: 'Mock Tests', desc: 'Practice with real exam patterns. Score yourself and track improvement.', gradient: 'from-green-500 to-emerald-500' },
   { icon: '📄', title: 'Previous Papers', desc: 'Download previous year question papers for all major exams.', gradient: 'from-indigo-500 to-violet-500' },
@@ -380,7 +380,7 @@ export default function Landing() {
             <div className="text-center">
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white text-sm mb-6">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                20+ sources monitored every 6 hours
+                30+ sources monitored every 6 hours
               </div>
               <br />
               <MagneticButton className="px-10 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl text-lg font-bold shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-shadow mt-4">
