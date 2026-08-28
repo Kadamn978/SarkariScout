@@ -1,6 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useEffect } from 'react'
+import { motion } from 'framer-motion'
+import ScrollReveal from './ScrollReveal'
 
 export default function Footer() {
   const { user } = useAuth()
@@ -12,62 +14,105 @@ export default function Footer() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
+  const columns = [
+    {
+      title: 'Jobs',
+      links: [
+        { to: '/jobs', label: 'All Jobs' },
+        { to: '/exam-calendar', label: 'Exam Calendar' },
+        { to: '/results', label: 'Results' },
+        { to: '/admit-cards', label: 'Admit Cards' },
+        { to: '/mock-tests', label: 'Mock Tests' },
+        { to: '/papers', label: 'Previous Year Papers' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { to: '/about', label: 'About' },
+        { to: '/faq', label: 'FAQ' },
+      ],
+    },
+    {
+      title: 'Categories',
+      links: [
+        { to: '/jobs?category=GOVERNMENT', label: 'Government' },
+        { to: '/jobs?category=BANKING', label: 'Banking' },
+        { to: '/jobs?category=RAILWAY', label: 'Railway' },
+        { to: '/jobs?category=ENGINEERING', label: 'Engineering' },
+        { to: '/jobs?category=DEFENCE', label: 'Defence' },
+      ],
+    },
+  ]
+
+  if (user) {
+    columns.push({
+      title: 'Account',
+      links: [
+        { to: '/dashboard', label: 'Dashboard' },
+        { to: '/profile', label: 'Profile' },
+        { to: '/email-preferences', label: 'Email Settings' },
+        { to: '/bug-report', label: 'Report Bug' },
+      ],
+    })
+  }
+
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 py-12">
+    <footer className="bg-gray-900 text-gray-300 relative overflow-hidden" role="contentinfo">
+      {/* Gradient line at top */}
+      <div className="h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-4 py-16">
         <div className={`grid grid-cols-2 gap-8 ${user ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}>
-          <div>
-            <h3 className="text-white font-semibold mb-4">SarkariScout</h3>
-            <p className="text-sm text-gray-400">Never miss a government job. Get personalized alerts for Sarkari Naukri.</p>
-          </div>
-          <div>
-            <h4 className="text-white font-medium mb-3 text-sm">Jobs</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/jobs" onClick={scrollToTop} className="hover:text-white transition">All Jobs</Link></li>
-              <li><Link to="/exam-calendar" onClick={scrollToTop} className="hover:text-white transition">Exam Calendar</Link></li>
-              <li><Link to="/results" onClick={scrollToTop} className="hover:text-white transition">Results</Link></li>
-              <li><Link to="/admit-cards" onClick={scrollToTop} className="hover:text-white transition">Admit Cards</Link></li>
-              <li><Link to="/mock-tests" onClick={scrollToTop} className="hover:text-white transition">Mock Tests</Link></li>
-              <li><Link to="/papers" onClick={scrollToTop} className="hover:text-white transition">Previous Year Papers</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-medium mb-3 text-sm">Company</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/about" onClick={scrollToTop} className="hover:text-white transition">About</Link></li>
-              <li><Link to="/faq" onClick={scrollToTop} className="hover:text-white transition">FAQ</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-medium mb-3 text-sm">Categories</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/jobs?category=GOVERNMENT" onClick={scrollToTop} className="hover:text-white transition">Government</Link></li>
-              <li><Link to="/jobs?category=BANKING" onClick={scrollToTop} className="hover:text-white transition">Banking</Link></li>
-              <li><Link to="/jobs?category=RAILWAY" onClick={scrollToTop} className="hover:text-white transition">Railway</Link></li>
-              <li><Link to="/jobs?category=ENGINEERING" onClick={scrollToTop} className="hover:text-white transition">Engineering</Link></li>
-              <li><Link to="/jobs?category=DEFENCE" onClick={scrollToTop} className="hover:text-white transition">Defence</Link></li>
-            </ul>
-          </div>
-          {user && (
+          <ScrollReveal delay={0}>
             <div>
-              <h4 className="text-white font-medium mb-3 text-sm">Account</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="/dashboard" onClick={scrollToTop} className="hover:text-white transition">Dashboard</Link></li>
-                <li><Link to="/profile" onClick={scrollToTop} className="hover:text-white transition">Profile</Link></li>
-                <li><Link to="/email-preferences" onClick={scrollToTop} className="hover:text-white transition">Email Settings</Link></li>
-                <li><Link to="/bug-report" onClick={scrollToTop} className="hover:text-white transition">Report Bug</Link></li>
-              </ul>
+              <Link to="/" className="text-xl font-bold text-white tracking-tight inline-block mb-4">
+                Sarkari<span className="text-blue-400">Scout</span>
+              </Link>
+              <p className="text-sm text-gray-400 leading-relaxed">Never miss a government job. Get personalized alerts for Sarkari Naukri.</p>
             </div>
-          )}
+          </ScrollReveal>
+
+          {columns.map((col, colIdx) => (
+            <ScrollReveal key={col.title} delay={(colIdx + 1) * 100}>
+              <div>
+                <h4 className="text-white font-medium mb-4 text-sm uppercase tracking-wider">{col.title}</h4>
+                <ul className="space-y-2.5 text-sm">
+                  {col.links.map((link) => (
+                    <li key={link.to}>
+                      <Link
+                        to={link.to}
+                        onClick={scrollToTop}
+                        className="text-gray-400 hover:text-white hover:pl-1 transition-all duration-200"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} SarkariScout. All rights reserved.</p>
-          <div className="flex gap-6 text-sm text-gray-400">
-            <Link to="/privacy" onClick={scrollToTop} className="hover:text-white transition">Privacy</Link>
-            <Link to="/terms" onClick={scrollToTop} className="hover:text-white transition">Terms</Link>
-            <Link to="/contact" onClick={scrollToTop} className="hover:text-white transition">Contact</Link>
+
+        <ScrollReveal delay={400}>
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} SarkariScout. All rights reserved.</p>
+            <div className="flex gap-6 text-sm">
+              {['Privacy', 'Terms', 'Contact'].map((label) => (
+                <motion.div key={label} whileHover={{ y: -2 }}>
+                  <Link
+                    to={`/${label.toLowerCase()}`}
+                    onClick={scrollToTop}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </footer>
   )

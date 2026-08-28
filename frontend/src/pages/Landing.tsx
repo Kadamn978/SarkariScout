@@ -8,6 +8,7 @@ import { useSEO } from '../hooks/useSEO'
 import MagneticButton from '../components/MagneticButton'
 import AnimatedCounter from '../components/AnimatedCounter'
 import ScrollReveal from '../components/ScrollReveal'
+import TextScramble from '../components/TextScramble'
 
 interface Job {
   id: string; title: string; org: string; state: string;
@@ -130,6 +131,9 @@ export default function Landing() {
   const { scrollYProgress } = useScroll()
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
+  const heroTextY = useTransform(scrollYProgress, [0, 0.4], [0, 80])
+  const heroParticlesY = useTransform(scrollYProgress, [0, 0.5], [0, 120])
+  const heroGradientY = useTransform(scrollYProgress, [0, 0.6], [0, 60])
 
   useSEO({
     title: 'Government Job Alerts, Mock Tests & Previous Papers',
@@ -270,9 +274,13 @@ export default function Landing() {
       <motion.section ref={heroRef} style={{ scale: heroScale, opacity: heroOpacity }}
         className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         {/* Animated Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 animate-gradient" aria-hidden="true" />
+        <motion.div style={{ y: heroGradientY }} className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 animate-gradient" aria-hidden="true" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" aria-hidden="true" />
-        <HeroParticles />
+
+        {/* Particles with parallax */}
+        <motion.div style={{ y: heroParticlesY }} className="absolute inset-0">
+          <HeroParticles />
+        </motion.div>
 
         {/* Grain Texture Overlay */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-[1]" aria-hidden="true"
@@ -282,7 +290,7 @@ export default function Landing() {
         <div className="absolute inset-0 opacity-30" aria-hidden="true"
           style={{ backgroundImage: 'radial-gradient(at 40% 20%, rgba(59,130,246,0.4) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(147,51,234,0.3) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(236,72,153,0.2) 0px, transparent 50%)' }} />
 
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+        <motion.div style={{ y: heroTextY }} className="relative z-10 text-center px-4 max-w-5xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
             <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white/80 text-sm mb-8">
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -349,7 +357,7 @@ export default function Landing() {
               ))}
             </motion.div>
           )}
-        </div>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
@@ -390,7 +398,9 @@ export default function Landing() {
           <ScrollReveal>
             <div className="text-center mb-16">
               <span className="text-sm font-semibold text-blue-400 uppercase tracking-widest">Why SarkariScout</span>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mt-3 mb-4">Not Just Another Job Site</h2>
+              <h2 className="text-4xl sm:text-5xl font-black text-white mt-3 mb-4">
+                <TextScramble text="Not Just Another Job Site" trigger="hover" />
+              </h2>
               <p className="text-blue-200/60 max-w-xl mx-auto text-lg">We don't just list jobs. We think, match, and alert — so you never miss what matters.</p>
             </div>
           </ScrollReveal>
@@ -442,7 +452,7 @@ export default function Landing() {
         <ScrollReveal>
           <div className="text-center mb-16">
             <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Features</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-3 mb-4">Everything You Need</h2>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mt-3 mb-4"><TextScramble text="Everything You Need" trigger="hover" /></h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto text-lg">One platform for your entire government job preparation journey.</p>
           </div>
         </ScrollReveal>
@@ -564,7 +574,7 @@ export default function Landing() {
           style={{ backgroundImage: 'radial-gradient(at 30% 20%, rgba(255,255,255,0.2) 0px, transparent 50%), radial-gradient(at 70% 80%, rgba(255,255,255,0.15) 0px, transparent 50%)' }} />
         <div className="relative z-10 max-w-4xl mx-auto text-center py-24 sm:py-32 px-4">
           <ScrollReveal>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">Ready to Start?</h2>
+            <h2 className="text-4xl sm:text-5xl font-black text-white mb-6"><TextScramble text="Ready to Start?" trigger="hover" /></h2>
             <p className="text-xl text-blue-100/80 mb-10 max-w-xl mx-auto">Join thousands of aspirants who never miss a government job opportunity.</p>
             <MagneticButton className="px-12 py-5 bg-white text-blue-700 rounded-2xl text-xl font-bold shadow-2xl shadow-black/20 hover:shadow-black/30 transition-shadow">
               <Link to="/register" className="flex items-center gap-3">
