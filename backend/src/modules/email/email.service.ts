@@ -112,8 +112,8 @@ export class EmailService {
     if (!job) return false;
 
     const subject = changeType
-      ? sanitizeEmailSubject(`SarkariScout Alert: ${job.title} - ${changeType}`)
-      : sanitizeEmailSubject(`SarkariScout: New match - ${job.title}`);
+      ? sanitizeEmailSubject(`SarkariScout Alert: ${job.title} at ${job.org} — ${changeType}`)
+      : sanitizeEmailSubject(`SarkariScout: New matching job — ${job.title} at ${job.org}`);
 
     const unsubToken = pref.unsubscribeToken || '';
 
@@ -293,8 +293,12 @@ export class EmailService {
           <div style="padding:20px">
             <table style="width:100%;border-collapse:collapse">${jobRows}</table>
           </div>
+          <div style="padding:20px;background:#f0f9ff;text-align:center;border-top:2px solid #2563eb">
+            <p style="color:#374151;font-size:14px;margin:0 0 12px">Login to your SarkariScout dashboard for full details, eligibility check, and one-click apply.</p>
+            <a href="${this.baseUrl}/dashboard" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Login to Dashboard</a>
+          </div>
           <div style="padding:16px 20px;background:#f9fafb;text-align:center;border-top:1px solid #e5e7eb">
-            <a href="${this.baseUrl}/jobs" style="color:#2563eb;text-decoration:none;font-weight:600">View All Jobs →</a>
+            <a href="${this.baseUrl}/jobs" style="color:#2563eb;text-decoration:none;font-weight:600">Browse All Jobs on SarkariScout →</a>
           </div>
           <div style="padding:12px 20px;background:#f3f4f6;text-align:center">
             <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe</a>
@@ -313,7 +317,7 @@ export class EmailService {
       <body style="font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#f9fafb">
         <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
           <div style="background:${changeType ? '#dc2626' : '#2563eb'};padding:24px;text-align:center">
-            <h1 style="color:#fff;margin:0;font-size:20px">${changeType ? 'Job Update Alert' : 'New Job Match'}</h1>
+            <h1 style="color:#fff;margin:0;font-size:20px">${changeType ? 'Job Update Alert' : 'New Job Match Found'}</h1>
           </div>
           <div style="padding:24px">
             <h2 style="margin:0 0 8px;font-size:18px;color:#111827">${escapeHtml(job.title)}</h2>
@@ -324,8 +328,13 @@ export class EmailService {
               ${job.applyEnd ? `<tr><td style="padding:8px 0;color:#6b7280">Deadline</td><td>${new Date(job.applyEnd).toLocaleDateString('en-IN')}</td></tr>` : ''}
               ${changeType ? `<tr><td style="padding:8px 0;color:#6b7280">Change</td><td style="color:#dc2626;font-weight:600">${escapeHtml(changeType)}</td></tr>` : ''}
             </table>
-            ${job.applyUrl ? `<p style="margin-top:20px"><a href="${encodeURIComponent(job.applyUrl)}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px;font-weight:600">Apply Now</a></p>` : ''}
-            <p style="margin-top:16px"><a href="${this.baseUrl}/jobs/${encodeURIComponent(job.id)}" style="color:#2563eb;text-decoration:none">View Details →</a></p>
+            <div style="margin-top:24px;text-align:center">
+              <p style="color:#374151;font-size:14px;margin:0 0 12px">Login to your SarkariScout dashboard to view full eligibility, deadline countdown, and one-click apply.</p>
+              <a href="${this.baseUrl}/dashboard" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Login to Dashboard</a>
+            </div>
+            <div style="margin-top:16px;text-align:center">
+              <a href="${this.baseUrl}/jobs/${encodeURIComponent(job.id)}" style="color:#2563eb;text-decoration:none;font-size:14px">View Job Details on SarkariScout →</a>
+            </div>
           </div>
           ${unsubToken ? `<div style="padding:12px 20px;background:#f3f4f6;text-align:center">
             <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe</a>
@@ -369,7 +378,7 @@ export class EmailService {
             <p style="font-size:16px;color:#374151">Hi ${escapeHtml(name)},</p>
             <p style="color:#6b7280;line-height:1.6">You're all set! SarkariScout will help you find the latest government job notifications, track deadlines, and get alerts for jobs that match your profile.</p>
             <div style="text-align:center;margin:24px 0">
-              <a href="${this.baseUrl}/jobs" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Browse Jobs</a>
+              <a href="${this.baseUrl}/login" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Login to Dashboard</a>
             </div>
             <p style="color:#6b7280;font-size:14px;line-height:1.6">
               <strong>Quick Links:</strong><br/>
