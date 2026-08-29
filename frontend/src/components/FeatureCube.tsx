@@ -24,8 +24,8 @@ export default function FeatureCube() {
       >
         {features.map((feat, i) => {
           const angle = (i * 60) * (Math.PI / 180)
-          const x = Math.sin(angle) * half
-          const z = Math.cos(angle) * half
+          const _x = Math.sin(angle) * half
+          const _z = Math.cos(angle) * half
           // Position each face at its edge of the cube
           return (
             <div

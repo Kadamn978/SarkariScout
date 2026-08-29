@@ -21,7 +21,6 @@ export default function TextScramble({ text, className = '', trigger = 'hover', 
     let frame = 0
 
     const interval = setInterval(() => {
-      const progress = frame / iterations
       const result = chars.map((char, i) => {
         if (i < frame * (text.length / iterations)) return char
         if (char === ' ') return ' '

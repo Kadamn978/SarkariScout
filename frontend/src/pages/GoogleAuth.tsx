@@ -13,8 +13,8 @@ export default function GoogleAuth() {
     const refresh = searchParams.get('refresh')
 
     if (token && refresh) {
-      localStorage.setItem('token', token)
-      localStorage.setItem('refreshToken', refresh)
+      localStorage.setItem('access_token', token)
+      localStorage.setItem('refresh_token', refresh)
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       navigate('/dashboard')
     } else {
