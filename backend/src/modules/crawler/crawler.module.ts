@@ -7,6 +7,7 @@ import { AdaptiveSchedulerService } from './adaptive-scheduler.service';
 import { JobDeletionDetectorService } from './job-deletion-detector.service';
 import { RSSMonitorService } from './rss-monitor.service';
 import { FakeSiteDetectorService } from './fake-site-detector.service';
+import { CompetitorMonitorService } from './competitor-monitor.service';
 
 @Module({
   imports: [ChangesModule, EmailModule],
@@ -17,6 +18,7 @@ import { FakeSiteDetectorService } from './fake-site-detector.service';
     JobDeletionDetectorService,
     RSSMonitorService,
     FakeSiteDetectorService,
+    CompetitorMonitorService,
   ],
   exports: [
     CrawlerService,
@@ -24,6 +26,7 @@ import { FakeSiteDetectorService } from './fake-site-detector.service';
     JobDeletionDetectorService,
     RSSMonitorService,
     FakeSiteDetectorService,
+    CompetitorMonitorService,
   ],
 })
 export class CrawlerModule {}
