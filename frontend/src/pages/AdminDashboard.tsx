@@ -47,7 +47,7 @@ export default function AdminDashboard() {
       ])
       setStats(statsRes.data)
       setSources(sourcesRes.data)
-    } catch (e) { console.error(e) }
+    } catch (e) { /* console.error(e) */ }
     finally { setLoading(false) }
   }
 
@@ -57,7 +57,7 @@ export default function AdminDashboard() {
       const res = await api.post(`/crawler/crawl/${sourceId}`)
       setCrawlResults((prev) => ({ ...prev, [sourceId]: res.data }))
       loadData()
-    } catch (e) { console.error(e) }
+    } catch (e) { /* console.error(e) */ }
     finally { setCrawling(null) }
   }
 
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       const res = await api.post('/crawler/crawl-all')
       setCrawlResults(res.data)
       loadData()
-    } catch (e) { console.error(e) }
+    } catch (e) { /* console.error(e) */ }
     finally { setCrawling(null) }
   }
 

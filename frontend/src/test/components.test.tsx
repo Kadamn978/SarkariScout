@@ -58,7 +58,7 @@ describe('Navbar', () => {
 
   it('has dark mode toggle', () => {
     render(<Navbar />, { wrapper: Wrapper })
-    expect(screen.getByLabelText(/toggle dark mode/i)).toBeInTheDocument()
+    expect(screen.getAllByLabelText(/toggle dark mode/i).length).toBeGreaterThanOrEqual(1)
   })
 })
 

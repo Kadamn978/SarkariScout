@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
 import NotificationBell from './NotificationBell'
+import Logo from './Logo'
 import { useState, useEffect } from 'react'
 
 export default function Navbar() {
@@ -28,8 +29,9 @@ export default function Navbar() {
       aria-label="Main navigation"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">
-          Sarkari<span className="text-purple-600 dark:text-purple-400">Scout</span>
+        <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+          <Logo size={28} />
+          <span className="text-blue-600 dark:text-blue-400">Sarkari<span className="text-purple-600 dark:text-purple-400">Scout</span></span>
         </Link>
 
         {/* Desktop */}
@@ -58,15 +60,31 @@ export default function Navbar() {
               </Link>
             </>
           )}
-          <button onClick={toggle} className="ml-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-base" aria-label="Toggle dark mode">
-            {dark ? '☀️' : '🌙'}
+          <button onClick={toggle} className="ml-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Toggle dark mode">
+            {dark ? (
+              <svg className="w-5 h-5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
           </button>
         </div>
 
         {/* Mobile hamburger */}
         <div className="sm:hidden flex items-center gap-2">
-          <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-base">
-            {dark ? '☀️' : '🌙'}
+          <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Toggle dark mode">
+            {dark ? (
+              <svg className="w-5 h-5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
           </button>
           <button
             className="p-2 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"

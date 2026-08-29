@@ -11,6 +11,7 @@ import ScrollReveal from '../components/ScrollReveal'
 import TextScramble from '../components/TextScramble'
 import FeatureCube from '../components/FeatureCube'
 import Icon from '../components/Icon'
+import Logo from '../components/Logo'
 
 interface Job {
   id: string; title: string; org: string; state: string;
@@ -179,7 +180,10 @@ export default function Landing() {
       <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-          <Link to="/" className="text-xl sm:text-2xl font-bold gradient-text">SarkariScout</Link>
+          <Link to="/" className="flex items-center gap-2 text-xl sm:text-2xl font-bold gradient-text">
+            <Logo size={28} />
+            <span>SarkariScout</span>
+          </Link>
           <div className="hidden lg:flex items-center gap-1">
             {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers'].map((l) => (
               <Link key={l} to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}

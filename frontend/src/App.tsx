@@ -104,10 +104,10 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <SkipToContent />
       <ThemeProvider>
       <ToastProvider>
       <BrowserRouter>
+        <SkipToContent />
         <AuthProvider>
           <SmoothScroll>
             {loading && <LoadingScreen />}
