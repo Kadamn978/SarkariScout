@@ -246,6 +246,7 @@ model Job {
   @@index([feePaymentEnd])
   @@index([sourceId, createdAt])
   @@index([status, applyEnd])
+  @@index([status, createdAt])
   @@index([category, status])
   @@index([status, state, applyEnd])
   @@index([status, category, applyEnd])
@@ -266,6 +267,7 @@ model JobChange {
   createdAt  DateTime   @default(now())
 
   @@index([jobId])
+  @@index([jobId, notified])
   @@index([detectedAt])
   @@index([notified, detectedAt])
   @@map("job_changes")
@@ -330,6 +332,7 @@ model EmailPreference {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
+  @@index([digestEnabled, unsubscribedAt])
   @@map("email_preferences")
 }
 
@@ -504,6 +507,7 @@ model MockTestAttempt {
 
   @@index([testId])
   @@index([userId])
+  @@index([userId, testId, score])
   @@index([createdAt])
   @@map("mock_test_attempts")
 }
