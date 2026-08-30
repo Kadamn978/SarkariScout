@@ -431,12 +431,15 @@ export class CrawlerService {
   }
 
   private generateFingerprint(job: CrawledJob): string {
-    const data = `${job.org}|${job.title}|${job.sourceUrl}`.toLowerCase().replace(/\s+/g, ' ');
+    const data = `${cleanHtml(job.org)}|${cleanHtml(job.title)}|${job.sourceUrl}`.toLowerCase().replace(/\s+/g, ' ');
     return crypto.createHash('sha256').update(data).digest('hex').substring(0, 32);
   }
 
   private async upsertJob(job: CrawledJob, sourceId: string): Promise<'created' | 'updated'> {
     const fingerprint = this.generateFingerprint(job);
+
+    const cleanedTitle = cleanHtml(job.title);
+    const cleanedOrg = cleanHtml(job.org);
 
     // Use Prisma upsert to avoid race condition
     const result = await this.prisma.job.upsert({
@@ -445,11 +448,11 @@ export class CrawlerService {
         fingerprint,
         sourceId,
         sourceUrl: job.sourceUrl,
-        org: job.org,
-        title: job.title,
+        org: cleanedOrg,
+        title: cleanedTitle,
         status: 'OPEN',
         category: (job.category as any) || 'GOVERNMENT',
-        postNames: JSON.stringify(job.postNames),
+        postNames: JSON.stringify(job.postNames.map(t => cleanHtml(t))),
         totalVacancies: job.totalVacancies,
         state: job.state || 'ALL_IN',
         district: job.district,
@@ -474,9 +477,9 @@ export class CrawlerService {
       },
       update: {
         sourceUrl: job.sourceUrl,
-        org: job.org,
-        title: job.title,
-        postNames: JSON.stringify(job.postNames),
+        org: cleanedOrg,
+        title: cleanedTitle,
+        postNames: JSON.stringify(job.postNames.map(t => cleanHtml(t))),
         totalVacancies: job.totalVacancies,
         state: job.state || 'ALL_IN',
         district: job.district,

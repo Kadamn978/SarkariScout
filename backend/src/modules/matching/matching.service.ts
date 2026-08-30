@@ -244,12 +244,23 @@ export class MatchingService {
   }
 
   async getJobMatchStats() {
+    const now = new Date();
+    const sevenDays = new Date(now.getTime() + 7 * 86400000);
     const totalJobs = await this.prisma.job.count({ where: { status: 'OPEN' } });
     const openJobs = await this.prisma.job.count({
-      where: { status: 'OPEN', applyEnd: { gte: new Date() } },
+      where: {
+        status: 'OPEN',
+        OR: [
+          { applyEnd: null },
+          { applyEnd: { gte: now } },
+        ],
+      },
     });
     const expiringSoon = await this.prisma.job.count({
-      where: { status: 'OPEN', applyEnd: { gte: new Date(), lte: new Date(Date.now() + 7 * 86400000) } },
+      where: {
+        status: 'OPEN',
+        applyEnd: { not: null, gte: now, lte: sevenDays },
+      },
     });
     const totalUsers = await this.prisma.profile.count();
     const categoryStats = await this.prisma.job.groupBy({

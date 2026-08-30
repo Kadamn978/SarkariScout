@@ -40,6 +40,11 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
       setInterval(() => this.runDeletionCheck(), 6 * 60 * 60 * 1000),
     );
 
+    // Auto-expire + cleanup — runs every 6 hours
+    this.intervals.push(
+      setInterval(() => this.runAutoExpireAndCleanup(), 6 * 60 * 60 * 1000),
+    );
+
     // Scheduler cleanup — runs every hour
     this.intervals.push(
       setInterval(() => this.adaptiveScheduler.cleanupStaleEntries(), 60 * 60 * 1000),
@@ -57,9 +62,12 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
     this.timeouts.push(
       setTimeout(() => this.runRSSMonitor(), 30000),
     );
+    this.timeouts.push(
+      setTimeout(() => this.runAutoExpireAndCleanup(), 60000),
+    );
 
     this.logger.log(
-      'CronService initialized — adaptive crawler (5min), RSS monitor (30min), deletion check (6h), digest (1min)',
+      'CronService initialized — adaptive crawler (5min), RSS monitor (30min), deletion check (6h), auto-expire+cleanup (6h), digest (1min)',
     );
   }
 
@@ -128,6 +136,32 @@ export class CronService implements OnModuleInit, OnModuleDestroy {
       }
     } catch (err) {
       this.logger.error(`Deletion check failed: ${(err as Error).message}`);
+    }
+  }
+
+  private async runAutoExpireAndCleanup() {
+    try {
+      const now = new Date();
+
+      // Auto-close jobs where applyEnd has passed
+      const closed = await this.prisma.job.updateMany({
+        where: { status: 'OPEN', applyEnd: { not: null, lt: now } },
+        data: { status: 'CLOSED' },
+      });
+      if (closed.count > 0) {
+        this.logger.log(`Auto-expired ${closed.count} jobs (applyEnd passed)`);
+      }
+
+      // Delete jobs closed 90+ days past applyEnd
+      const cutoff = new Date(now.getTime() - 90 * 86400000);
+      const deleted = await this.prisma.job.deleteMany({
+        where: { status: 'CLOSED', applyEnd: { not: null, lt: cutoff } },
+      });
+      if (deleted.count > 0) {
+        this.logger.log(`Cleanup: deleted ${deleted.count} old jobs (closed 90+ days)`);
+      }
+    } catch (err) {
+      this.logger.error(`Auto-expire/cleanup failed: ${(err as Error).message}`);
     }
   }
 
