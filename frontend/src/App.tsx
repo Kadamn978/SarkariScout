@@ -147,7 +147,7 @@ export default function App() {
             <Route path="/verify-email" element={<Suspense fallback={<Loading />}><VerifyEmail /></Suspense>} />
             <Route path="/forgot-password" element={<Suspense fallback={<Loading />}><ForgotPassword /></Suspense>} />
             <Route path="/reset-password" element={<Suspense fallback={<Loading />}><ResetPassword /></Suspense>} />
-            <Route path="*" element={<AppLayout><NotFound /></AppLayout>} />
+            <Route path="*" element={<NotFound />} />
             </Routes>
           </SmoothScroll>
         </AuthProvider>
