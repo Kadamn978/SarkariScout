@@ -18,7 +18,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const res = exception.getResponse();
       message = typeof res === 'string' ? res : (typeof res === 'object' && res !== null && 'message' in res ? String((res as Record<string, unknown>).message) : message);
     } else if (exception instanceof Error) {
-      message = exception.message;
+      const isProd = process.env.NODE_ENV === 'production';
+      message = isProd ? 'Internal server error' : exception.message;
       this.logger.error(
         `[${request.method}] ${request.url} ${status} - ${exception.message}`,
         exception.stack,

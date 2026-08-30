@@ -1,26 +1,28 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 
 export default function GoogleAuth() {
-  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const token = searchParams.get('token')
-    const refresh = searchParams.get('refresh')
+    const hash = window.location.hash.substring(1)
+    const params = new URLSearchParams(hash)
+    const token = params.get('token')
+    const refresh = params.get('refresh')
 
     if (token && refresh) {
       localStorage.setItem('access_token', token)
       localStorage.setItem('refresh_token', refresh)
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      window.history.replaceState(null, '', window.location.pathname)
       navigate('/dashboard')
     } else {
       setError('Google sign-in failed. Please try again.')
     }
-  }, [searchParams, navigate])
+  }, [navigate])
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -37,6 +37,6 @@ export class GoogleAuthController {
     await this.redis.set(`refresh:${userId}`, refreshToken, 604800);
 
     const frontendUrl = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173';
-    res.redirect(`${frontendUrl}/auth/google?token=${accessToken}&refresh=${refreshToken}`);
+    res.redirect(`${frontendUrl}/auth/google#token=${accessToken}&refresh=${refreshToken}`);
   }
 }

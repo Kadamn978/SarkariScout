@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../../modules/auth/jwt-auth.guard';
 import { Roles } from '../../modules/auth/roles.decorator';
 import { RolesGuard } from '../../modules/auth/roles.guard';
@@ -45,9 +45,16 @@ export class LogsController {
 
   @Get('files/:date')
   async getLogFile(@Param('date') date: string) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      throw new BadRequestException('Invalid date format. Use YYYY-MM-DD');
+    }
     const logsDir = path.join(process.cwd(), 'logs');
     const month = date.slice(0, 7);
     const filePath = path.join(logsDir, month, `${date}.log`);
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(path.resolve(logsDir))) {
+      throw new BadRequestException('Invalid path');
+    }
     if (!fs.existsSync(filePath)) return { error: 'Log file not found' };
     const content = fs.readFileSync(filePath, 'utf8');
     return { date, lines: content.split('\n').filter(Boolean) };

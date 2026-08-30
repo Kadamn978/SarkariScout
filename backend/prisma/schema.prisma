@@ -52,6 +52,9 @@ enum ChangeType {
   CORRIGENDUM
   RESULT
   ADMIT_CARD
+  STATUS
+  VACANCY
+  NEW
 }
 
 enum SourceType {

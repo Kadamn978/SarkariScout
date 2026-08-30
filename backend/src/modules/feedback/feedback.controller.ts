@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Patch, Body, Param, UseGuards, Request, Query } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -10,6 +11,7 @@ export class FeedbackController {
   constructor(private feedbackService: FeedbackService) {}
 
   @Post('bugs')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async reportBug(
     @Request() req: any,
     @Body() body: { title: string; description: string; category?: string; priority?: string },

@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, UseGuards, Request, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { DocumentsService } from './documents.service';
 import { DocumentType } from '@prisma/client';
+
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg', 'image/png', 'image/webp', 'application/pdf',
+];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 @Controller('documents')
 @UseGuards(JwtAuthGuard)
@@ -15,7 +20,17 @@ export class DocumentsController {
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', { dest: 'uploads/documents' }))
+  @UseInterceptors(FileInterceptor('file', {
+    dest: 'uploads/documents',
+    limits: { fileSize: MAX_FILE_SIZE },
+    fileFilter: (_req, file, cb) => {
+      if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+        cb(new BadRequestException('Only JPEG, PNG, WebP, PDF allowed'), false);
+      } else {
+        cb(null, true);
+      }
+    },
+  }))
   async upload(
     @Request() req: any,
     @UploadedFile() file: Express.Multer.File,

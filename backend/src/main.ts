@@ -1,9 +1,8 @@
 import 'dotenv/config';
-import * as Sentry from '@sentry/node';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
-import * as compression from 'compression';
+import compression from 'compression';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from './common/logger/logger.service';
@@ -14,14 +13,6 @@ const requiredEnvVars = ['DATABASE_URL', 'REDIS_URL', 'JWT_SECRET'];
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-
-  if (process.env.SENTRY_DSN) {
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN,
-      tracesSampleRate: 1.0,
-    });
-    logger.log('Sentry error tracking initialized');
-  }
 
   for (const key of requiredEnvVars) {
     if (!process.env[key]) {

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { CompetitorDiscoveryAgent } from './competitor-discovery.agent';
 import { SourceResolverAgent, ResolvedJob } from './source-resolver.agent';
 import { SourceManagerAgent } from './source-manager.agent';
