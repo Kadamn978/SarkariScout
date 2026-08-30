@@ -100,13 +100,13 @@ export default function Dashboard() {
           <Link to="/jobs" className="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
             Browse Jobs
           </Link>
-          <Link to="/profile" className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+          <Link to="/profile" className="px-5 py-2.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
             Edit Profile
           </Link>
-          <Link to="/email-preferences" className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+          <Link to="/email-preferences" className="px-5 py-2.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
             Email Settings
           </Link>
-          <Link to="/documents" className="px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+          <Link to="/documents" className="px-5 py-2.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
             My Documents
           </Link>
         </div>
@@ -115,8 +115,8 @@ export default function Dashboard() {
           {/* Tracked Jobs */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Your Tracked Jobs</h2>
-              <Link to="/jobs" className="text-sm text-blue-600 hover:text-blue-700">Find More →</Link>
+              <h2 className="text-lg font-semibold dark:text-white">Your Tracked Jobs</h2>
+              <Link to="/jobs" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Find More →</Link>
             </div>
             {loading ? (
               <div className="space-y-3">
