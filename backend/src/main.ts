@@ -89,7 +89,7 @@ async function bootstrap() {
   // Swagger API Documentation — only enabled in development, behind basic auth
   if (!isProd) {
     const config = new DocumentBuilder()
-      .setTitle('SarkariScout API')
+      .setTitle('NaukarScout API')
       .setDescription('Government job notification aggregator API')
       .setVersion('0.1.0')
       .addBearerAuth()
@@ -110,7 +110,7 @@ async function bootstrap() {
       swaggerOptions: {
         persistAuthorization: true,
       },
-      customSiteTitle: 'SarkariScout API Docs',
+      customSiteTitle: 'NaukarScout API Docs',
     })
     logger.log('Swagger API docs enabled at /docs (dev only)')
   }
@@ -119,6 +119,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  logger.log(`SarkariScout API running on http://localhost:${port}/api`);
+  logger.log(`NaukarScout API running on http://localhost:${port}/api`);
 }
 bootstrap();

@@ -15,7 +15,7 @@ export function initSentry() {
       Sentry.replayIntegration(),
     ],
     tracesSampleRate: 1.0,
-    tracePropagationTargets: ['localhost', /^https:\/\/sarkariscout\.in\/api/],
+    tracePropagationTargets: ['localhost', /^https:\/\/naukarscout\.in\/api/],
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
   });

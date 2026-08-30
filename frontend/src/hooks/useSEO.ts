@@ -17,7 +17,7 @@ export function useSEO(data: SEOData) {
     const prevTitle = document.title
 
     if (data.title) {
-      document.title = `${data.title} | SarkariScout`
+      document.title = `${data.title} | NaukarScout`
     }
 
     const meta = (name: string, content: string) => {

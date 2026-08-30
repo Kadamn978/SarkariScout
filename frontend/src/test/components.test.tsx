@@ -33,7 +33,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Navbar', () => {
   it('renders brand name', () => {
     render(<Navbar />, { wrapper: Wrapper })
-    expect(screen.getByText(/Sarkari/)).toBeInTheDocument()
+    expect(screen.getByText(/Naukar/)).toBeInTheDocument()
   })
 
   it('renders nav links', () => {
@@ -65,7 +65,7 @@ describe('Navbar', () => {
 describe('Footer', () => {
   it('renders copyright', () => {
     render(<Footer />, { wrapper: Wrapper })
-    expect(screen.getAllByText(/SarkariScout/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/NaukarScout/).length).toBeGreaterThan(0)
   })
 
   it('renders job links', () => {

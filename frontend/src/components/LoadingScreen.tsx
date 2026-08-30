@@ -22,7 +22,7 @@ export default function LoadingScreen() {
           transition={{ delay: 0.3, duration: 0.5 }}
           className="text-3xl font-black text-white mb-2"
         >
-          SarkariScout
+           NaukarScout
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}

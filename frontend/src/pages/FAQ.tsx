@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar'
 import { useSEO } from '../hooks/useSEO'
 
 const FAQ_ITEMS = [
-  { q: 'What is SarkariScout?', a: 'A government job aggregator. We pull notifications from 20+ official sites — SSC, UPSC, IBPS, RRB, state PSCs — and put them in one place. New job? We show it. Deadline changed? We update it. You search, filter, and track everything from a single dashboard.' },
+  { q: 'What is NaukarScout?', a: 'A government job aggregator. We pull notifications from 20+ official sites — SSC, UPSC, IBPS, RRB, state PSCs — and put them in one place. New job? We show it. Deadline changed? We update it. You search, filter, and track everything from a single dashboard.' },
   { q: 'Is it really free?', a: 'Yes. Browse jobs, set alerts, take mock tests, download papers, track applications — all free. We might add premium features later, but the core stuff stays free.' },
   { q: 'How do job alerts work?', a: 'Sign up, fill in your profile (education, state, category), and turn on email notifications. You get a daily digest of matching jobs plus instant alerts when deadlines are near.' },
   { q: 'Where does the data come from?', a: 'Directly from official government websites. We check multiple times a day for new notifications, date changes, corrigendum, and vacancy updates. No guessing, no copying from other sites.' },
@@ -23,10 +23,10 @@ export default function FAQ() {
 
   useSEO({
     title: 'Frequently Asked Questions',
-    description: 'Answers to common questions about SarkariScout — government job alerts, mock tests, papers, and tracking.',
-    canonical: 'https://sarkariscout.in/faq',
-    ogTitle: 'FAQ | SarkariScout',
-    ogDescription: 'Frequently asked questions about SarkariScout.',
+    description: 'Answers to common questions about NaukarScout — government job alerts, mock tests, papers, and tracking.',
+    canonical: 'https://naukarscout.in/faq',
+    ogTitle: 'FAQ | NaukarScout',
+    ogDescription: 'Frequently asked questions about NaukarScout.',
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
@@ -75,7 +75,7 @@ export default function FAQ() {
         <div className="mt-12 text-center bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Still have questions?</h2>
           <p className="text-gray-500 mb-4">Drop us a line</p>
-          <a href="mailto:sarkariscout+support@gmail.com"
+           <a href="mailto:naukarscout+support@gmail.com"
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
             Contact Support
           </a>

@@ -64,8 +64,8 @@ export default function JobDetail() {
   useSEO({
     title: job ? `${job.title} - ${job.org}` : 'Loading...',
     description: job ? `${job.title} at ${job.org}. ${job.totalVacancies || ''} vacancies. Apply before ${job.applyEnd || 'deadline'}.` : '',
-    canonical: job ? `https://sarkariscout.in/jobs/${job.id}` : undefined,
-    ogTitle: job ? `${job.title} | SarkariScout` : undefined,
+    canonical: job ? `https://naukarscout.in/jobs/${job.id}` : undefined,
+    ogTitle: job ? `${job.title} | NaukarScout` : undefined,
     ogDescription: job ? `${job.totalVacancies || ''} vacancies at ${job.org}. Free apply link.` : undefined,
     jsonLd: job ? {
       '@context': 'https://schema.org',
@@ -211,12 +211,16 @@ export default function JobDetail() {
                 <div className="p-3 bg-purple-50 rounded-lg dark:bg-purple-900/20"><p className="text-xs text-purple-600 dark:text-purple-400 font-medium">Exam Date</p><p className="text-sm font-semibold">{formatDate(job.examDate)}</p></div>
               </div>
 
-              {job.postNames && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg dark:bg-gray-800">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Post Names</p>
-                  <p className="text-sm text-gray-900 dark:text-white">{job.postNames}</p>
-                </div>
-              )}
+              {job.postNames && (() => {
+                let names: string = job.postNames;
+                try { names = JSON.parse(job.postNames).join(', '); } catch { /* use raw */ }
+                return (
+                  <div className="mb-4 p-3 bg-gray-50 rounded-lg dark:bg-gray-800">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Post Names</p>
+                    <p className="text-sm text-gray-900 dark:text-white">{names}</p>
+                  </div>
+                );
+              })()}
 
               {job.eligibilityCriteria && (
                 <div className="mb-6"><h3 className="font-semibold text-gray-900 dark:text-white mb-2">Eligibility Criteria</h3><p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{job.eligibilityCriteria}</p></div>

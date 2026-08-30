@@ -5,10 +5,10 @@ import { useSEO } from '../hooks/useSEO'
 export default function Terms() {
   useSEO({
     title: 'Terms of Service',
-    description: 'The rules for using SarkariScout. Plain language, no nonsense.',
-    canonical: 'https://sarkariscout.in/terms',
-    ogTitle: 'Terms of Service | SarkariScout',
-    ogDescription: 'Terms for using SarkariScout.',
+    description: 'The rules for using NaukarScout. Plain language, no nonsense.',
+    canonical: 'https://naukarscout.in/terms',
+    ogTitle: 'Terms of Service | NaukarScout',
+    ogDescription: 'Terms for using NaukarScout.',
   })
 
   return (
@@ -29,11 +29,11 @@ export default function Terms() {
 
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">1. The deal</h2>
-              <p>Use SarkariScout and you're agreeing to these terms. Don't use it if you don't agree — that's fair. We can update these terms whenever we need to, and if you keep using the site after we do, that counts as accepting the changes.</p>
+               <p>Use NaukarScout and you're agreeing to these terms. Don't use it if you don't agree — that's fair. We can update these terms whenever we need to, and if you keep using the site after we do, that counts as accepting the changes.</p>
             </section>
 
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">2. What SarkariScout actually does</h2>
+               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">2. What NaukarScout actually does</h2>
               <p>We're a government job notification aggregator. We pull data from official sources — SSC, UPSC, IBPS, RRB, state PSCs, and others — and put it all in one place so you don't have to check twenty different websites every morning.</p>
               <p className="mt-2">Here's what you get:</p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
@@ -92,7 +92,7 @@ export default function Terms() {
 
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">7. No guarantees</h2>
-              <p>SarkariScout runs on a "best efforts" basis. We work hard to keep things accurate and running, but we can't promise perfection.</p>
+               <p>NaukarScout runs on a "best efforts" basis. We work hard to keep things accurate and running, but we can't promise perfection.</p>
               <p className="mt-2">Specifically, we don't guarantee:</p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
                 <li>That every job posting is 100% accurate or up to the minute</li>
@@ -105,7 +105,7 @@ export default function Terms() {
 
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">8. Our liability has limits</h2>
-              <p>To the extent the law allows, SarkariScout won't be responsible for:</p>
+               <p>To the extent the law allows, NaukarScout won't be responsible for:</p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
                 <li>Wrong or missing info in job postings</li>
                 <li>Missed deadlines because you relied on our data</li>
@@ -135,17 +135,17 @@ export default function Terms() {
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">11. Disputes</h2>
               <p>These terms follow <strong>Indian law</strong>. If there's a dispute, it goes to the courts in India — no exceptions.</p>
-              <p className="mt-2">Before lawyering up, though, try talking to us first. Email <a href="mailto:sarkariscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">sarkariscout+support@gmail.com</a> and give us 30 days to work it out. Most things don't need a courtroom.</p>
+               <p className="mt-2">Before lawyering up, though, try talking to us first. Email <a href="mailto:naukarscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">naukarscout+support@gmail.com</a> and give us 30 days to work it out. Most things don't need a courtroom.</p>
               <p className="mt-2">Also, no class-action lawsuits. Any dispute is between you and us, individually.</p>
             </section>
 
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Questions?</h2>
-              <p>Reach out to us at <a href="mailto:sarkariscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">sarkariscout+support@gmail.com</a>. We usually get back within a week.</p>
+               <p>Reach out to us at <a href="mailto:naukarscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">naukarscout+support@gmail.com</a>. We usually get back within a week.</p>
             </section>
 
             <div className="border-t border-gray-100 dark:border-gray-800 pt-6 mt-8">
-              <p className="text-xs text-gray-500 dark:text-gray-400">By using SarkariScout, you've read these terms, understood them, and agreed to follow them. If you don't agree, don't use the site.</p>
+               <p className="text-xs text-gray-500 dark:text-gray-400">By using NaukarScout, you've read these terms, understood them, and agreed to follow them. If you don't agree, don't use the site.</p>
             </div>
 
           </div>

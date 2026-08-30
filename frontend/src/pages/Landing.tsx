@@ -141,18 +141,18 @@ export default function Landing() {
   useSEO({
     title: 'Government Job Alerts, Mock Tests & Previous Papers',
     description: 'Get personalized government job alerts for SSC, UPSC, IBPS, RRB & more. Free mock tests, previous year papers, and application tracker for Indian aspirants.',
-    canonical: 'https://sarkariscout.in',
-    ogTitle: 'SarkariScout - Government Job Alerts & Preparation',
+    canonical: 'https://naukarscout.in',
+    ogTitle: 'NaukarScout - Government Job Alerts & Preparation',
     ogDescription: 'Never miss a Sarkari Naukri. Free alerts, mock tests, and papers for SSC, UPSC, IBPS, RRB.',
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      'name': 'SarkariScout',
-      'url': 'https://sarkariscout.in',
+      'name': 'NaukarScout',
+      'url': 'https://naukarscout.in',
       'description': 'Government job alerts, mock tests, and previous year papers for SSC, UPSC, IBPS, RRB.',
       'potentialAction': {
         '@type': 'SearchAction',
-        'target': 'https://sarkariscout.in/jobs?search={search_term_string}',
+        'target': 'https://naukarscout.in/jobs?search={search_term_string}',
         'query-input': 'required name=search_term_string',
       },
     },
@@ -182,7 +182,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2 text-xl sm:text-2xl font-bold gradient-text">
             <Logo size={28} />
-            <span>SarkariScout</span>
+            <span>NaukarScout</span>
           </Link>
           <div className="hidden lg:flex items-center gap-1">
             {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers'].map((l) => (
@@ -411,7 +411,7 @@ export default function Landing() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-24 sm:py-32">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <span className="text-sm font-semibold text-blue-400 uppercase tracking-widest">Why SarkariScout</span>
+              <span className="text-sm font-semibold text-blue-400 uppercase tracking-widest">Why NaukarScout</span>
               <h2 className="text-4xl sm:text-5xl font-black text-white mt-3 mb-4">
                 <TextScramble text="Not Just Another Job Site" trigger="hover" />
               </h2>
@@ -459,7 +459,7 @@ export default function Landing() {
               <br />
               <MagneticButton className="px-10 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl text-lg font-bold shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-shadow mt-4">
                 <Link to="/register" className="flex items-center gap-2">
-                  Try SarkariScout Free
+                   Try NaukarScout Free
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -617,7 +617,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
-              <Link to="/" className="text-xl font-bold gradient-text">SarkariScout</Link>
+               <Link to="/" className="text-xl font-bold gradient-text">NaukarScout</Link>
               <p className="text-sm mt-3 leading-relaxed">Never miss a government job. Free alerts, mock tests, and papers for every aspirant.</p>
             </div>
             <div>
@@ -656,7 +656,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="border-t border-gray-800/50 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} SarkariScout. All rights reserved.</p>
+            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} NaukarScout. All rights reserved.</p>
             <div className="flex gap-6 text-sm text-gray-400">
               <Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Privacy</Link>
               <Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Terms</Link>

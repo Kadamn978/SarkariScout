@@ -12,7 +12,7 @@ export default function Logo({ className = '', size = 32 }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="SarkariScout logo"
+      aria-label="NaukarScout logo"
     >
       {/* Shield */}
       <path

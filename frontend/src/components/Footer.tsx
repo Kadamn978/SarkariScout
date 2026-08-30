@@ -67,7 +67,7 @@ export default function Footer() {
           <ScrollReveal delay={0}>
             <div>
               <Link to="/" className="text-xl font-bold text-white tracking-tight inline-block mb-4">
-                Sarkari<span className="text-blue-400">Scout</span>
+                Naukar<span className="text-blue-400">Scout</span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed">Never miss a government job. Get personalized alerts for Sarkari Naukri.</p>
             </div>
@@ -97,7 +97,7 @@ export default function Footer() {
 
         <ScrollReveal delay={400}>
           <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} SarkariScout. All rights reserved.</p>
+            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} NaukarScout. All rights reserved.</p>
             <div className="flex gap-6 text-sm">
               {['Privacy', 'Terms', 'Contact'].map((label) => (
                 <motion.div key={label} whileHover={{ y: -2 }}>

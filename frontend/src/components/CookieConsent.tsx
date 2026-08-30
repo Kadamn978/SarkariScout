@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const COOKIE_KEY = 'sarkariscout_cookie_consent';
+const COOKIE_KEY = 'naukarscout_cookie_consent';
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
