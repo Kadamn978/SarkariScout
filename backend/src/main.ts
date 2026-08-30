@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import helmet from 'helmet';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
+const helmet = require('helmet');
+const compression = require('compression');
+const cookieParser = require('cookie-parser');
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger } from './common/logger/logger.service';
@@ -89,7 +89,7 @@ async function bootstrap() {
   // Swagger API Documentation — only enabled in development, behind basic auth
   if (!isProd) {
     const config = new DocumentBuilder()
-      .setTitle('NaukarScout API')
+      .setTitle('RozgarScout API')
       .setDescription('Government job notification aggregator API')
       .setVersion('0.1.0')
       .addBearerAuth()
@@ -110,7 +110,7 @@ async function bootstrap() {
       swaggerOptions: {
         persistAuthorization: true,
       },
-      customSiteTitle: 'NaukarScout API Docs',
+      customSiteTitle: 'RozgarScout API Docs',
     })
     logger.log('Swagger API docs enabled at /docs (dev only)')
   }
@@ -119,6 +119,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  logger.log(`NaukarScout API running on http://localhost:${port}/api`);
+  logger.log(`RozgarScout API running on http://localhost:${port}/api`);
 }
 bootstrap();

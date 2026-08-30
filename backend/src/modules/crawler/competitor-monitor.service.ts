@@ -135,7 +135,7 @@ export class CompetitorMonitorService {
     });
 
     const trackedOfficial = await this.prisma.source.count({
-      where: { configJson: { notContains: '"isCompetitor":true' } },
+      where: { configJson: { not: { contains: '"isCompetitor":true' } } },
     });
 
     return {
@@ -170,7 +170,7 @@ export class CompetitorMonitorService {
       try {
         const validation = validateUrl(url);
         if (!validation.valid) {
-          this.logger.warn(`Invalid URL: ${validation.error}`);
+          this.logger.warn(`Invalid URL: ${validation.reason}`);
           return null;
         }
 
