@@ -83,3 +83,5 @@ backups/
 safe-push.bat
 safe-push.sh
 test-db.js
+
+dump.rdb
