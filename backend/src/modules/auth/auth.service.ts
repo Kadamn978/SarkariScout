@@ -34,6 +34,7 @@ export class AuthService {
       this.logger.warn(`Failed to send verification email to ${user.email}: ${err.message}`);
     });
 
+    // Return tokens but frontend must check emailVerifiedAt
     return this.generateTokens(user.id, user.email, user.role);
   }
 
@@ -58,6 +59,16 @@ export class AuthService {
     }
 
     await this.redis.del(lockKey);
+
+    // Check email verification
+    if (!user.emailVerifiedAt) {
+      // Resend verification email automatically
+      this.sendVerificationEmail(user.id, user.email).catch((err) => {
+        this.logger.warn(`Failed to resend verification to ${user.email}: ${err.message}`);
+      });
+      throw new UnauthorizedException('Please verify your email before logging in. A new verification link has been sent.');
+    }
+
     return this.generateTokens(user.id, user.email, user.role);
   }
 

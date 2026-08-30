@@ -10,6 +10,11 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('me')
+  async getMe(@Req() req: AuthRequest) {
+    return this.usersService.getUserWithProfile(req.user.sub);
+  }
+
+  @Get('me/profile')
   async getProfile(@Req() req: AuthRequest) {
     return this.usersService.getProfile(req.user.sub);
   }
