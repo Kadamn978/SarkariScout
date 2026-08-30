@@ -51,7 +51,7 @@ export class JobsService {
     }
 
     const [jobs, total] = await Promise.all([
-      this.prisma.job.findMany({ where, orderBy: { applyEnd: 'asc' }, skip, take: limit }),
+      this.prisma.job.findMany({ where, orderBy: { applyEnd: 'asc' }, skip, take: limit, include: { source: { select: { name: true } } } }),
       this.prisma.job.count({ where }),
     ]);
 
@@ -76,7 +76,10 @@ export class JobsService {
 
     const job = await this.prisma.job.findUnique({
       where: { id },
-      include: { changes: { orderBy: { detectedAt: 'desc' }, take: 10 } },
+      include: {
+        changes: { orderBy: { detectedAt: 'desc' }, take: 10 },
+        source: { select: { name: true } },
+      },
     });
     if (!job) throw new NotFoundException('Job not found');
 
@@ -100,6 +103,7 @@ export class JobsService {
       },
       orderBy: { applyEnd: 'asc' },
       take: 50,
+      include: { source: { select: { name: true } } },
     });
 
     await this.redis.set(cacheKey, JSON.stringify(jobs), 120);
@@ -118,6 +122,7 @@ export class JobsService {
       where: { status: 'OPEN' },
       orderBy: { createdAt: 'desc' },
       take: limit,
+      include: { source: { select: { name: true } } },
     });
 
     await this.redis.set(cacheKey, JSON.stringify(jobs), 60);
