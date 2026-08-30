@@ -5,6 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../common/redis/redis.service';
 
+const isProd = process.env.NODE_ENV === 'production';
+const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined;
+
 @Controller('auth')
 export class GoogleAuthController {
   constructor(
@@ -26,17 +29,36 @@ export class GoogleAuthController {
     const role = user?.role || 'USER';
     const userId = user?.id || id;
 
-    const payload = { sub: userId, email, role, type: 'access' };
-    const accessToken = this.jwt.sign(payload, { expiresIn: '15m' });
+    const accessToken = this.jwt.sign(
+      { sub: userId, email, role, type: 'access' },
+      { expiresIn: '15m' },
+    );
     const refreshToken = this.jwt.sign(
       { sub: userId, email, role, type: 'refresh' },
       { expiresIn: '7d' },
     );
 
-    // Store refresh token in Redis (same as normal login)
     await this.redis.set(`refresh:${userId}`, refreshToken, 604800);
 
+    // Set HttpOnly cookies — no tokens in URL (prevents Referer/history leaks)
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+      path: '/',
+      domain: COOKIE_DOMAIN,
+    });
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+      domain: COOKIE_DOMAIN,
+    });
+
     const frontendUrl = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173';
-    res.redirect(`${frontendUrl}/auth/google#token=${accessToken}&refresh=${refreshToken}`);
+    res.redirect(`${frontendUrl}/dashboard`);
   }
 }
