@@ -1,59 +1,59 @@
-import { IsEmail, IsString, MinLength, MaxLength, Matches } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength, Matches } from 'class-validator'
 
 export class RegisterDto {
   @IsEmail()
-  email: string;
+  email: string
 
   @IsString()
   @MinLength(8)
   @MaxLength(128)
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/,
-    { message: 'Password must contain uppercase, lowercase, number, and special character' },
-  )
-  password: string;
+  // eslint-disable-next-line no-useless-escape
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/, {
+    message: 'Password must contain uppercase, lowercase, number, and special character',
+  })
+  password: string
 
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  name: string;
+  name: string
 }
 
 export class LoginDto {
   @IsEmail()
-  email: string;
+  email: string
 
   @IsString()
   @MinLength(1)
   @MaxLength(128)
-  password: string;
+  password: string
 }
 
 export class RefreshTokenDto {
   @IsString()
-  refreshToken: string;
+  refreshToken: string
 }
 
 export class ForgotPasswordDto {
   @IsEmail()
-  email: string;
+  email: string
 }
 
 export class VerifyEmailDto {
   @IsString()
-  token: string;
+  token: string
 }
 
 export class ResetPasswordDto {
   @IsString()
-  token: string;
+  token: string
 
   @IsString()
   @MinLength(8)
   @MaxLength(128)
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/,
-    { message: 'Password must contain uppercase, lowercase, number, and special character' },
-  )
-  newPassword: string;
+  // eslint-disable-next-line no-useless-escape
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).+$/, {
+    message: 'Password must contain uppercase, lowercase, number, and special character',
+  })
+  newPassword: string
 }
