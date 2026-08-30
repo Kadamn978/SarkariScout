@@ -21,30 +21,39 @@ Single source of truth. Read this file first at the start of every session.
 | 9  | Testing & QA               | Done   |
 | 10 | Deployment                 | Done   |
 
-## API Routes (50+ total)
+## API Routes (68 total)
 
-**Auth (6):** register, login, refresh, logout, forgot-password, google-oauth
+**Auth (8):** register, login, refresh, logout, verify-email, resend-verification, forgot-password, reset-password
+**Auth - Google (2):** google-auth, google-callback
 **Users (3):** getProfile, updateProfile, deleteAccount
-**Jobs (8):** list, detail, upcoming, recent, track, untrack, trackedJobs, trackerStats
-**Crawler (4):** crawlSource, crawlAll, stats, crawlHistory (ADMIN)
+**Jobs (9):** list, detail, upcoming, recent, track, untrack, updateTracker, trackedJobs, trackerStats
+**Crawler (8):** crawlSource, crawlAll, competitorPipeline, pipelineStats, discoverSources, discoveredSources, stats, crawlHistory (ADMIN)
 **Matching (4):** myJobs, search, score, stats
 **Email (5):** sendDigest, getPreferences, updatePreferences, notifications, unsubscribe
 **Changes (3):** jobChanges, recentChanges, unnotifiedChanges
 **Documents (4):** upload, list, setDefault, delete
-**Feedback (3):** createBug, listBugs, updateBugStatus (ADMIN)
+**Feedback (4):** createBug, myBugs, listBugs, updateBugStatus (ADMIN)
+**Mock Tests (10):** list, detail, start, submit, attempt, userStats, leaderboard, adminCreate, adminQuestions, adminPublish
+**Papers (6):** list, families, popular, detail, download, adminCreate
+**Analytics (3):** track, dashboard (ADMIN), page (ADMIN)
 **Admin Logs (7):** audit, auditByUser, errors, errorStats, logFiles, logFile, cleanup (ADMIN)
-**Health (1):** healthCheck
+**Health (2):** healthCheck, uptime
 
 ## Security
 
 - Argon2 hashing (memoryCost: 65536)
 - JWT 15min access + 7d refresh in Redis
 - Account lockout: 5 fails = 15min lock
-- Rate limiting per route
+- Rate limiting per route (register: 5/min, login: 10/min, refresh: 20/min, analytics: 30/min)
 - Helmet CSP, HSTS, referrer policy
 - Role-based access (USER/ADMIN)
 - Input validation (whitelist, max length)
 - Error messages hidden in production
+- File upload validation: 10MB limit, JPEG/PNG/WebP/PDF only
+- Path traversal prevention in log file reader
+- Google OAuth tokens via URL fragment (prevents Referer leak)
+- Analytics dashboard admin-only (was public)
+- Papers download counter rate-limited
 
 ## Logging & Observability
 
@@ -70,8 +79,21 @@ Single source of truth. Read this file first at the start of every session.
 **Core:** users, profiles, jobs, sources
 **Tracking:** user_jobs, job_changes, notification_logs, email_preferences
 **Content:** user_documents, bug_reports, subscriptions, mock_tests, mock_questions, mock_test_attempts, previous_papers
-**Logs:** audit_logs, error_logs, crawl_logs
+**Logs:** audit_logs, error_logs, crawl_logs, page_views, daily_stats
 **Enums:** Role, Category, JobStatus, TrackerStage, NotificationType, ChangeType, SourceType, JobCategory
+
+**Indexes (critical):** [status, createdAt] on Job, [jobId, notified] on JobChange, [userId, testId, score] on MockTestAttempt, [digestEnabled, unsubscribedAt] on EmailPreference
+
+## Competitor Pipeline (Multi-Agent)
+
+5-agent pipeline for discovering official sources from competitor sites:
+1. **CompetitorDiscoveryAgent** — scrapes SarkariResult, FreeJobAlert, FreshersLive, JagranJosh
+2. **SourceResolverAgent** — maps jobs to official gov URLs (50+ known mappings)
+3. **SourceManagerAgent** — adds missing official sources to DB
+4. **OfficialScraperAgent** — scrapes newly discovered official sites
+5. **JobValidatorAgent** — validates, deduplicates, inserts only valid jobs
+
+**Total sources:** 81 official + 4 competitor monitors = 85 sources
 
 ## Sprints (5/5 Complete)
 

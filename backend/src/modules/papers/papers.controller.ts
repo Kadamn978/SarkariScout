@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Param, Body, UseGuards, Query } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { PapersService } from './papers.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -40,6 +41,7 @@ export class PapersController {
   }
 
   @Post(':id/download')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async recordDownload(@Param('id') id: string) {
     await this.papersService.incrementDownload(id);
     return { success: true };

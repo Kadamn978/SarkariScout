@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useSEO } from '../hooks/useSEO'
+import api from '../lib/api'
 
 export default function Contact() {
   useSEO({
@@ -14,10 +15,26 @@ export default function Contact() {
 
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    setLoading(true)
+    setError('')
+    try {
+      await api.post('/feedback/bugs', {
+        title: `[Contact] ${form.subject || 'General'}: ${form.message.substring(0, 80)}`,
+        description: `From: ${form.name} (${form.email})\n\n${form.message}`,
+        category: 'OTHER',
+        priority: 'LOW',
+      })
+      setSubmitted(true)
+    } catch (err) {
+      setError('Failed to send message. Please try again or email us directly.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -94,9 +111,10 @@ export default function Contact() {
                   <textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
                 </div>
-                <button type="submit"
-                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                  Send Message
+                {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+                <button type="submit" disabled={loading}
+                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50">
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             )}
