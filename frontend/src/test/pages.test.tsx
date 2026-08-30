@@ -43,7 +43,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Landing Page', () => {
   it('renders hero heading', () => {
     render(<Landing />, { wrapper: Wrapper })
-    expect(screen.getAllByText(/NaukarScout/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/RozgarScout/i).length).toBeGreaterThan(0)
   })
 
   it('renders category links', () => {
@@ -77,12 +77,12 @@ describe('FAQ Page', () => {
 
   it('renders FAQ items', () => {
     render(<FAQ />, { wrapper: Wrapper })
-    expect(screen.getByText(/What is NaukarScout/i)).toBeInTheDocument()
+    expect(screen.getByText(/What is RozgarScout/i)).toBeInTheDocument()
   })
 
   it('toggles FAQ answer on click', () => {
     render(<FAQ />, { wrapper: Wrapper })
-    const question = screen.getByText(/What is NaukarScout/i)
+    const question = screen.getByText(/What is RozgarScout/i)
     fireEvent.click(question)
     expect(screen.getByText(/government job aggregator/i)).toBeInTheDocument()
   })
@@ -96,7 +96,7 @@ describe('FAQ Page', () => {
 describe('Login Page', () => {
   it('renders login heading', () => {
     render(<Login />, { wrapper: Wrapper })
-    expect(screen.getByText(/Login to NaukarScout/i)).toBeInTheDocument()
+    expect(screen.getByText(/Login to RozgarScout/i)).toBeInTheDocument()
   })
 
   it('renders email and password fields', () => {
@@ -152,7 +152,7 @@ describe('Jobs Page', () => {
 describe('About Page', () => {
   it('renders about heading', () => {
     render(<About />, { wrapper: Wrapper })
-    expect(screen.getByText(/About NaukarScout/i)).toBeInTheDocument()
+    expect(screen.getByText(/About RozgarScout/i)).toBeInTheDocument()
   })
 
   it('renders content sections', () => {

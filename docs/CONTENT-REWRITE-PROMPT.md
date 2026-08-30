@@ -1,6 +1,6 @@
-# Content Rewrite Prompt — SarkariScout
+# Content Rewrite Prompt — RozgarScout
 
-Use this prompt whenever you need to rewrite, create, or review content pages (Terms, Privacy, About, FAQ, landing copy, error pages, etc.) for SarkariScout.
+Use this prompt whenever you need to rewrite, create, or review content pages (Terms, Privacy, About, FAQ, landing copy, error pages, etc.) for RozgarScout.
 
 ---
 

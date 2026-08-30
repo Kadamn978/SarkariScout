@@ -1,4 +1,4 @@
-# SarkariScout — Service Setup Guide
+# RozgarScout — Service Setup Guide
 
 Step-by-step instructions to get every external service working.
 
@@ -40,14 +40,14 @@ Step-by-step instructions to get every external service working.
 
 1. Go to https://console.cloud.google.com
 2. Click **Select a project** → **New Project**
-3. Name: `SarkariScout` → **Create**
+3. Name: `RozgarScout` → **Create**
 
 ### Step 2: Configure OAuth Consent Screen
 
 1. Go to **APIs & Services** → **OAuth consent screen**
 2. Select **External** → **Create**
 3. Fill in:
-   - App name: `SarkariScout`
+   - App name: `RozgarScout`
    - User support email: your email
    - Developer contact: your email
 4. Click **Save and Continue**
@@ -59,7 +59,7 @@ Step-by-step instructions to get every external service working.
 1. Go to **APIs & Services** → **Credentials**
 2. Click **+ Create Credentials** → **OAuth client ID**
 3. Application type: **Web application**
-4. Name: `SarkariScout Web`
+4. Name: `RozgarScout Web`
 5. Authorized redirect URIs: add `http://localhost:3000/api/auth/google/callback`
 6. Click **Create**
 7. Copy the **Client ID** and **Client Secret**
@@ -79,7 +79,7 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
 3. Select your test account
 4. You should be redirected back and logged in
 
-**Note:** In production, add your domain to **Authorized domains** and update `GOOGLE_CALLBACK_URL` to `https://sarkariscout.in/api/auth/google/callback`.
+**Note:** In production, add your domain to **Authorized domains** and update `GOOGLE_CALLBACK_URL` to `https://rozgarscout.in/api/auth/google/callback`.
 
 ---
 
@@ -96,13 +96,13 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
 
 1. Click **Create Project**
 2. Platform: **React**
-3. Project name: `sarkariscout-frontend`
+3. Project name: `rozgarscout-frontend`
 4. Click **Create Project**
 5. Skip the "install SDK" wizard — we already have Sentry code
 
 ### Step 3: Get DSN
 
-1. Go to **Settings** → **Projects** → **sarkariscout-frontend** → **Client Keys (DSN)**
+1. Go to **Settings** → **Projects** → **rozgarscout-frontend** → **Client Keys (DSN)**
 2. Copy the DSN (looks like `https://xxxx@sentry.io/xxxx`)
 
 ### Step 4: Update frontend .env
@@ -111,7 +111,7 @@ Create `frontend/.env` if it doesn't exist:
 
 ```
 VITE_API_URL=/api
-VITE_APP_NAME=SarkariScout
+VITE_APP_NAME=RozgarScout
 VITE_SENTRY_DSN=<paste-your-dsn-here>
 ```
 
@@ -142,7 +142,7 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 1. Go to https://www.google.com/adsense
 2. Click **Get started**
-3. Enter your website URL: `https://sarkariscout.in`
+3. Enter your website URL: `https://rozgarscout.in`
 4. Select country: **India**
 5. Choose: **Create new account**
 6. Fill in payment details (can be added later)
@@ -232,20 +232,20 @@ NCS_API_URL=https://api.ncs.gov.in
 
 1. Go to **SMTP & API** → **API Keys**
 2. Click **Generate a new API key**
-3. Name: `SarkariScout`
+3. Name: `RozgarScout`
 4. Copy the key
 
 ### Step 3: Verify Sender
 
 1. Go to **SMTP & API** → **Senders & IP**
-2. Add sender: `sarkariscout+noreply@gmail.com`
+2. Add sender: `rozgarscout+noreply@gmail.com`
 3. Verify the email (click link sent to that address)
 
 ### Step 4: Update .env (for production)
 
 ```
 BREVO_API_KEY=<your-brevo-api-key>
-BREVO_SENDER_EMAIL=sarkariscout+noreply@gmail.com
+BREVO_SENDER_EMAIL=rozgarscout+noreply@gmail.com
 ```
 
 **Note:** Brevo is for production. Keep Mailtrap for dev testing.
@@ -259,7 +259,7 @@ BREVO_SENDER_EMAIL=sarkariscout+noreply@gmail.com
 ### Step 1: Register Domain
 
 1. Go to https://www.godaddy.com or https://www.namecheap.com
-2. Search: `sarkariscout.in`
+2. Search: `rozgarscout.in`
 3. Register + buy (₹400-800/year for .in)
 
 ### Step 2: DNS Setup
@@ -269,15 +269,15 @@ Add these records:
 | Type  | Name | Value                               | TTL  |
 | ----- | ---- | ----------------------------------- | ---- |
 | A     | @    | Your server IP                      | 3600 |
-| CNAME | www  | sarkariscout.in                     | 3600 |
+| CNAME | www  | rozgarscout.in                     | 3600 |
 | MX    | @    | Mail provider MX                    | 3600 |
 | TXT   | @    | `v=spf1 include:mailtrap.io ~all` | 3600 |
 
 ### Step 3: Update Code
 
-1. `frontend/index.html`: change `sarkariscout.in` URLs
-2. `backend/.env`: `ALLOWED_ORIGINS=https://sarkariscout.in`
-3. `backend/.env`: `GOOGLE_CALLBACK_URL=https://sarkariscout.in/api/auth/google/callback`
+1. `frontend/index.html`: change `rozgarscout.in` URLs
+2. `backend/.env`: `ALLOWED_ORIGINS=https://rozgarscout.in`
+3. `backend/.env`: `GOOGLE_CALLBACK_URL=https://rozgarscout.in/api/auth/google/callback`
 
 ---
 
@@ -286,9 +286,9 @@ Add these records:
 ### backend/.env (required for app to start)
 
 ```
-DATABASE_URL=mysql://root@127.0.0.1:3306/sarkariscout?connection_limit=10&pool_timeout=30
+DATABASE_URL=mysql://root@127.0.0.1:3306/rozgarscout?connection_limit=10&pool_timeout=30
 REDIS_URL=redis://localhost:6379
-JWT_SECRET=sarkariscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
+JWT_SECRET=rozgarscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
 PORT=3000
 NODE_ENV=development
 ALLOWED_ORIGINS=http://localhost:5173
@@ -297,10 +297,10 @@ SMTP_HOST=sandbox.smtp.mailtrap.io
 SMTP_PORT=2525
 SMTP_USER=a79cfe5727090a
 SMTP_PASS=270b68f6b38964
-SMTP_FROM=SarkariScout <sarkariscout+noreply@gmail.com>
+SMTP_FROM=RozgarScout <rozgarscout+noreply@gmail.com>
 SMTP_SECURE=false
 BREVO_API_KEY=
-BREVO_SENDER_EMAIL=sarkariscout+noreply@gmail.com
+BREVO_SENDER_EMAIL=rozgarscout+noreply@gmail.com
 NCS_API_KEY=
 NCS_API_URL=https://api.ncs.gov.in
 ENCRYPTION_KEY=0123456789abcdef0123456789abcdef
@@ -313,7 +313,7 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
 
 ```
 VITE_API_URL=/api
-VITE_APP_NAME=SarkariScout
+VITE_APP_NAME=RozgarScout
 VITE_SENTRY_DSN=
 VITE_ADSENSE_CLIENT=
 ```

@@ -93,7 +93,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-sm text-gray-500">Monitor and manage your NaukarScout instance</p>
+            <p className="text-sm text-gray-500">Monitor and manage your RozgarScout instance</p>
           </div>
           <Link to="/dashboard" className="text-sm text-blue-600 hover:text-blue-700">← Back to Dashboard</Link>
         </div>

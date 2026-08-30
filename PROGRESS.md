@@ -1,4 +1,4 @@
-# SarkariScout — Progress Tracker
+# RozgarScout — Progress Tracker
 
 Single source of truth. Read this file first at the start of every session.
 
@@ -192,7 +192,7 @@ Run: `python crewai/run.py [research|security|feature|data|sprint]`
 | FreeJobAlert.com | 2011 | 10M+ | State-wise filtering, PDF tools |
 | Testbook | 2014 | 40M+ | Mock tests, live classes |
 | Adda247 | 2016 | 30M+ | Study material, bilingual |
-| **SarkariScout** | 2026 | — | **Eligibility matching + tracker + change detection** |
+| **RozgarScout** | 2026 | — | **Eligibility matching + tracker + change detection** |
 
 **Our unique advantages:**
 1. Automated eligibility matching (competitors don't have this)
@@ -220,16 +220,16 @@ Run: `python crewai/run.py [research|security|feature|data|sprint]`
 
 ## Social Media Strategy (Aug 27)
 
-**SarkariScout accounts to create:**
+**RozgarScout accounts to create:**
 | Platform | Handle | Priority |
 |---|---|---|
-| X (Twitter) | @SarkariScout | P0 |
-| Telegram | @SarkariScout (Channel) | P0 |
-| WhatsApp | SarkariScout Channel | P0 |
-| Instagram | @sarkariscout | P1 |
-| YouTube | SarkariScout | P1 |
-| Facebook | SarkariScout | P1 |
-| LinkedIn | SarkariScout | P2 |
+| X (Twitter) | @RozgarScout | P0 |
+| Telegram | @RozgarScout (Channel) | P0 |
+| WhatsApp | RozgarScout Channel | P0 |
+| Instagram | @rozgarscout | P1 |
+| YouTube | RozgarScout | P1 |
+| Facebook | RozgarScout | P1 |
+| LinkedIn | RozgarScout | P2 |
 
 **Social media monitoring:**
 - X: @SSC_GoI, @ibps_official, @indiannavy, @IAF_MCC, @DRDO_India

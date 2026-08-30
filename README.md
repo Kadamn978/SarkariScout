@@ -1,6 +1,6 @@
-# SarkariScout 🛰️
+# RozgarScout 🛰️
 
-**Never miss a government job again.** SarkariScout monitors every major Indian government job & exam notification source (all-India + Maharashtra), filters them against each user's eligibility profile (education, state, languages, age, category), and sends email alerts **only for jobs they can actually apply to** — before deadlines close.
+**Never miss a government job again.** RozgarScout monitors every major Indian government job & exam notification source (all-India + Maharashtra), filters them against each user's eligibility profile (education, state, languages, age, category), and sends email alerts **only for jobs they can actually apply to** — before deadlines close.
 
 ## 🎯 The Promise
 

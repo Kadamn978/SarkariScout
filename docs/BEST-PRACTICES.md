@@ -1,4 +1,4 @@
-# Best Practices Implemented — SarkariScout
+# Best Practices Implemented — RozgarScout
 
 ## Backend (NestJS + Prisma + MySQL + Redis)
 

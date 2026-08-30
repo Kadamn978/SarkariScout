@@ -3,7 +3,7 @@
 # Run this instead of manual git push
 
 echo ""
-echo "=== SarkariScout Safe Push ==="
+echo "=== RozgarScout Safe Push ==="
 echo ""
 
 echo "[1/4] Checking for uncommitted changes..."

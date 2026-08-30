@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# SarkariScout Phone Server - Deploy Script
+# RozgarScout Phone Server - Deploy Script
 # =============================================================================
 # Pulls latest code, applies phone-specific patches, builds, and restarts.
 # Run from laptop: bash deploy.sh
@@ -11,11 +11,11 @@ set -euo pipefail
 PHONE_HOST="${PHONE_HOST:-127.0.0.1}"
 PHONE_PORT="${PHONE_PORT:-8022}"
 PHONE_USER="${PHONE_USER:-127.0.0.1}"
-REPO_DIR="$HOME/SarkariScout"
+REPO_DIR="$HOME/RozgarScout"
 BACKEND_DIR="$REPO_DIR/backend"
 LOG_DIR="$BACKEND_DIR/logs"
 BRANCH="pre-dev"
-APP_NAME="sarkari-backend"
+APP_NAME="rozgar-backend"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 info()  { echo -e "${GREEN}[INFO]${NC}  $1"; }
@@ -45,7 +45,7 @@ run_cmd_bg() {
 }
 
 echo "=========================================="
-echo "  SarkariScout Phone Server Deploy"
+echo "  RozgarScout Phone Server Deploy"
 echo "=========================================="
 
 # --- Step 1: Pre-flight checks ---
@@ -65,7 +65,7 @@ Redis_OK=$(run_cmd "pgrep -f redis-server >/dev/null && echo yes || echo no" 2>/
 
 if [[ "$MariaDB_OK" != "yes" ]]; then
   warn "MariaDB not running! Starting..."
-  run_cmd "cd ~/SarkariScout && bash infra/phone-server/keep-alive.sh" 2>/dev/null || true
+  run_cmd "cd ~/RozgarScout && bash infra/phone-server/keep-alive.sh" 2>/dev/null || true
   sleep 2
 fi
 if [[ "$Redis_OK" != "yes" ]]; then
@@ -114,7 +114,7 @@ const DB_HOST = process.env.DB_HOST || '127.0.0.1';
 const DB_PORT = parseInt(process.env.DB_PORT || '3306', 10);
 const DB_USER = process.env.DB_USER || 'sarkari';
 const DB_PASSWORD = process.env.DB_PASSWORD || '';
-const DB_NAME = process.env.DB_NAME || 'sarkariscout';
+const DB_NAME = process.env.DB_NAME || 'rozgarscout';
 
 const ADAPTER = new PrismaMariaDb({
   host: DB_HOST,

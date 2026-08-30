@@ -97,7 +97,7 @@ export default function Footer() {
 
         <ScrollReveal delay={400}>
           <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} NaukarScout. All rights reserved.</p>
+            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} RozgarScout. All rights reserved.</p>
             <div className="flex gap-6 text-sm">
               {['Privacy', 'Terms', 'Contact'].map((label) => (
                 <motion.div key={label} whileHover={{ y: -2 }}>

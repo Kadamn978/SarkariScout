@@ -3,7 +3,7 @@ REM safe-push.bat — Pull before push, handle conflicts safely
 REM Run this instead of manual git push
 
 echo.
-echo === SarkariScout Safe Push ===
+echo === RozgarScout Safe Push ===
 echo.
 
 echo [1/4] Checking for uncommitted changes...

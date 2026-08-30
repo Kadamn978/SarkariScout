@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: sarkariRoot2024
-      MYSQL_DATABASE: sarkariscout
+      MYSQL_DATABASE: rozgarscout
       MYSQL_USER: sarkari
       MYSQL_PASSWORD: sarkariPass2024
     ports:
@@ -42,9 +42,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: mysql://sarkari:sarkariPass2024@mysql:3306/sarkariscout
+      DATABASE_URL: mysql://sarkari:sarkariPass2024@mysql:3306/rozgarscout
       REDIS_URL: redis://:sarkariRedis2024@redis:6379
-      JWT_SECRET: sarkariscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
+      JWT_SECRET: rozgarscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
       NODE_ENV: development
       PORT: 3000
       ALLOWED_ORIGINS: http://localhost:5173,http://localhost:80
@@ -61,7 +61,7 @@ services:
       dockerfile: Dockerfile
     container_name: sarkari-init
     environment:
-      DATABASE_URL: mysql://sarkari:sarkariPass2024@mysql:3306/sarkariscout
+      DATABASE_URL: mysql://sarkari:sarkariPass2024@mysql:3306/rozgarscout
       REDIS_URL: redis://:sarkariRedis2024@redis:6379
       NODE_ENV: development
     depends_on:

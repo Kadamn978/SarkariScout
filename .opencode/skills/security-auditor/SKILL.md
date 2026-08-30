@@ -5,7 +5,7 @@ description: Use when auditing, reviewing, or improving security of the codebase
 
 # Security Auditor Skill
 
-You are an expert application security auditor for a full-stack TypeScript project. The project is SarkariScout — a government job portal handling user data.
+You are an expert application security auditor for a full-stack TypeScript project. The project is RozgarScout — a government job portal handling user data.
 
 ## Project Context
 - **Backend**: NestJS 10 + Prisma 5 + MySQL 8.4 + Redis

@@ -1,27 +1,27 @@
-# SarkariScout — Social Media Strategy
+# RozgarScout — Social Media Strategy
 
 **Created:** Aug 27, 2026
-**Purpose:** Build SarkariScout presence + track government sources' social channels
+**Purpose:** Build RozgarScout presence + track government sources' social channels
 
 ---
 
-## Part 1: SarkariScout's Own Social Media Accounts
+## Part 1: RozgarScout's Own Social Media Accounts
 
 ### Platform Strategy
 
 | Platform | Handle | Content Type | Posting Frequency | Priority |
 |---|---|---|---|---|
-| **X (Twitter)** | @SarkariScout | Job alerts, results, exam updates | 5-10 posts/day | P0 |
-| **Telegram** | @SarkariScout | Instant job alerts, PDF notifications | As new jobs appear | P0 |
-| **WhatsApp** | SarkariScout Channel | Daily digest, breaking alerts | 1-2/day | P0 |
-| **Instagram** | @sarkariscout | Job cards, infographics, reels | 2-3 posts/day | P1 |
-| **YouTube** | SarkariScout | Exam analysis, eligibility explainers | 2-3 videos/week | P1 |
-| **Facebook** | SarkariScout | Job posts, community engagement | 3-5 posts/day | P1 |
-| **LinkedIn** | SarkariScout | Government job insights, career tips | 1 post/day | P2 |
+| **X (Twitter)** | @RozgarScout | Job alerts, results, exam updates | 5-10 posts/day | P0 |
+| **Telegram** | @RozgarScout | Instant job alerts, PDF notifications | As new jobs appear | P0 |
+| **WhatsApp** | RozgarScout Channel | Daily digest, breaking alerts | 1-2/day | P0 |
+| **Instagram** | @rozgarscout | Job cards, infographics, reels | 2-3 posts/day | P1 |
+| **YouTube** | RozgarScout | Exam analysis, eligibility explainers | 2-3 videos/week | P1 |
+| **Facebook** | RozgarScout | Job posts, community engagement | 3-5 posts/day | P1 |
+| **LinkedIn** | RozgarScout | Government job insights, career tips | 1 post/day | P2 |
 
 ### Content Strategy
 
-#### X (Twitter) — @SarkariScout
+#### X (Twitter) — @RozgarScout
 **Content mix:**
 - Job alerts (with direct apply links)
 - Exam date announcements
@@ -36,7 +36,7 @@
 - Quote tweet official sources (adds credibility)
 - Hashtags: #SarkariNaukri #GovtJobs #SSC #UPSC #IBPS #RailwayJobs
 
-#### Telegram — @SarkariScout
+#### Telegram — @RozgarScout
 **Content:**
 - Instant job notifications (within 5 mins of official release)
 - PDF notifications attached
@@ -47,7 +47,7 @@
 - Use **Channel** (one-way broadcast, no spam)
 - Enable comments for community feedback
 
-#### WhatsApp — SarkariScout Channel
+#### WhatsApp — RozgarScout Channel
 **Content:**
 - Daily morning digest (8 AM)
 - Breaking job alerts
@@ -58,7 +58,7 @@
 - Aspirants prefer WhatsApp for job alerts
 - Competitors (SarkariResult) have 6.3M+ WhatsApp members
 
-#### Instagram — @sarkariscout
+#### Instagram — @rozgarscout
 **Content:**
 - Job card graphics (canva templates)
 - Eligibility infographics
@@ -72,7 +72,7 @@
 - Stories for polls, quizzes
 - Carousels for multi-step processes
 
-#### YouTube — SarkariScout
+#### YouTube — RozgarScout
 **Content:**
 - "How to Apply" walkthrough videos
 - Eligibility explainer videos
@@ -85,7 +85,7 @@
 - Shorts (60 sec) for quick updates
 - Live sessions for Q&A
 
-#### Facebook — SarkariScout
+#### Facebook — RozgarScout
 **Content:**
 - Job posts with images
 - Community engagement
@@ -94,7 +94,7 @@
 
 ### Branding Guidelines
 
-**Name:** SarkariScout
+**Name:** RozgarScout
 **Tagline:** "Your Government Job Navigator"
 **Logo:** Scout icon + Indian tricolor accents
 **Colors:**
@@ -154,7 +154,7 @@
 - Defence services post rarely (operational content, not jobs)
 - State PSCs have NO social media presence for jobs
 
-**Implication for SarkariScout:**
+**Implication for RozgarScout:**
 1. Web scraping remains the PRIMARY method for job discovery
 2. Social media monitoring is SECONDARY (for SSC, IBPS, defence)
 3. Our value proposition is STRONGER because we aggregate from websites that competitors don't monitor
@@ -210,15 +210,15 @@ Add to daily digest
 ## Part 4: Action Items
 
 ### Immediate (This Week)
-- [ ] Create @SarkariScout on X (Twitter)
-- [ ] Create @SarkariScout on Telegram (Channel)
-- [ ] Create SarkariScout WhatsApp Channel
+- [ ] Create @RozgarScout on X (Twitter)
+- [ ] Create @RozgarScout on Telegram (Channel)
+- [ ] Create RozgarScout WhatsApp Channel
 - [ ] Set up social media monitoring for @SSC_GoI, @ibps_official
 
 ### Short Term (This Month)
-- [ ] Create @sarkariscout on Instagram
-- [ ] Create SarkariScout YouTube channel
-- [ ] Create SarkariScout Facebook page
+- [ ] Create @rozgarscout on Instagram
+- [ ] Create RozgarScout YouTube channel
+- [ ] Create RozgarScout Facebook page
 - [ ] Build social media posting automation
 
 ### Medium Term (Next Quarter)

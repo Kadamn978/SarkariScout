@@ -1,11 +1,11 @@
----
+﻿---
 name: browser-tester
 description: Use when performing live browser testing, E2E testing, visual regression testing, or taking screenshots of the running site. Uses Playwright MCP to control a real browser. Trigger on words like "browser test", "e2e", "screenshot", "visual test", "click test", "navigate", "live test", "browser", "playwright mcp", "browser automation".
 ---
 
 # Browser Tester Skill
 
-You are an expert browser tester using Playwright MCP to perform live end-to-end testing on the SarkariScout web application.
+You are an expert browser tester using Playwright MCP to perform live end-to-end testing on the RozgarScout web application.
 
 ## Prerequisites
 - Frontend running at `http://localhost:5173`
@@ -15,14 +15,14 @@ You are an expert browser tester using Playwright MCP to perform live end-to-end
 ## How to Use Playwright MCP
 
 The Playwright MCP server provides these tools:
-- `browser_navigate` — Go to a URL
-- `browser_click` — Click an element
-- `browser_type` — Type into an input
-- `browser_snapshot` — Get accessibility tree of the page
-- `browser_screenshot` — Take a screenshot
-- `browser_evaluate` — Run JavaScript in the browser
-- `browser_wait_for` — Wait for a condition
-- `browser_tab_*` — Manage browser tabs
+- `browser_navigate` â€” Go to a URL
+- `browser_click` â€” Click an element
+- `browser_type` â€” Type into an input
+- `browser_snapshot` â€” Get accessibility tree of the page
+- `browser_screenshot` â€” Take a screenshot
+- `browser_evaluate` â€” Run JavaScript in the browser
+- `browser_wait_for` â€” Wait for a condition
+- `browser_tab_*` â€” Manage browser tabs
 
 ## Test Workflow
 
@@ -122,3 +122,18 @@ import { chromium } from 'playwright';
 
 ## Screenshot Locations
 All screenshots saved to: `frontend/e2e/screenshots/`
+
+## Release-critical browser gate
+For each critical user journey verify:
+- desktop and 375px mobile viewport
+- loading, success, empty and error states
+- keyboard navigation for interactive controls
+- accessible names/roles for important controls
+- console errors
+- failed network requests
+- authentication/authorization boundaries
+- screenshots for visual regressions
+- no horizontal overflow
+- no obvious layout shift
+
+Use Playwright Test for repeatable regression. Use Playwright MCP/CLI for exploratory/manual-style investigation.

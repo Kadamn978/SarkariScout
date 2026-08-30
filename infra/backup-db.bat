@@ -1,6 +1,6 @@
 @echo off
 REM ─────────────────────────────────────────────────
-REM  SarkariScout — Automated DB Backup Script
+REM  RozgarScout — Automated DB Backup Script
 REM  Run daily via Task Scheduler or cron
 REM ─────────────────────────────────────────────────
 
@@ -9,7 +9,7 @@ setlocal
 REM ── Config ──
 set MYSQL_BIN="D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe"
 set MYSQLDUMP_BIN="D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysqldump.exe"
-set DB_NAME=sarkariscout
+set DB_NAME=rozgarscout
 set DB_USER=root
 set DB_PASS=
 set BACKUP_DIR=D:\Nilesh\laragon\www\New folder\backups
@@ -24,15 +24,15 @@ set TIMESTAMP=%dt:~0,4%%dt:~4,2%%dt:~6,2_%dt:~8,2%%dt:~10,2%%dt:~12,2%
 
 REM ── Backup ──
 echo [%date% %time%] Starting backup...
-"%MYSQLDUMP_BIN%" -u %DB_USER% %DB_PASS% --single-transaction --routines --triggers %DB_NAME% > "%BACKUP_DIR%\sarkariscout_%TIMESTAMP%.sql"
+"%MYSQLDUMP_BIN%" -u %DB_USER% %DB_PASS% --single-transaction --routines --triggers %DB_NAME% > "%BACKUP_DIR%\rozgarscout_%TIMESTAMP%.sql"
 
 if %ERRORLEVEL% equ 0 (
-    echo [%date% %time%] Backup successful: sarkariscout_%TIMESTAMP%.sql
+    echo [%date% %time%] Backup successful: rozgarscout_%TIMESTAMP%.sql
     
     REM ── Compress ──
-    powershell -command "Compress-Archive -Path '%BACKUP_DIR%\sarkariscout_%TIMESTAMP%.sql' -DestinationPath '%BACKUP_DIR%\sarkariscout_%TIMESTAMP%.zip' -Force"
-    del "%BACKUP_DIR%\sarkariscout_%TIMESTAMP%.sql"
-    echo [%date% %time%] Compressed to sarkariscout_%TIMESTAMP%.zip
+    powershell -command "Compress-Archive -Path '%BACKUP_DIR%\rozgarscout_%TIMESTAMP%.sql' -DestinationPath '%BACKUP_DIR%\rozgarscout_%TIMESTAMP%.zip' -Force"
+    del "%BACKUP_DIR%\rozgarscout_%TIMESTAMP%.sql"
+    echo [%date% %time%] Compressed to rozgarscout_%TIMESTAMP%.zip
 ) else (
     echo [%date% %time%] ERROR: Backup failed!
     exit /b 1

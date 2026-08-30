@@ -1,12 +1,26 @@
-<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#1e40af"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <text x="600" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">SarkariScout</text>
-  <text x="600" y="360" font-family="Arial, sans-serif" font-size="32" fill="rgba(255,255,255,0.8)" text-anchor="middle">Government Job Alerts & Preparation</text>
-  <text x="600" y="420" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.6)" text-anchor="middle">SSC | UPSC | IBPS | RRB | State PSCs</text>
+  <rect x="0" y="0" width="1200" height="630" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  
+  <!-- Logo circle -->
+  <circle cx="600" cy="200" r="80" fill="rgba(255,255,255,0.15)"/>
+  <text x="600" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white">SS</text>
+  
+  <!-- Title -->
+  <text x="600" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="white">RozgarScout</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.85)">Government Job Alerts &amp; Preparation</text>
+  
+  <!-- Features -->
+  <text x="600" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.7)">81+ Sources  •  Daily Alerts  •  Mock Tests  •  Application Tracker</text>
+  
+  <!-- URL -->
+  <text x="600" y="580" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.6)">rozgarscout.in</text>
 </svg>

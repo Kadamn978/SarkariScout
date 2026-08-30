@@ -112,9 +112,9 @@ export class AuthService {
     const verifyUrl = `${FRONTEND_URL}/verify-email?token=${token}`;
     await this.emailService.sendEmail({
       to: email,
-      subject: 'NaukarScout - Verify your email',
+      subject: 'RozgarScout - Verify your email',
       html: `
-        <h2>Welcome to NaukarScout!</h2>
+        <h2>Welcome to RozgarScout!</h2>
         <p>Click the link below to verify your email address:</p>
         <p><a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px">Verify Email</a></p>
         <p>This link expires in 24 hours.</p>
@@ -150,7 +150,7 @@ export class AuthService {
     const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`;
     await this.emailService.sendEmail({
       to: user.email,
-      subject: 'NaukarScout - Password Reset',
+      subject: 'RozgarScout - Password Reset',
       html: `
         <h2>Password Reset Request</h2>
         <p>Click the link below to reset your password:</p>

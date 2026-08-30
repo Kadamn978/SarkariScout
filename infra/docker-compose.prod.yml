@@ -10,7 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - TZ=Asia/Kolkata
-      - DATABASE_URL=mysql://sarkari:${DB_PASSWORD}@mysql:3306/sarkariscout
+      - DATABASE_URL=mysql://sarkari:${DB_PASSWORD}@mysql:3306/rozgarscout
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: sarkariscout
+      MYSQL_DATABASE: rozgarscout
       MYSQL_USER: sarkari
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:

@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # ============================================================
-# SARKARISCOUT - Phone Server Setup Script
+# ROZGARSCOUT - Phone Server Setup Script
 # Run this inside Termux on your Android phone
 # ============================================================
 
@@ -158,7 +158,7 @@ echo "It will give you a URL. Open it on any device to authenticate."
 echo "After that, your phone gets a permanent IP like: 100.x.x.x"
 
 # ============================================================
-print_step "STEP 7: Clone SarkariScout Repository"
+print_step "STEP 7: Clone RozgarScout Repository"
 # ============================================================
 
 cd ~
@@ -168,11 +168,11 @@ echo -e "${YELLOW}Enter your GitHub repo URL (or press Enter to skip):${NC}"
 read -r REPO_URL
 
 if [ -n "$REPO_URL" ]; then
-    git clone "$REPO_URL" sarkariscout
-    print_ok "Repository cloned to ~/sarkariscout"
+    git clone "$REPO_URL" rozgarscout
+    print_ok "Repository cloned to ~/rozgarscout"
 else
-    mkdir -p sarkariscout
-    print_warn "Skipped. Clone manually later with: git clone <url> ~/sarkariscout"
+    mkdir -p rozgarscout
+    print_warn "Skipped. Clone manually later with: git clone <url> ~/rozgarscout"
 fi
 
 # ============================================================
@@ -183,9 +183,9 @@ cat > ~/deploy.sh << 'DEPLOYEOF'
 #!/data/data/com.termux/files/usr/bin/bash
 set -e
 
-echo "=== Deploying SarkariScout ==="
+echo "=== Deploying RozgarScout ==="
 
-cd ~/sarkariscout
+cd ~/rozgarscout
 
 # Pull latest code
 git pull origin main
@@ -196,7 +196,7 @@ echo "Starting Docker containers..."
 
 # Option 1: Run inside Ubuntu proot
 proot-distro login ubuntu --shared-tmp -- bash -c "
-    cd /data/data/com.termux/files/home/sarkariscout/infra
+    cd /data/data/com.termux/files/home/rozgarscout/infra
     docker compose -f docker-compose.prod.yml up -d --build
 "
 
@@ -276,7 +276,7 @@ echo -e "${GREEN}Your phone server is ready!${NC}"
 echo ""
 echo "Quick commands:"
 echo "  start-server    - Start Ubuntu with Docker"
-echo "  ~/deploy.sh     - Deploy SarkariScout"
+echo "  ~/deploy.sh     - Deploy RozgarScout"
 echo "  ~/check-status.sh - Check server status"
 echo ""
 echo "From your PC (after Tailscale is setup):"

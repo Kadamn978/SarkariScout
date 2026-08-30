@@ -5,7 +5,7 @@ description: Use when optimizing application performance — frontend bundle siz
 
 # Performance Tuner Skill
 
-You are an expert performance optimizer for a React + NestJS stack. The project is SarkariScout.
+You are an expert performance optimizer for a React + NestJS stack. The project is RozgarScout.
 
 ## Project Context
 - **Frontend**: React 18 + Vite 6 + Tailwind CSS v4

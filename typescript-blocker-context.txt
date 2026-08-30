@@ -1,0 +1,211 @@
+﻿===== job-validator.agent.ts 120-155 =====
+    return !!existing;
+  }
+
+  private async insertJob(job: ScrapedOfficialJob): Promise<void> {
+    const source = await this.prisma.source.findFirst({
+      where: { baseUrl: { contains: job.officialDomain } },
+    });
+
+    const sourceId = source?.id || 'unknown';
+
+    // Generate fingerprint
+    const crypto = await import('crypto');
+    const fingerprint = crypto.createHash('sha256')
+      .update(`${job.title}-${job.org}-${job.officialDomain}`)
+      .digest('hex')
+      .substring(0, 32);
+
+    await this.prisma.job.create({
+      data: {
+        fingerprint,
+        sourceId,
+        sourceUrl: job.applyUrl,
+        sourceType: 'OFFICIAL',
+        title: job.title,
+        org: job.org,
+        postNames: JSON.stringify(job.postNames),
+        description: job.description,
+        vacancies: job.vacancies,
+        location: job.location,
+        category: 'GOVERNMENT',
+        type: 'FULL_TIME',
+        status: 'OPEN',
+        salary: null,
+        eligibility: null,
+        importantDates: null,
+        howToApply: null,
+===== competitor-monitor.service.ts 125-180 =====
+      if (seen.has(l.url)) return false;
+      seen.add(l.url);
+      return true;
+    });
+  }
+
+  async getDiscoveredSourcesSummary() {
+    const competitors = await this.prisma.source.findMany({
+      where: { configJson: { contains: '"isCompetitor":true' } },
+      select: { id: true, name: true, baseUrl: true, lastRunAt: true },
+    });
+
+    const trackedOfficial = await this.prisma.source.count({
+      where: { configJson: { notContains: '"isCompetitor":true' } },
+    });
+
+    return {
+      competitors: competitors.length,
+      officialSources: trackedOfficial,
+      competitorList: competitors,
+    };
+  }
+
+  private extractDomain(url: string): string {
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return '';
+    }
+  }
+
+  private cleanHtml(html: string): string {
+    return html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&#\d+;/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private async fetchWithRetry(url: string, retries = 3): Promise<string | null> {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const validation = validateUrl(url);
+        if (!validation.valid) {
+          this.logger.warn(`Invalid URL: ${validation.error}`);
+          return null;
+        }
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(url, {
+===== Prisma Job model =====
+
+> model Job {
+    id                      String    @id @default(uuid())
+    fingerprint             String    @unique
+    sourceId                String?
+    source                  Source?   @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+    sourceUrl               String?
+    org                     String
+    advtNo                  String?
+    title                   String
+    postNames               String?   @db.Text
+    totalVacancies          Int?
+    state                   String    @default("ALL_IN")
+    district                String?
+    category                JobCategory @default(GOVERNMENT)
+    examFamily              String?
+    qualificationText       String?   @db.Text
+    qualificationLevels     String?   @db.Text
+    ageMin                  Int?
+    ageMax                  Int?
+    gender                  String?   @default("ALL")
+    categoryFeesJson        String?   @db.Text
+    generalFee              Int?
+    obcFee                  Int?
+    scStFee                 Int?
+    applyStart              DateTime?
+    applyEnd                DateTime?
+    feeEnd                  DateTime?
+    feePaymentEnd           DateTime?
+    examDate                DateTime?
+    examEndDate             DateTime?
+    admitCardDate           DateTime?
+    resultDate              DateTime?
+    interviewDate           DateTime?
+    status                  JobStatus @default(OPEN)
+    notificationPdfUrl      String?
+    applyUrl                String?
+    applyUrlPost            String?
+    officialNotificationUrl String?
+    officialUrls            String?   @db.Text
+    eligibilityCriteria     String?   @db.Text
+    howToApply              String?   @db.Text
+    selectionProcess        String?   @db.Text
+    examPattern             String?   @db.Text
+    syllabus                String?   @db.Text
+    importantDates          String?   @db.Text
+    contactInfo             String?   @db.Text
+    sourceUrlHash           String?
+    rawHtml                 String?   @db.Text
+    rawHash                 String?
+    firstSeenAt             DateTime  @default(now())
+    lastSeenAt              DateTime  @default(now())
+    createdAt               DateTime  @default(now())
+    updatedAt               DateTime  @updatedAt
+  
+    changes       JobChange[]
+    trackers      UserJob[]
+    notifications NotificationLog[]
+  
+    @@index([status])
+    @@index([rawHash])
+    @@index([sourceId])
+    @@index([state])
+    @@index([district])
+    @@index([applyEnd])
+    @@index([category])
+    @@index([examFamily])
+    @@index([feePaymentEnd])
+    @@index([sourceId, createdAt])
+    @@index([status, applyEnd])
+    @@index([status, createdAt])
+    @@index([category, status])
+    @@index([status, state, applyEnd])
+    @@index([status, category, applyEnd])
+    @@index([status, examFamily])
+    @@map("jobs")
+  }
+  
+===== URL validation definitions =====
+backend\src\modules\crawler\competitor-monitor.service.ts:3:import { validateUrl, sanitizeError } from './url-validator';
+backend\src\modules\crawler\competitor-monitor.service.ts:171:        const validation = validateUrl(url);
+backend\src\modules\crawler\crawler.service.ts:5:import { validateUrl, validateHeaders, sanitizeError } from './url-validator';
+backend\src\modules\crawler\crawler.service.ts:177:    // Validate source URL
+backend\src\modules\crawler\crawler.service.ts:178:    const urlCheck = validateUrl(source.baseUrl);
+backend\src\modules\crawler\fake-site-detector.service.ts:7:  reason: string;
+backend\src\modules\crawler\job-deletion-detector.service.ts:4:import { validateUrl, sanitizeError } from './url-validator';
+backend\src\modules\crawler\job-deletion-detector.service.ts:158:    // Validate URL before fetching
+backend\src\modules\crawler\job-deletion-detector.service.ts:159:    const urlCheck = validateUrl(url);
+backend\src\modules\crawler\rss-monitor.service.ts:4:import { validateUrl, sanitizeError } from './url-validator';
+backend\src\modules\crawler\rss-monitor.service.ts:67:    // Validate URL before fetching
+backend\src\modules\crawler\rss-monitor.service.ts:68:    const urlCheck = validateUrl(feed.feedUrl);
+backend\src\modules\crawler\url-validator.ts:31:export function validateUrl(url: string, allowedDomains?: string[]): { valid: boolean; reason: string 
+} {
+backend\src\modules\crawler\url-validator.ts:65:export function validateHeaders(headersJson: string): { valid: boolean; safe: Record<string, string>; 
+blocked: string[] } {
+backend\src\modules\crawler\agents\competitor-discovery.agent.ts:2:import { validateUrl } from '../url-validator';
+backend\src\modules\crawler\agents\competitor-discovery.agent.ts:213:        const validation = validateUrl(url);
+backend\src\modules\crawler\agents\job-validator.agent.ts:15:  isValid: boolean;
+backend\src\modules\crawler\agents\job-validator.agent.ts:16:  skipReason?: string;
+backend\src\modules\crawler\agents\official-scraper.agent.ts:3:import { validateUrl } from '../url-validator';
+backend\src\modules\crawler\agents\official-scraper.agent.ts:120:  private isValidApplyDomain(linkDomain: string, sourceDomain: string): boolean {
+backend\src\modules\crawler\agents\official-scraper.agent.ts:175:        const validation = validateUrl(url);
+backend\src\modules\matching\matching.service.ts:9:  reasons: string[];
+backend\src\modules\matching\matching.service.ts:98:    const reasons: string[] = [];
+backend\src\modules\matching\matching.service.ts:141:  private checkEducation(profile: Profile, job: Job): { score: number; reason?: string; 
+blocked?: boolean } {
+backend\src\modules\matching\matching.service.ts:165:  private checkState(profile: Profile, job: Job): { score: number; reason?: string } {
+backend\src\modules\matching\matching.service.ts:172:  private checkCategory(profile: Profile, job: Job): { score: number; reason?: string } {
+backend\src\modules\matching\matching.service.ts:183:  private checkAge(profile: Profile, job: Job): { score: number; reason?: string; blocked?: 
+boolean } {
+backend\src\modules\matching\matching.service.ts:211:  private checkGender(profile: Profile, job: Job): { score: number; reason?: string; blocked?: 
+boolean } {
+backend\src\modules\matching\matching.service.ts:222:  private checkQualificationText(profile: Profile, job: Job): { score: number; reason?: string } 
+{
+
+

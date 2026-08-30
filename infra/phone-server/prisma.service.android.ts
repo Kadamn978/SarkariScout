@@ -490,7 +490,7 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
       port: 3306,
       user: 'sarkari',
       password: 'sarkari123',
-      database: 'sarkariscout',
+      database: 'rozgarscout',
       waitForConnections: true,
       connectionLimit: 5,
       queueLimit: 0,

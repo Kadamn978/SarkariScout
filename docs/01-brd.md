@@ -6,7 +6,7 @@
 
 ## 1. Executive Summary
 
-SarkariScout is a web application that aggregates **all Indian government job and exam notifications** (all-India + Maharashtra focus), filters them against a user's **eligibility profile**, and delivers **email notifications** only for jobs the user can genuinely apply to — before application deadlines and fee-payment windows close. Users additionally get an **application tracker** with automatic alerts on exam-date changes, admit cards, results, venue changes, and corrigenda.
+RozgarScout is a web application that aggregates **all Indian government job and exam notifications** (all-India + Maharashtra focus), filters them against a user's **eligibility profile**, and delivers **email notifications** only for jobs the user can genuinely apply to — before application deadlines and fee-payment windows close. Users additionally get an **application tracker** with automatic alerts on exam-date changes, admit cards, results, venue changes, and corrigenda.
 
 The product is **free for users** and monetized through non-intrusive display ads (fixed side/top/bottom banners only — no popups, no interstitials), affiliate links, and a premium tier. Total infrastructure cost until first revenue: **₹0** (free tiers only).
 

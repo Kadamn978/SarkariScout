@@ -34,6 +34,6 @@ ssh root@<phone-tailscale-ip>
 
 From PC or phone:
 ```bash
-cd ~/sarkariscout
+cd ~/rozgarscout
 ./deploy.sh
 ```

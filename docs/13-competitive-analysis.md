@@ -20,7 +20,7 @@
 
 ## 2. Feature Comparison
 
-| Feature | Sarkari Result | Testbook | Adda247 | FreeJobAlert | **SarkariScout** |
+| Feature | Sarkari Result | Testbook | Adda247 | FreeJobAlert | **RozgarScout** |
 |---|---|---|---|---|---|
 | Job Notifications | ✅ Core | ✅ Secondary | ✅ Secondary | ✅ Core | ✅ Core |
 | Admit Cards | ✅ | ✅ | ✅ | ✅ | ⬜ Phase 2 |

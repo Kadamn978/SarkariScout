@@ -41,7 +41,7 @@
 - **Date:** 2026-08-22
 - **What:** Chose a name without checking if it exists
 - **Why:** Didn't search Google before committing to name
-- **Fix:** Renamed to "SarkariScout" across all files
+- **Fix:** Renamed to "RozgarScout" across all files
 - **Rule:** ALWAYS search Google for the exact name before using it. Check for existing sites, trademarks, social media handles.
 
 ### M005 — JSON parse error on large file writes

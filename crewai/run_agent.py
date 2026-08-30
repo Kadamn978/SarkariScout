@@ -1,5 +1,5 @@
 """
-Run individual crewAI agents for SarkariScout.
+Run individual crewAI agents for RozgarScout.
 Usage: python crewai/run_agent.py <agent> [task]
 Agents: pm, architect, dev, qa, devops, security, data, ux, research, scrum
 """
@@ -19,7 +19,7 @@ FAST = "openrouter/nvidia/nemotron-3-super-120b-a12b:free"
 REASON = "openrouter/nvidia/nemotron-3-super-120b-a12b:free"
 
 # ── Project Context ──
-CONTEXT = """SarkariScout is an Indian government job notification portal.
+CONTEXT = """RozgarScout is an Indian government job notification portal.
 Tech: React 18 + Vite + Tailwind (frontend), NestJS + Prisma + MySQL + Redis (backend).
 Features: Auth (Google SSO + email), Jobs (20+ sources), Document Wallet, Bug Reports.
 Schema: 18 tables (User, Job, Profile, MockTest, MockQuestion, PreviousPaper, UserDocument, BugReport, etc.)
@@ -31,61 +31,61 @@ agents = {
     "pm": Agent(
         role="Product Manager",
         goal="Write PRDs, prioritize features",
-        backstory=f"You are a PM for SarkariScout. {CONTEXT}",
+        backstory=f"You are a PM for RozgarScout. {CONTEXT}",
         llm=SMART, verbose=True, allow_delegation=False,
     ),
     "architect": Agent(
         role="Solution Architect",
         goal="Design architecture, API contracts, tech patterns",
-        backstory=f"You are a Solution Architect for SarkariScout. {CONTEXT}",
+        backstory=f"You are a Solution Architect for RozgarScout. {CONTEXT}",
         llm=SMART, verbose=True, allow_delegation=True,
     ),
     "dev": Agent(
         role="Senior Developer",
         goal="Write clean, secure TypeScript code",
-        backstory=f"You are a Senior Dev for SarkariScout. {CONTEXT} You write NestJS + React code.",
+        backstory=f"You are a Senior Dev for RozgarScout. {CONTEXT} You write NestJS + React code.",
         llm=REASON, verbose=True, allow_delegation=False,
     ),
     "qa": Agent(
         role="QA Engineer",
         goal="Write tests, validate quality, report bugs",
-        backstory=f"You are a QA Engineer for SarkariScout. {CONTEXT} Current: 50/50 tests pass.",
+        backstory=f"You are a QA Engineer for RozgarScout. {CONTEXT} Current: 50/50 tests pass.",
         llm=SMART, verbose=True, allow_delegation=False,
     ),
     "devops": Agent(
         role="DevOps Engineer",
         goal="Docker, CI/CD, deployment, monitoring",
-        backstory=f"You are a DevOps Engineer for SarkariScout. {CONTEXT} Free SSL: Let's Encrypt. Free VPS: Oracle Cloud.",
+        backstory=f"You are a DevOps Engineer for RozgarScout. {CONTEXT} Free SSL: Let's Encrypt. Free VPS: Oracle Cloud.",
         llm=FAST, verbose=True, allow_delegation=False,
     ),
     "security": Agent(
         role="Security Engineer",
         goal="OWASP audits, vulnerability scanning, security review",
-        backstory=f"You are a Security Engineer for SarkariScout. {CONTEXT} OWASP Top 10, DPDP Act compliance.",
+        backstory=f"You are a Security Engineer for RozgarScout. {CONTEXT} OWASP Top 10, DPDP Act compliance.",
         llm=REASON, verbose=True, allow_delegation=False,
     ),
     "data": Agent(
         role="Data Engineer",
         goal="Crawlers, scraping, data normalization, RSS parsing",
-        backstory=f"You are a Data Engineer for SarkariScout. {CONTEXT} 20+ job sources to crawl.",
+        backstory=f"You are a Data Engineer for RozgarScout. {CONTEXT} 20+ job sources to crawl.",
         llm=SMART, verbose=True, allow_delegation=False,
     ),
     "ux": Agent(
         role="UX Designer",
         goal="UI/UX review, accessibility, responsive design",
-        backstory=f"You are a UX Designer for SarkariScout. {CONTEXT} Mobile-first, WCAG 2.1 AA.",
+        backstory=f"You are a UX Designer for RozgarScout. {CONTEXT} Mobile-first, WCAG 2.1 AA.",
         llm=FAST, verbose=True, allow_delegation=False,
     ),
     "research": Agent(
         role="Competitive Intelligence",
         goal="Monitor competitors, market trends, feature gaps",
-        backstory=f"You are a Competitive Intel Analyst for SarkariScout. {CONTEXT}",
+        backstory=f"You are a Competitive Intel Analyst for RozgarScout. {CONTEXT}",
         llm=FAST, verbose=True, allow_delegation=False,
     ),
     "scrum": Agent(
         role="Scrum Master",
         goal="Sprint planning, progress tracking, blocker resolution",
-        backstory=f"You are the Scrum Master for SarkariScout. {CONTEXT} PROGRESS.md is single source of truth.",
+        backstory=f"You are the Scrum Master for RozgarScout. {CONTEXT} PROGRESS.md is single source of truth.",
         llm=SMART, verbose=True, allow_delegation=True,
     ),
 }
@@ -100,7 +100,7 @@ default_tasks = {
     "security": "Perform a security audit of the authentication module. Check JWT rotation, timing-safe comparison, token reuse detection, CORS config, CSP headers.",
     "data": "Design the job crawler architecture for 20+ Indian government sources. Define source registry, normalization pipeline, dedup strategy, error handling.",
     "ux": "Review the landing page UX. Analyze: conversion funnel, mobile responsiveness, accessibility, page speed, content hierarchy.",
-    "research": "Analyze the top 3 competitors (Testbook, Adda247, Sarkari Result): features, pricing, SEO strategy, user reviews. Identify 3 opportunities for SarkariScout.",
+    "research": "Analyze the top 3 competitors (Testbook, Adda247, Sarkari Result): features, pricing, SEO strategy, user reviews. Identify 3 opportunities for RozgarScout.",
     "scrum": "Create a sprint plan for the next 2 weeks. Prioritize: Mock Test Engine, Previous Papers, Premium subscriptions. Define story points and acceptance criteria.",
 }
 

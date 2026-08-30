@@ -43,7 +43,7 @@ npm install
 Start-Process "D:\Nilesh\laragon\bin\redis\redis-x64-5.0.14.1\redis-server.exe"
 
 # 6. Create database
-& "D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe" -u root -e "CREATE DATABASE IF NOT EXISTS sarkariscout;"
+& "D:\Nilesh\laragon\bin\mysql\mysql-8.4.3-winx64\bin\mysql.exe" -u root -e "CREATE DATABASE IF NOT EXISTS rozgarscout;"
 
 # 7. Configure environment
 cd backend
@@ -233,7 +233,7 @@ sudo apt update
 sudo apt install certbot python3-certbot-nginx -y
 
 # 2. Get SSL certificate (auto-configures nginx)
-sudo certbot --nginx -d sarkariscout.in -d www.sarkariscout.in
+sudo certbot --nginx -d rozgarscout.in -d www.rozgarscout.in
 
 # 3. Auto-renewal (certbot sets this up automatically)
 sudo certbot renew --dry-run
@@ -257,7 +257,7 @@ sudo certbot certificates
 sudo apt install snapd
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
-sudo certbot --nginx -d sarkariscout.in
+sudo certbot --nginx -d rozgarscout.in
 ```
 
 ---
@@ -304,8 +304,8 @@ sudo apt install -y redis-server
 sudo systemctl enable redis-server
 
 # 7. Clone project
-git clone <repo-url> /var/www/sarkariscout
-cd /var/www/sarkariscout
+git clone <repo-url> /var/www/rozgarscout
+cd /var/www/rozgarscout
 
 # 8. Configure environment
 cp backend/.env.example backend/.env
@@ -322,17 +322,17 @@ node dist/main.js
 
 # 11. Setup nginx
 sudo apt install -y nginx
-sudo cp infra/nginx.conf /etc/nginx/sites-available/sarkariscout
-sudo ln -s /etc/nginx/sites-available/sarkariscout /etc/nginx/sites-enabled/
+sudo cp infra/nginx.conf /etc/nginx/sites-available/rozgarscout
+sudo ln -s /etc/nginx/sites-available/rozgarscout /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
 # 12. SSL (free)
-sudo certbot --nginx -d sarkariscout.in
+sudo certbot --nginx -d rozgarscout.in
 
 # 13. Setup PM2 (process manager)
 npm install -g pm2
-pm2 start dist/main.js --name sarkariscout-api
+pm2 start dist/main.js --name rozgarscout-api
 pm2 save
 pm2 startup
 ```
@@ -341,7 +341,7 @@ pm2 startup
 
 ```bash
 # On VPS
-cd /var/www/sarkariscout
+cd /var/www/rozgarscout
 docker compose -f infra/docker-compose.prod.yml up -d
 ```
 
@@ -352,13 +352,13 @@ docker compose -f infra/docker-compose.prod.yml up -d
 crontab -e
 
 # Daily competitive research at 6 AM IST
-0 0 * * * cd /var/www/sarkariscout/crewai && python3 run.py research >> /var/log/crewai-research.log 2>&1
+0 0 * * * cd /var/www/rozgarscout/crewai && python3 run.py research >> /var/log/crewai-research.log 2>&1
 
 # Weekly security audit on Mondays
-0 1 * * 1 cd /var/www/sarkariscout/crewai && python3 run.py security >> /var/log/crewai-security.log 2>&1
+0 1 * * 1 cd /var/www/rozgarscout/crewai && python3 run.py security >> /var/log/crewai-security.log 2>&1
 
 # Data pipeline every 6 hours
-0 */6 * * * cd /var/www/sarkariscout/crewai && python3 run.py data >> /var/log/crewai-data.log 2>&1
+0 */6 * * * cd /var/www/rozgarscout/crewai && python3 run.py data >> /var/log/crewai-data.log 2>&1
 ```
 
 ---
@@ -420,7 +420,7 @@ termux-wake-lock && sshd && mariadbd-safe --datadir=$PREFIX/var/lib/mysql & slee
 | SSH              | 8022 | `sshd`                                                         |
 | MariaDB (MySQL)  | 3306 | `mariadbd-safe --datadir=$PREFIX/var/lib/mysql &`              |
 | Redis            | 6379 | `redis-server --daemonize yes --ignore-warnings ARM64-COW-BUG` |
-| Node.js (NestJS) | 3000 | `cd ~/SarkariScout/backend && npm run start:prod`              |
+| Node.js (NestJS) | 3000 | `cd ~/RozgarScout/backend && npm run start:prod`              |
 
 ### Phone Server Files
 

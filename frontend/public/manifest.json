@@ -1,6 +1,6 @@
 {
-  "name": "SarkariScout",
-  "short_name": "SarkariScout",
+  "name": "RozgarScout",
+  "short_name": "RozgarScout",
   "description": "India's smartest government job search platform",
   "start_url": "/",
   "display": "standalone",

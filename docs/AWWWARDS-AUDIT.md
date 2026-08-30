@@ -1,4 +1,4 @@
-# Awwwards UI Audit — SarkariScout
+# Awwwards UI Audit — RozgarScout
 ## Score: 52/100 (Current) → Target: 88/100 (Awwwards Minimum)
 
 ---

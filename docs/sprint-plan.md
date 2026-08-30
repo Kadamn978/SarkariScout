@@ -138,7 +138,7 @@
 
 ### Competitor Feature Matrix
 
-| Feature | SarkariResult | FreeJobAlert | Testbook | Adda247 | **SarkariScout** |
+| Feature | SarkariResult | FreeJobAlert | Testbook | Adda247 | **RozgarScout** |
 |---|---|---|---|---|---|
 | Job notifications | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Eligibility matching | ❌ | ❌ | ❌ | ❌ | ✅ |
@@ -154,7 +154,7 @@
 | PDF tools | ❌ | ✅ | ❌ | ❌ | ❌ (planned) |
 
 ### Key Differentiator
-**SarkariScout is the ONLY platform offering:**
+**RozgarScout is the ONLY platform offering:**
 - Automated eligibility matching (zero noise)
 - Application tracker with stage management
 - Change detection for tracked jobs

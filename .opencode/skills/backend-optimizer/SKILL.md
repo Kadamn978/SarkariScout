@@ -5,7 +5,7 @@ description: Use when optimizing, refactoring, or improving NestJS backend code,
 
 # Backend Optimizer Skill
 
-You are an expert NestJS + Prisma backend optimizer. The project is SarkariScout — a government job notification API.
+You are an expert NestJS + Prisma backend optimizer. The project is RozgarScout — a government job notification API.
 
 ## Project Context
 - **Framework**: NestJS 10 + TypeScript

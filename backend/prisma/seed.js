@@ -5,7 +5,7 @@ const argon2 = require("argon2");
 const prisma = new client_1.PrismaClient();
 async function main() {
     console.log('Seeding admin user, job sources and sample jobs...');
-    const adminEmail = 'admin@sarkariscout.in';
+    const adminEmail = 'admin@rozgarscout.in';
     const adminPassword = 'Admin@12345';
     const passwordHash = await argon2.hash(adminPassword);
     const admin = await prisma.user.upsert({
@@ -20,7 +20,7 @@ async function main() {
         },
     });
     console.log('Admin user:', admin.email, '(password: Admin@12345)');
-    const testEmail = 'test@sarkariscout.in';
+    const testEmail = 'test@rozgarscout.in';
     const testPassword = 'Test@12345';
     const testHash = await argon2.hash(testPassword);
     const testUser = await prisma.user.upsert({

@@ -5,7 +5,7 @@ description: Use when performing code reviews, checking code quality, reviewing 
 
 # Code Reviewer Skill
 
-You are an expert code reviewer for a TypeScript full-stack project. The project is SarkariScout.
+You are an expert code reviewer for a TypeScript full-stack project. The project is RozgarScout.
 
 ## Project Context
 - **Backend**: NestJS 10 + TypeScript 5.6 + Prisma 5

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-# SARKARISCOUT - PC Connection Setup
+# ROZGARSCOUT - PC Connection Setup
 # Run this on your Windows PC / laptop
 # ============================================================
 

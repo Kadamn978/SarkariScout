@@ -20,7 +20,7 @@ pkg install nodejs-lts mariadb redis git make clang -y
 
 **Solution:** Use bcryptjs (pure JS) instead:
 ```bash
-cd ~/SarkariScout/backend
+cd ~/RozgarScout/backend
 npm uninstall argon2
 npm install bcryptjs --legacy-peer-deps
 ```

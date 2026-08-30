@@ -4,10 +4,10 @@ import { useSEO } from '../hooks/useSEO'
 
 export default function About() {
   useSEO({
-    title: 'About NaukarScout',
-    description: 'NaukarScout aggregates government job notifications from 20+ official sources. Learn about our mission to help Indian aspirants never miss a deadline.',
-    canonical: 'https://naukarscout.in/about',
-    ogTitle: 'About NaukarScout',
+    title: 'About RozgarScout',
+    description: 'RozgarScout aggregates government job notifications from 20+ official sources. Learn about our mission to help Indian aspirants never miss a deadline.',
+    canonical: 'https://rozgarscout.in/about',
+    ogTitle: 'About RozgarScout',
     ogDescription: 'Government job aggregator monitoring 20+ official sources. Free alerts, mock tests, and papers.',
   })
 
@@ -20,12 +20,12 @@ export default function About() {
         </nav>
 
         <section className="mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">About NaukarScout</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">About RozgarScout</h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
             Government job information in India is a mess. It's spread across 20+ websites — SSC, UPSC, IBPS, RRB, state PSCs — and every one of them updates on their own schedule. If you're a serious aspirant, you're probably checking three or four of these daily just to stay on top of things.
           </p>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-            NaukarScout fixes that. We pull notifications from all these sources into one place, filter by what matters to you, and let you know when deadlines are approaching or something changes. That way you can spend your time actually preparing instead of hunting for notifications.
+            RozgarScout fixes that. We pull notifications from all these sources into one place, filter by what matters to you, and let you know when deadlines are approaching or something changes. That way you can spend your time actually preparing instead of hunting for notifications.
           </p>
         </section>
 
@@ -64,7 +64,7 @@ export default function About() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Who we are</h2>
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-               A small team that's been on the other side — as aspirants who spent too much time checking multiple websites for job notifications. We built NaukarScout because we wanted something better, and figured other people might want it too. It's still early days, but we're building this properly, one feature at a time.
+               A small team that's been on the other side — as aspirants who spent too much time checking multiple websites for job notifications. We built RozgarScout because we wanted something better, and figured other people might want it too. It's still early days, but we're building this properly, one feature at a time.
             </p>
           </div>
         </section>

@@ -45,7 +45,7 @@ case "$PROOT_CHECK" in
     STOPPED:*)
         CONTAINERS="${PROOT_CHECK#STOPPED:}"
         log "WARN: Containers stopped: $CONTAINERS. Restarting..."
-        proot-distro login ubuntu --shared-tmp -- bash -c "cd /data/data/com.termux/files/home/sarkariscout/infra && docker compose -f docker-compose.phone.yml up -d"
+        proot-distro login ubuntu --shared-tmp -- bash -c "cd /data/data/com.termux/files/home/rozgarscout/infra && docker compose -f docker-compose.phone.yml up -d"
         log "OK: Containers restarted"
         ;;
     ALL_OK)

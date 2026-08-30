@@ -5,7 +5,7 @@ description: Use when reviewing, auditing, or improving UI/UX components, pages,
 
 # UI/UX Reviewer Skill
 
-You are an expert UI/UX reviewer for a React + Tailwind CSS v4 + Framer Motion frontend. The project is SarkariScout — a government job portal for Indian aspirants.
+You are an expert UI/UX reviewer for a React + Tailwind CSS v4 + Framer Motion frontend. The project is RozgarScout — a government job portal for Indian aspirants.
 
 ## Project Context
 - **Framework**: React 18 + TypeScript + Vite 6

@@ -1,12 +1,12 @@
 @echo off
-REM SarkariScout Deployment Script (Windows)
+REM RozgarScout Deployment Script (Windows)
 REM Usage: deploy.bat [dev|prod]
 
 set ENV=%1
 if "%ENV%"=="" set ENV=dev
 
 echo ===================================
-echo  SarkariScout Deploy - %ENV%
+echo  RozgarScout Deploy - %ENV%
 echo ===================================
 
 if "%ENV%"=="dev" (

@@ -1,11 +1,11 @@
----
+﻿---
 name: test-engineer
-description: Use when writing, running, fixing, or improving tests — unit tests, integration tests, E2E tests, coverage analysis, or test infrastructure. Trigger on words like "test", "spec", "coverage", "jest", "vitest", "e2e", "mock", "assert", "testcafe", "playwright", "supertest", "testing library".
+description: Use when writing, running, fixing, or improving tests â€” unit tests, integration tests, E2E tests, coverage analysis, or test infrastructure. Trigger on words like "test", "spec", "coverage", "jest", "vitest", "e2e", "mock", "assert", "testcafe", "playwright", "supertest", "testing library".
 ---
 
 # Test Engineer Skill
 
-You are an expert test engineer for a NestJS + React TypeScript project. The project is SarkariScout.
+You are an expert test engineer for a NestJS + React TypeScript project. The project is RozgarScout.
 
 ## Project Context
 
@@ -82,7 +82,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 // Mock the auth context
-jest.mock('../contexts/AuthContext', () => ({
+vi.mock('../contexts/AuthContext', () => ({
   useAuth: () => ({ user: null }),
 }));
 
@@ -93,7 +93,7 @@ describe('Footer', () => {
         <Footer />
       </BrowserRouter>
     );
-    expect(screen.getByText('SarkariScout')).toBeDefined();
+    expect(screen.getByText('RozgarScout')).toBeInTheDocument();
   });
 
   it('does not show Account section for guests', () => {
@@ -102,7 +102,7 @@ describe('Footer', () => {
         <Footer />
       </BrowserRouter>
     );
-    expect(screen.queryByText('Account')).toBeNull();
+    expect(screen.queryByText('Account')).not.toBeInTheDocument();
   });
 });
 ```
@@ -204,3 +204,6 @@ jest.mock('../lib/api', () => ({
 - Testing framework internals instead of your code
 - Flaky tests (async timing issues)
 - Console.log in tests (use assertions instead)
+
+## Important project-specific rule
+The frontend uses Vitest. Use `vi.mock`, `vi.fn`, `vi.spyOn`, etc. Do not copy Jest-only APIs into frontend tests.

@@ -1,0 +1,34 @@
+{
+  "name": "new-folder",
+  "version": "1.0.0",
+  "description": "**Never miss a government job again.** RozgarScout monitors every major Indian government job & exam notification source (all-India + Maharashtra), filters them against each user's eligibility profile (education, state, languages, age, category), and sends email alerts **only for jobs they can actually apply to** — before deadlines close.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kadamn978/RozgarScout.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kadamn978/RozgarScout/issues"
+  },
+  "homepage": "https://github.com/Kadamn978/RozgarScout#readme",
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,css,md}": ["prettier --write"]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  }
+}

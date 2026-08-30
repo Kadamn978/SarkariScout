@@ -1,0 +1,108 @@
+﻿===== competitor-monitor.service.ts 130-145 =====
+
+  async getDiscoveredSourcesSummary() {
+    const competitors = await this.prisma.source.findMany({
+      where: { configJson: { contains: '"isCompetitor":true' } },
+      select: { id: true, name: true, baseUrl: true, lastRunAt: true },
+    });
+
+    const trackedOfficial = await this.prisma.source.count({
+      where: { configJson: { notContains: '"isCompetitor":true' } },
+    });
+
+    return {
+      competitors: competitors.length,
+      officialSources: trackedOfficial,
+      competitorList: competitors,
+    };
+  }
+===== competitor-monitor.service.ts 165-180 =====
+      .trim();
+  }
+
+  private async fetchWithRetry(url: string, retries = 3): Promise<string | null> {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const validation = validateUrl(url);
+        if (!validation.valid) {
+          this.logger.warn(`Invalid URL: ${validation.error}`);
+          return null;
+        }
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(url, {
+          headers: {
+===== validateUrl implementation =====
+
+export function isPrivateIP(hostname: string): boolean {
+  return PRIVATE_IP_RANGES.some((range) => range.test(hostname));
+}
+
+export function validateUrl(url: string, allowedDomains?: string[]): { valid: boolean; reason: string } {
+  try {
+    const parsed = new URL(url);
+
+    // Only allow http/https
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { valid: false, reason: `Blocked protocol: ${parsed.protocol}` };
+    }
+
+    // Check for private IP in hostname
+    const hostname = parsed.hostname.toLowerCase();
+    if (isPrivateIP(hostname)) {
+      return { valid: false, reason: `Blocked private IP: ${hostname}` };
+    }
+
+    // Check for encoded bypasses
+    if (hostname.includes('%') || url.includes('@') || url.includes('\\')) {
+      return { valid: false, reason: `Suspicious URL encoding detected` };
+    }
+
+    // Check allowed domains if provided
+    if (allowedDomains && allowedDomains.length > 0) {
+      const isAllowed = allowedDomains.some((d) => hostname === d || hostname.endsWith(`.${d}`));
+      if (!isAllowed) {
+        return { valid: false, reason: `Domain not in allowlist: ${hostname}` };
+      }
+    }
+
+    return { valid: true, reason: 'OK' };
+  } catch (e) {
+    return { valid: false, reason: `Invalid URL: ${(e as Error).message}` };
+  }
+}
+
+export function validateHeaders(headersJson: string): { valid: boolean; safe: Record<string, string>; blocked: string[] } {
+  let headers: Record<string, string>;
+  try {
+    headers = JSON.parse(headersJson);
+  } catch {
+    return { valid: false, safe: {}, blocked: ['Invalid JSON'] };
+===== Job create fields around insert =====
+
+    await this.prisma.job.create({
+      data: {
+        fingerprint,
+        sourceId,
+        sourceUrl: job.applyUrl,
+        sourceType: 'OFFICIAL',
+        title: job.title,
+        org: job.org,
+        postNames: JSON.stringify(job.postNames),
+        description: job.description,
+        vacancies: job.vacancies,
+        location: job.location,
+        category: 'GOVERNMENT',
+        type: 'FULL_TIME',
+        status: 'OPEN',
+        salary: null,
+        eligibility: null,
+        importantDates: null,
+        howToApply: null,
+        officialNotificationUrl: job.sourceUrl,
+      },
+    });
+  }
+}

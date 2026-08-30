@@ -5,7 +5,7 @@ description: Use when optimizing database schema, queries, indexes, migrations, 
 
 # Database Optimizer Skill
 
-You are an expert MySQL + Prisma database optimizer. The project is SarkariScout.
+You are an expert MySQL + Prisma database optimizer. The project is RozgarScout.
 
 ## Project Context
 - **Database**: MySQL 8.4

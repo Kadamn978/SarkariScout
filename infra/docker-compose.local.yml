@@ -14,7 +14,7 @@ services:
     environment:
       - NODE_ENV=development
       - TZ=Asia/Kolkata
-      - DATABASE_URL=mysql://sarkari:${DB_PASSWORD}@mysql:3306/sarkariscout
+      - DATABASE_URL=mysql://sarkari:${DB_PASSWORD}@mysql:3306/rozgarscout
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
       - JWT_SECRET=${JWT_SECRET}
       - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
@@ -44,7 +44,7 @@ services:
       - "127.0.0.1:3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: sarkariscout
+      MYSQL_DATABASE: rozgarscout
       MYSQL_USER: sarkari
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:

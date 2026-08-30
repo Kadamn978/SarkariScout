@@ -1,6 +1,6 @@
 # Solution Architect — designs API architecture, schemas, caching, deployment Output
 
-## SarkariScout – Next‑Step Architecture Review  
+## RozgarScout – Next‑Step Architecture Review  
 **Current baseline** (as you described)  
 - Frontend: React 18 + Vite + Tailwind (SPA)  
 - Backend: NestJS + Prisma 5 + MySQL 8.4 + Redis 5.0  
@@ -175,7 +175,7 @@ Below are the **top 5 priorities** to build next, ordered by impact on user ex
 
 **Total estimated effort:** ~9 weeks (≈ 2 months) with a small, focused team (2‑3 backend engineers, 1‑2 frontend engineers, 1 DevOps/QA).  
 
-Implementing these in the order listed will give SarkariScout a **solid, scalable foundation** while delivering visible UX improvements that directly address the gaps with current market leaders.  
+Implementing these in the order listed will give RozgarScout a **solid, scalable foundation** while delivering visible UX improvements that directly address the gaps with current market leaders.  
 
 ---  
 
@@ -190,5 +190,5 @@ Once the kickoff is done, the team can begin with **Priority 1** (ingestion pi
 
 ---  
 
-*Prepared by the Solution Architect – SarkariScout*  
+*Prepared by the Solution Architect – RozgarScout*  
 *Date: 3 Nov 2025*

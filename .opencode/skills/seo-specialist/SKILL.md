@@ -1,16 +1,16 @@
 ---
 name: seo-specialist
-description: Use when improving SEO, meta tags, structured data, sitemaps, social sharing, search rankings, or content optimization for the SarkariScout website. Trigger on words like "seo", "meta", "og", "open graph", "twitter card", "sitemap", "structured data", "json-ld", "search", "ranking", "canonical", "robots".
+description: Use when improving SEO, meta tags, structured data, sitemaps, social sharing, search rankings, or content optimization for the RozgarScout website. Trigger on words like "seo", "meta", "og", "open graph", "twitter card", "sitemap", "structured data", "json-ld", "search", "ranking", "canonical", "robots".
 ---
 
 # SEO Specialist Skill
 
-You are an expert SEO specialist for a government job portal. The project is SarkariScout.
+You are an expert SEO specialist for a government job portal. The project is RozgarScout.
 
 ## Project Context
 - **Frontend**: React 18 + Vite 6 + React Router v6
 - **SEO Hook**: `useSEO()` in `src/hooks/useSEO.ts`
-- **Domain**: sarkariscout.in (was sarakriradar.in)
+- **Domain**: rozgarscout.in (was sarakriradar.in)
 - **Target Audience**: Indian government job aspirants
 
 ## SEO Checklist
@@ -25,19 +25,19 @@ Every page MUST have:
 ### 2. Open Graph (Facebook/LinkedIn)
 ```html
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Page Title - SarkariScout" />
+<meta property="og:title" content="Page Title - RozgarScout" />
 <meta property="og:description" content="Page description" />
-<meta property="og:url" content="https://sarkariscout.in/path" />
-<meta property="og:image" content="https://sarkariscout.in/og-image.png" />
-<meta property="og:site_name" content="SarkariScout" />
+<meta property="og:url" content="https://rozgarscout.in/path" />
+<meta property="og:image" content="https://rozgarscout.in/og-image.png" />
+<meta property="og:site_name" content="RozgarScout" />
 ```
 
 ### 3. Twitter Cards
 ```html
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Page Title - SarkariScout" />
+<meta name="twitter:title" content="Page Title - RozgarScout" />
 <meta name="twitter:description" content="Page description" />
-<meta name="twitter:image" content="https://sarkariscout.in/og-image.png" />
+<meta name="twitter:image" content="https://rozgarscout.in/og-image.png" />
 ```
 
 ### 4. Structured Data (JSON-LD)
@@ -59,30 +59,30 @@ Job listings should use JobPosting schema:
 ### 5. Page-Specific SEO
 
 #### Homepage (/)
-- Title: "SarkariScout — Government Job Alerts, Mock Tests & Papers"
+- Title: "RozgarScout — Government Job Alerts, Mock Tests & Papers"
 - Description: "Never miss a government job. Free alerts for SSC, UPSC, IBPS, Railway. Mock tests, previous papers, and application tracker."
 - Schema: WebSite + Organization
 
 #### Job Listings (/jobs)
-- Title: "Government Jobs 2026 — Latest Sarkari Naukri | SarkariScout"
+- Title: "Government Jobs 2026 — Latest Sarkari Naukri | RozgarScout"
 - Description: "Browse latest government jobs. Filter by state, category, exam. Apply before deadline."
 - Schema: ItemList of JobPosting
 
 #### Job Detail (/jobs/:id)
-- Title: "{Job Title} — {Organization} | SarkariScout"
+- Title: "{Job Title} — {Organization} | RozgarScout"
 - Description: "{vacancies} vacancies. Apply before {deadline}. Eligibility: {qualifications}"
 - Schema: JobPosting (dynamic from job data)
 
 #### Exam Calendar (/exam-calendar)
-- Title: "Exam Calendar 2026 — Upcoming Government Exam Dates | SarkariScout"
+- Title: "Exam Calendar 2026 — Upcoming Government Exam Dates | RozgarScout"
 - Description: "Complete exam calendar for SSC, UPSC, Banking, Railway. Never miss an exam date."
 
 #### Mock Tests (/mock-tests)
-- Title: "Free Mock Tests — SSC, UPSC, Banking | SarkariScout"
+- Title: "Free Mock Tests — SSC, UPSC, Banking | RozgarScout"
 - Description: "Practice with free mock tests. Score yourself. Leaderboard ranking."
 
 #### Results (/results)
-- Title: "Government Exam Results 2026 | SarkariScout"
+- Title: "Government Exam Results 2026 | RozgarScout"
 - Description: "Latest exam results for SSC, UPSC, IBPS, Railway. Check your result status."
 
 ### 6. Technical SEO

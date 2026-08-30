@@ -1,4 +1,4 @@
-# SarkariScout — Comprehensive Audit Findings (Aug 2026)
+# RozgarScout — Comprehensive Audit Findings (Aug 2026)
 
 ## Executive Summary
 

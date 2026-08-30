@@ -12,9 +12,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: mysql://root@host.docker.internal:3306/sarkariscout?connection_limit=10&pool_timeout=30
+      DATABASE_URL: mysql://root@host.docker.internal:3306/rozgarscout?connection_limit=10&pool_timeout=30
       REDIS_URL: redis://host.docker.internal:6379
-      JWT_SECRET: sarkariscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
+      JWT_SECRET: rozgarscout-dev-jwt-secret-change-in-prod-2026-secure-random-string
       PORT: 3000
       NODE_ENV: development
       ALLOWED_ORIGINS: http://localhost:5173,http://localhost:80

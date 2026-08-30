@@ -65,7 +65,7 @@ describe('Navbar', () => {
 describe('Footer', () => {
   it('renders copyright', () => {
     render(<Footer />, { wrapper: Wrapper })
-    expect(screen.getAllByText(/NaukarScout/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/RozgarScout/).length).toBeGreaterThan(0)
   })
 
   it('renders job links', () => {

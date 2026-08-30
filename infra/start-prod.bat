@@ -1,9 +1,9 @@
 @echo off
-REM SarkariScout Production Startup (Windows, no Docker)
+REM RozgarScout Production Startup (Windows, no Docker)
 REM Requires: MySQL and Redis running via Laragon
 
 echo ===================================
-echo  SarkariScout Production Mode
+echo  RozgarScout Production Mode
 echo ===================================
 
 REM Start Redis if not running

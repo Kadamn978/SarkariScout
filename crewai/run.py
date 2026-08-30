@@ -1,5 +1,5 @@
 """
-SarkariScout — crewAI Runner
+RozgarScout — crewAI Runner
 Run specific crews for different tasks.
 
 Usage:
@@ -31,7 +31,7 @@ def run_research():
         "Analyze the current competitive landscape for Indian government job portals. "
         "Check: Testbook, Adda247, Sarkari Result, FreeJobAlert, Gradeup, Oliveboard. "
         "Report: new features launched, pricing changes, SEO strategies, user sentiment. "
-        "Identify top 3 opportunities for SarkariScout this week. "
+        "Identify top 3 opportunities for RozgarScout this week. "
         "Save report to docs/research/YYYY-MM-DD.md"
     )
     result = research_crew.kickoff(inputs={"task": task})
@@ -41,7 +41,7 @@ def run_research():
 def run_security():
     """Security audit of codebase."""
     task = (
-        "Perform a comprehensive security audit of the SarkariScout codebase. "
+        "Perform a comprehensive security audit of the RozgarScout codebase. "
         "Check: auth flows (JWT rotation, reuse detection), input validation, SQL injection, "
         "XSS, CSRF, rate limiting, CORS, CSP, secret management, dependency vulnerabilities. "
         "Update SECURITY-CHECKLIST.md with findings. "

@@ -43,21 +43,21 @@ ssh -p 8022 127.0.0.1@<phone-tailscale-ip>
 ```
 Enter the password you set on the phone when prompted.
 
-## Phase 6: Deploy SarkariScout (paste as ONE block in SSH session)
+## Phase 6: Deploy RozgarScout (paste as ONE block in SSH session)
 
 ```bash
 mariadbd-safe --datadir=$PREFIX/var/lib/mysql &
 sleep 2
 redis-server --daemonize yes --ignore-warnings ARM64-COW-BUG
-mariadb -u root -e "CREATE DATABASE IF NOT EXISTS sarkariscout; CREATE USER IF NOT EXISTS 'sarkari' IDENTIFIED BY 'sarkari123'; GRANT ALL ON sarkariscout.* TO 'sarkari'; FLUSH PRIVILEGES;"
-cd ~ && git clone https://github.com/Kadamn978/SarkariScout.git && cd SarkariScout && git checkout pre-dev
+mariadb -u root -e "CREATE DATABASE IF NOT EXISTS rozgarscout; CREATE USER IF NOT EXISTS 'sarkari' IDENTIFIED BY 'sarkari123'; GRANT ALL ON rozgarscout.* TO 'sarkari'; FLUSH PRIVILEGES;"
+cd ~ && git clone https://github.com/Kadamn978/RozgarScout.git && cd RozgarScout && git checkout pre-dev
 echo "=== Services started, repo cloned ==="
 ```
 
 ## Phase 7: Install Backend Dependencies
 
 ```bash
-cd ~/SarkariScout/backend
+cd ~/RozgarScout/backend
 export CXXFLAGS="-std=c++17"
 rm -rf node_modules package-lock.json
 npm install --legacy-peer-deps
@@ -69,7 +69,7 @@ npm install --legacy-peer-deps
 ## Phase 8: Setup Environment & Run
 
 ```bash
-cp .env.example .env 2>/dev/null || echo "DATABASE_URL=mysql://sarkari:sarkari123@127.0.0.1:3306/sarkariscout
+cp .env.example .env 2>/dev/null || echo "DATABASE_URL=mysql://sarkari:sarkari123@127.0.0.1:3306/rozgarscout
 REDIS_URL=redis://127.0.0.1:6379
 JWT_SECRET=your-secret-key-change-this
 PORT=3000" > .env

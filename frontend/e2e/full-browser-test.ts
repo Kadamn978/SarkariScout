@@ -436,7 +436,7 @@ async function testAccessibility(p: Page) {
 
 async function run() {
   console.log('╔════════════════════════════════════════════╗');
-  console.log('║   SARKARISCOUT — LIVE BROWSER TEST SUITE  ║');
+  console.log('║   ROZGARSCOUT — LIVE BROWSER TEST SUITE  ║');
   console.log('║   Powered by Playwright MCP               ║');
   console.log('╚════════════════════════════════════════════╝');
 
@@ -476,7 +476,7 @@ async function run() {
 
   // Final report
   console.log('\n' + '═'.repeat(55));
-  console.log('          SARKARISCOUT — BROWSER TEST REPORT');
+  console.log('          ROZGARSCOUT — BROWSER TEST REPORT');
   console.log('═'.repeat(55));
   console.log(`  ✅ PASS:    ${pass}`);
   console.log(`  ❌ FAIL:    ${fail}`);

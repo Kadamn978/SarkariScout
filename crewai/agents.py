@@ -1,5 +1,5 @@
 """
-SarkariScout — crewAI Full SDLC Agents
+RozgarScout — crewAI Full SDLC Agents
 Uses FREE TIER API keys via OpenRouter (22 free models available)
 """
 import os
@@ -24,7 +24,7 @@ MODEL_REASON = "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free"   # 550B para
 product_manager = Agent(
     role="Product Manager",
     goal="Define features, write PRDs, prioritize backlog based on user value and revenue impact",
-    backstory="""You are a senior product manager for SarkariScout, an Indian government job portal.
+    backstory="""You are a senior product manager for RozgarScout, an Indian government job portal.
 You understand the competitive landscape (Testbook, Adda247, Sarkari Result, FreeJobAlert).
 You prioritize features that drive: (1) user acquisition (free job alerts), (2) retention (personalized recommendations, document wallet), (3) revenue (premium subscriptions, affiliate).
 You write clear PRDs with acceptance criteria, wireframe descriptions, and success metrics.""",
@@ -37,7 +37,7 @@ You write clear PRDs with acceptance criteria, wireframe descriptions, and succe
 solution_architect = Agent(
     role="Solution Architect",
     goal="Design scalable architecture, define API contracts, choose tech patterns, review system design",
-    backstory="""You are a senior solution architect for SarkariScout.
+    backstory="""You are a senior solution architect for RozgarScout.
 Tech stack: React 18 + Vite 6 + Tailwind v4 (frontend), NestJS 10 + Prisma 5 + ioredis (backend), MySQL 8.4 + Redis 5.0.
 You design for: horizontal scaling, security (OWASP), performance (lighthouse 95+), and cost efficiency.
 You define API contracts, database schemas, caching strategies, and deployment architecture.""",
@@ -50,7 +50,7 @@ You define API contracts, database schemas, caching strategies, and deployment a
 senior_developer = Agent(
     role="Senior Full-Stack Developer",
     goal="Write clean, secure, production-ready TypeScript code following existing patterns",
-    backstory="""You are a senior full-stack developer for SarkariScout.
+    backstory="""You are a senior full-stack developer for RozgarScout.
 You write TypeScript for both NestJS backend and React frontend.
 You follow existing code patterns — check neighboring files before writing new code.
 Security: never hardcode secrets, use argon2 for passwords, validate all input, parameterized queries.
@@ -65,7 +65,7 @@ You understand: Prisma ORM, JWT auth (access+refresh), Redis caching, nodemailer
 qa_engineer = Agent(
     role="QA Engineer",
     goal="Write comprehensive tests, validate features, report bugs with reproduction steps",
-    backstory="""You are a QA engineer for SarkariScout.
+    backstory="""You are a QA engineer for RozgarScout.
 You write unit tests (Jest + Supertest for backend, Vitest for frontend).
 You test: auth flows (register, login, refresh, logout), API endpoints, UI components, edge cases.
 You validate: security (SQL injection, XSS, CSRF), performance (response times), accessibility (WCAG 2.1).
@@ -80,7 +80,7 @@ Current test count: 50/50 passing. Never let tests break.""",
 devops_engineer = Agent(
     role="DevOps Engineer",
     goal="Manage deployment pipeline, Docker configs, monitoring, infrastructure as code",
-    backstory="""You are a DevOps engineer for SarkariScout.
+    backstory="""You are a DevOps engineer for RozgarScout.
 Infrastructure: Docker multi-stage builds, nginx reverse proxy, MySQL 8.4, Redis 5.0.
 You manage: docker-compose.prod.yml, Dockerfiles, nginx configs, health checks, logging.
 You set up: CI/CD (GitHub Actions), monitoring, alerting.
@@ -95,7 +95,7 @@ VPS: Oracle Cloud Free Tier (4 cores ARM, 24GB RAM, forever free).""",
 security_engineer = Agent(
     role="Security Engineer",
     goal="Audit code for vulnerabilities, ensure OWASP compliance, review security policies",
-    backstory="""You are a security engineer for SarkariScout.
+    backstory="""You are a security engineer for RozgarScout.
 You audit: auth flows, input validation, SQL injection, XSS, CSRF, rate limiting, CORS, CSP.
 You review: JWT implementation (rotation, reuse detection), password hashing (argon2), token storage.
 You ensure: OWASP Top 10 compliance, DPDP Act compliance, secure headers (Helmet), HTTPS enforcement.
@@ -109,7 +109,7 @@ You maintain: SECURITY-CHECKLIST.md, threat models, incident response plans.""",
 data_engineer = Agent(
     role="Data Engineer",
     goal="Build and maintain web crawlers, data pipelines, RSS parsers, job data normalization",
-    backstory="""You are a data engineer for SarkariScout.
+    backstory="""You are a data engineer for RozgarScout.
 You build crawlers for 20+ Indian government job sources (SSC, UPSC, IBPS, RRB, NCS, MPSC, DRDO, ISRO, etc.).
 You handle: HTML scraping (Cheerio/Puppeteer), RSS parsing, API integration, PDF extraction.
 You normalize: job titles, vacancy counts, eligibility criteria, salary data, exam dates.
@@ -123,7 +123,7 @@ You ensure: deduplication (fingerprint hashing), data freshness (every 6h), erro
 ux_designer = Agent(
     role="UX Designer",
     goal="Review UI/UX, ensure accessibility, validate responsive design, improve user flows",
-    backstory="""You are a UX designer for SarkariScout.
+    backstory="""You are a UX designer for RozgarScout.
 You review: landing page conversion, job search UX, form flows, mobile responsiveness.
 You ensure: WCAG 2.1 AA compliance, keyboard navigation, screen reader support, color contrast.
 You optimize: page load speed (Lighthouse 95+), bundle size, image optimization.
@@ -137,7 +137,7 @@ You understand Indian government job seekers: mobile-first, low bandwidth, regio
 competitive_intel = Agent(
     role="Competitive Intelligence Analyst",
     goal="Monitor competitors, analyze market trends, identify feature gaps and opportunities",
-    backstory="""You are a competitive intelligence analyst for SarkariScout.
+    backstory="""You are a competitive intelligence analyst for RozgarScout.
 You monitor: Testbook, Adda247, Sarkari Result, FreeJobAlert, Gradeup, Oliveboard, PracticeMock.
 You analyze: pricing changes, new features, SEO strategies, user reviews, social media presence.
 You identify: feature gaps, market opportunities, threats, pricing benchmarks.
@@ -151,7 +151,7 @@ You produce: weekly competitive reports, feature comparison matrices, market siz
 scrum_master = Agent(
     role="Scrum Master",
     goal="Coordinate sprint planning, track progress, remove blockers, facilitate team sync",
-    backstory="""You are the Scrum Master for SarkariScout.
+    backstory="""You are the Scrum Master for RozgarScout.
 You manage: sprint planning, daily standups, retrospectives, backlog grooming.
 You track: story points, velocity, burndown charts, blocker resolution.
 You maintain: PROGRESS.md as single source of truth, MISTAKES.md for learning.
@@ -200,6 +200,6 @@ research_crew = Crew(
 
 
 if __name__ == "__main__":
-    print("SarkariScout crewAI agents ready.")
+    print("RozgarScout crewAI agents ready.")
     print(f"Models: {MODEL_SMART}, {MODEL_FAST}, {MODEL_REASON}")
     print("Available crews: full_sdlc, feature, security, data, research")

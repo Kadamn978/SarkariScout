@@ -1,5 +1,5 @@
 """
-SarkariScout — Lightweight Agent Runner
+RozgarScout — Lightweight Agent Runner
 Works on Windows without crewAI's heavy dependency chain.
 Uses OpenRouter API directly with requests.
 
@@ -16,7 +16,7 @@ API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
 
 # ── Project Context ──
-CONTEXT = """SarkariScout is an Indian government job notification portal.
+CONTEXT = """RozgarScout is an Indian government job notification portal.
 Tech: React 18 + Vite + Tailwind (frontend), NestJS + Prisma 5 + MySQL 8.4 + Redis 5.0 (backend).
 Auth: Google OAuth SSO + email/password, JWT 15min + 7d refresh, argon2 hashing.
 Features: Auth, Jobs (14 seeded, 10 sources), Document Wallet, Bug Reports, State/Qual pages.
@@ -63,7 +63,7 @@ def run_agent(agent_name: str, task: str = None):
         sys.exit(1)
 
     role_desc = AGENTS[agent_name]
-    system = f"You are a {role_desc} for SarkariScout.\n\n{CONTEXT}\n\nWrite detailed, actionable output. Use markdown formatting."
+    system = f"You are a {role_desc} for RozgarScout.\n\n{CONTEXT}\n\nWrite detailed, actionable output. Use markdown formatting."
     
     if not task:
         task = f"Perform your role as {role_desc}. Review the current project state and provide recommendations."

@@ -15,8 +15,8 @@ export default function AdmitCards() {
   useSEO({
     title: 'Admit Cards - Download Dates',
     description: 'Check upcoming and recently released admit cards for SSC, UPSC, IBPS, RRB, State PSC exams. Never miss an admit card download date.',
-    canonical: 'https://naukarscout.in/admit-cards',
-    ogTitle: 'Admit Cards | NaukarScout',
+    canonical: 'https://rozgarscout.in/admit-cards',
+    ogTitle: 'Admit Cards | RozgarScout',
     ogDescription: 'Government exam admit card dates and download links.',
   })
 

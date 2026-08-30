@@ -1,0 +1,97 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "username": "nilesh",
+  "instructions": ["AGENTS.md"],
+  "logLevel": "INFO",
+  "share": "manual",
+  "autoupdate": "notify",
+
+  "references": {
+    "docs": {
+      "path": "./docs",
+      "description": "Project documentation, sprint plans, engineering guides, and review checklists"
+    },
+    "backend": {
+      "path": "./backend",
+      "description": "NestJS backend with Prisma ORM, MySQL, Redis. Contains modules for auth, jobs, crawler, matching, email, documents, feedback, analytics, mock-tests, papers."
+    },
+    "frontend": {
+      "path": "./frontend",
+      "description": "React + Vite + Tailwind CSS v4 frontend with React Router, Framer Motion, Vitest testing"
+    },
+    "crewai": {
+      "path": "./crewai",
+      "description": "CrewAI Python agents for automated tasks"
+    }
+  },
+
+  "skills": {
+    "paths": [".opencode/skills"],
+    "browser-tester": {
+      "description": "Use when performing live browser testing, E2E testing, visual regression, or taking screenshots. Uses Playwright MCP to control a real Chromium browser."
+    },
+    "awwwards-designer": {
+      "description": "Use when building Awwwards-level websites. 5-phase pipeline: Brief → Invention Gate → Stitch MCP → Animation Layer → Quality Gate. Targets SOTD/SOTM/SOTY."
+    },
+    "awwwards-skill": {
+      "description": "Elite frontend orchestrator for jaw-dropping UI. 9-phase pipeline: Brief → Palette → Inspiration → Composition → Motion → Implementation → Video → Polish → Verification. Uses Framer Motion + anime.js + Three.js."
+    },
+    "awwwards-ui-design": {
+      "description": "Use for premium Awwwards-level UI design. WebGL, smooth scrolling, custom cursors, curated color palettes. Requires self-audit with UI-Max Scorecard (88/100 minimum)."
+    }
+  },
+
+  "agent": {
+    "security-auditor": {
+      "description": "Audits code for security vulnerabilities, OWASP compliance, secret leaks, and dependency issues.",
+      "mode": "subagent",
+      "permission": {
+        "edit": "deny",
+        "bash": { "npm audit*": "allow", "grep *": "allow", "*": "ask" }
+      }
+    },
+    "test-runner": {
+      "description": "Runs test suites, analyzes coverage gaps, and suggests new tests.",
+      "mode": "subagent",
+      "permission": {
+        "bash": { "npm test*": "allow", "npx vitest*": "allow", "npx jest*": "allow", "*": "ask" }
+      }
+    },
+    "ui-reviewer": {
+      "description": "Reviews UI components for accessibility, dark mode consistency, responsive design, and UX issues.",
+      "mode": "subagent",
+      "permission": {
+        "edit": "deny",
+        "bash": { "npx vite build*": "allow", "*": "ask" }
+      }
+    },
+    "api-docs": {
+      "description": "Generates and maintains Swagger/OpenAPI documentation for NestJS endpoints.",
+      "mode": "subagent",
+      "permission": {
+        "bash": { "npx nest build*": "allow", "*": "ask" }
+      }
+    }
+  },
+
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp"],
+      "enabled": true,
+      "environment": { "BROWSER": "chromium" }
+    }
+  },
+
+  "permission": {
+    "edit": "allow",
+    "bash": {
+      "git *": "allow",
+      "npm run *": "allow",
+      "npx *": "allow",
+      "node *": "allow",
+      "rm -rf node_modules*": "allow",
+      "*": "ask"
+    }
+  }
+}

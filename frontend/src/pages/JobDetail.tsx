@@ -64,8 +64,8 @@ export default function JobDetail() {
   useSEO({
     title: job ? `${job.title} - ${job.org}` : 'Loading...',
     description: job ? `${job.title} at ${job.org}. ${job.totalVacancies || ''} vacancies. Apply before ${job.applyEnd || 'deadline'}.` : '',
-    canonical: job ? `https://naukarscout.in/jobs/${job.id}` : undefined,
-    ogTitle: job ? `${job.title} | NaukarScout` : undefined,
+    canonical: job ? `https://rozgarscout.in/jobs/${job.id}` : undefined,
+    ogTitle: job ? `${job.title} | RozgarScout` : undefined,
     ogDescription: job ? `${job.totalVacancies || ''} vacancies at ${job.org}. Free apply link.` : undefined,
     jsonLd: job ? {
       '@context': 'https://schema.org',

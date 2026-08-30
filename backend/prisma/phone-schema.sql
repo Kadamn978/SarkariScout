@@ -1,4 +1,4 @@
--- SarkariScout Phone Server - Direct MySQL Schema
+-- RozgarScout Phone Server - Direct MySQL Schema
 -- Generated from prisma/schema.prisma
 
 CREATE TABLE IF NOT EXISTS `users` (

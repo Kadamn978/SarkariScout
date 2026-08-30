@@ -5,10 +5,10 @@ import { useSEO } from '../hooks/useSEO'
 export default function Privacy() {
   useSEO({
     title: 'Privacy Policy',
-    description: 'How NaukarScout handles your data. Short version: we don\'t sell it, we store it in India, and you can delete it anytime.',
-    canonical: 'https://naukarscout.in/privacy',
-    ogTitle: 'Privacy Policy | NaukarScout',
-    ogDescription: 'How NaukarScout handles your personal data.',
+    description: 'How RozgarScout handles your data. Short version: we don\'t sell it, we store it in India, and you can delete it anytime.',
+    canonical: 'https://rozgarscout.in/privacy',
+    ogTitle: 'Privacy Policy | RozgarScout',
+    ogDescription: 'How RozgarScout handles your personal data.',
   })
 
   return (
@@ -107,12 +107,12 @@ export default function Privacy() {
                 <li>Unsubscribe from emails (there's a link in every one)</li>
                 <li>Withdraw consent for anything you previously agreed to</li>
               </ul>
-               <p className="mt-2">Email <a href="mailto:privacy@naukarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@naukarscout.in</a> to exercise any of these. We'll respond within 30 days.</p>
+               <p className="mt-2">Email <a href="mailto:privacy@rozgarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@rozgarscout.in</a> to exercise any of these. We'll respond within 30 days.</p>
             </section>
 
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">8. Kids</h2>
-               <p>NaukarScout isn't for anyone under 18. We don't knowingly collect data from minors. If we find out we have, we'll delete it immediately. Parents — if your kid somehow signed up, let us know and we'll handle it.</p>
+               <p>RozgarScout isn't for anyone under 18. We don't knowingly collect data from minors. If we find out we have, we'll delete it immediately. Parents — if your kid somehow signed up, let us know and we'll handle it.</p>
             </section>
 
             <section>
@@ -123,7 +123,7 @@ export default function Privacy() {
                 <li><strong>We only collect with your consent</strong> — you agreed when you signed up, and you can withdraw anytime</li>
                 <li><strong>Purpose-limited</strong> — we only use your data for job alerts, matching, and running the site</li>
                 <li><strong>Stored in India</strong> — your data never leaves the country</li>
-                 <li><strong>You can complain</strong> — email <a href="mailto:dpo@naukarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@naukarscout.in</a> if you have concerns. We'll respond within 30 days</li>
+                 <li><strong>You can complain</strong> — email <a href="mailto:dpo@rozgarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@rozgarscout.in</a> if you have concerns. We'll respond within 30 days</li>
               </ul>
             </section>
 
@@ -140,9 +140,9 @@ export default function Privacy() {
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Get in touch</h2>
               <ul className="list-disc pl-5 space-y-1.5">
-                 <li>General questions: <a href="mailto:privacy@naukarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@naukarscout.in</a></li>
-                 <li>Data protection officer: <a href="mailto:dpo@naukarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@naukarscout.in</a></li>
-                 <li>Other stuff: <a href="mailto:naukarscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">naukarscout+support@gmail.com</a></li>
+                 <li>General questions: <a href="mailto:privacy@rozgarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@rozgarscout.in</a></li>
+                 <li>Data protection officer: <a href="mailto:dpo@rozgarscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@rozgarscout.in</a></li>
+                 <li>Other stuff: <a href="mailto:rozgarscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">rozgarscout+support@gmail.com</a></li>
               </ul>
             </section>
 

@@ -1,37 +1,179 @@
 # Security Engineer — OWASP audits, vulnerability scanning, security review Output
 
-## Backend Security Audit – `backend/src/`  
-**Findings are ordered by severity (Critical → High → Medium → Low).**  
-Each entry includes a short description, the vulnerable code location (file : line), and a concrete remediation recommendation.
+# Security Audit Report – RozgarScout  
+**Scope:** JWT authentication, input validation, SQL injection, rate limiting, CORS, secret management  
+**Tech Stack:** React 18 + Vite + Tailwind (frontend) • NestJS + Prisma 5 + MySQL 8.4 + Redis 5.0 (backend)  
 
-| # | Severity | Finding | File : Line | Remediation |
-|---|----------|---------|-------------|-------------|
-| **1** | **Critical** | **Auth Bypass – Missing Refresh‑Token Validation** The refresh‑token guard only checks the presence of a token in the `Authorization` header but does **not** verify that the token is a *refresh* token (type claim) nor checks its revocation status. An attacker can reuse an access token (or any valid JWT) to obtain a new access token, effectively bypassing token‑type controls. | `src/auth/guards/refresh-token.guard.ts:38` | - Add a claim check: `if (payload.type !== 'refresh') throw new UnauthorizedException();` <br> - Store a hashed version of the refresh token in the DB (or Redis) and verify it on each use; implement a revocation list / token‑version field on the `User` entity. |
-| **2** | **High** | **SQL Injection via Raw Query in Job Search** A custom search endpoint builds a raw SQL string by concatenating user‑supplied `keyword` and `location` parameters without using Prisma’s parameterised queries or escaping. | `src/jobs/jobs.service.ts:84` (inside `searchJobs`) | - Replace the raw query with Prisma’s `findMany` + `where` using `OR` and `contains` filters. <br> - If raw SQL is unavoidable, use `$queryRaw` with **parameterised** placeholders (`?`) and never concatenate user input. |
-| **3** | **High** | **Hardcoded Database Credentials** The MySQL password is committed in plain text in the configuration file. This exposes the credential to anyone with repository access and risks leakage if the repo is ever public. | `src/config/database.config.ts:12` | - Move secrets to environment variables (`.env`) and load them via `@nestjs/config`. <br> - Add the file to `.gitignore` and use a secret‑management solution (AWS Secrets Manager, HashiCorp Vault, or Docker secrets) for production. |
-| **4** | **High** | **Path Traversal in Document Upload** The file‑upload service uses the original filename supplied by the client to construct a storage path (`./uploads/${filename}`) without sanitising `../` sequences. An attacker could overwrite arbitrary files on the server (e.g., `../../../etc/passwd`). | `src/file/file.service.ts:78` (inside `saveFile`) | - Generate a server‑side unique name (e.g., UUID) and store the original filename separately in DB. <br> - Validate the filename with a whitelist of allowed characters (`/^[a-zA-Z0-9._-]+$/`) and reject any containing path separators. |
-| **5** | **Medium** | **Missing Input Validation on User Registration** The `CreateUserDto` lacks `@IsEmail()` and `@IsStrongPassword()` decorators, relying only on manual checks in the controller. This opens the door to malformed emails, weak passwords, and potential injection via unexpected characters. | `src/users/dto/create-user.dto.ts:10` | - Add appropriate `class-validator` decorators: `@IsEmail()`, `@IsStrongPassword({ minLength: 8, minNumbers: 1, minSymbols: 1 })`. <br> - Enable global validation pipe (`app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));`) in `main.ts`. |
-| **6** | **Medium** | **Rate‑Limiting Gaps – Public Endpoints Unprotected** Only the authentication routes (`/auth/*`) have a `ThrottlerGuard` applied globally. Endpoints such as `/jobs/search`, `/documents/upload`, and `/bug-reports` are accessible without any rate limit, enabling brute‑force or DoS attacks. | `src/main.ts:30` (where `ThrottlerModule` is registered) | - Extend the `ThrottlerGuard` to cover all routes or apply it selectively via `@UseGuards(ThrottlerGuard)` on vulnerable controllers. <br> - Consider a more granular limiter (e.g., per‑IP, per‑user) for high‑risk actions like file upload or password reset. |
-| **7** | **Low** | **Information Disclosure in Global Exception Filter** The custom HTTP exception filter returns the full error stack trace (`error.stack`) in the response body when `process.env.NODE_ENV !== 'production'`. In some environments the check fails (e.g., when `NODE_ENV` is unset), leaking internal file paths and library versions to attackers. | `src/common/filters/http-exception.filter.ts:22` | - Always filter out stack traces in non‑development environments. <br> - Use a dedicated logger (e.g., `nestjs/pino`) to record details server‑side, and return only a generic message (`Internal Server Error`) to the client. |
-| **8** | **Low** | **Insecure JWT Secret – Default Value Used** The JWT signing key falls back to a hard‑coded string (`'defaultSecret'`) when `JWT_SECRET` is not defined in the environment. This makes token forgery trivial if the env var is missing. | `src/auth/jwt.strategy.ts:15` | - Remove the fallback; throw an error if `process.env.JWT_SECRET` is undefined. <br> - Enforce a minimum key length (>= 32 bytes) via validation at startup. |
-| **9** | **Low** | **Missing CSRF Protection for Stateless API** While the API is token‑based (JWT), the refresh‑token endpoint uses cookies to store the refresh token without `SameSite` or `HttpOnly` flags, making it susceptible to CSRF if the frontend ever uses cookie‑based auth. | `src/auth/auth.controller.ts:92` (cookie set options) | - Set `httpOnly: true`, `secure: true` (in production), and `sameSite: 'strict'` when issuing the refresh‑token cookie. <br> - Alternatively, store refresh tokens only in HTTP‑only, SameSite‑strict cookies and never expose them via JavaScript. |
-| **10** | **Very Low** | **Unprotected Health‑Check Endpoint Exposes System Info** The `/health` endpoint returns detailed Redis and MySQL connection stats (uptime, memory usage) which could aid an attacker in profiling the infrastructure. | `src/health/health.controller.ts:18` | - Limit the health check to a simple `OK` response in production; expose detailed metrics only behind an internal network or with authentication. |
+> **Methodology** – The audit is based on a review of the typical implementation patterns for the listed technologies, the public repository structure (as inferred from the description), and common OWASP‑Top‑10 findings. No live penetration testing was performed; the findings are **potential** issues that should be verified against the actual codebase.
 
-### Summary of Risk Distribution
-- **Critical:** 1  
-- **High:** 3  
-- **Medium:** 3  
-- **Low:** 3  
-- **Very Low:** 1  
+---
 
-### Quick‑Start Remediation Checklist
-1. **Secrets & Config** – Move all passwords/keys to `.env`, enforce validation, add to `.gitignore`.  
-2. **Input Validation** – Activate global `ValidationPipe` and annotate all DTOs.  
-3. **SQL Safety** – Replace any raw string concatenation with Prisma’s query builder or parameterised `$queryRaw`.  
-4. **File Upload** – Sanitize filenames, store server‑generated names, validate mime‑type & size.  
-5. **Auth Hardening** – Verify token types, implement refresh‑token revocation, secure cookie flags.  
-6. **Rate Limiting** – Apply throttler to all public endpoints; consider per‑user limits for sensitive actions.  
-7. **Error Handling** – Strip stack traces from client responses; log details server‑side.  
-8. **Monitoring** – Add alerts for failed login attempts, abnormal upload volumes, and config drift.  
+## 📋 Summary of Findings  
 
-Addressing the items above will significantly reduce the attack surface of SarkariScout’s backend and bring the implementation in line with OWASP ASVS Level 2 recommendations.
+| # | Area | Issue | Severity | Likely Location | Recommended Fix |
+|---|------|-------|----------|-----------------|-----------------|
+| 1 | **JWT Auth** | Access token stored in `localStorage` (or `sessionStorage`) → XSS theft risk | **High** | Frontend auth service (`src/auth/*`) | Switch to **HttpOnly, Secure, SameSite=Strict** cookies for access & refresh tokens; if localStorage is unavoidable, add strict CSP & XSS mitigations. |
+| 2 | **JWT Auth** | No token revocation / refresh‑token rotation | **Medium** | Auth service (`src/auth/jwt.strategy.ts`, `refresh-token.controller.ts`) | Implement **refresh‑token rotation** + **token blacklist** (Redis) on logout / password change; enforce short‑lived access tokens (≤15 min) and rotate refresh tokens on each use. |
+| 3 | **JWT Auth** | Missing audience (`aud`) / issuer (`iss`) claims validation | **Low** | JWT strategy (`jwt.strategy.ts`) | Verify `aud` (e.g., `sarkari-scout`) and `iss` (your auth server) in `JwtStrategy.validate()`. |
+| 4 | **Input Validation** | Reliance on manual DTO checks or missing validation on nested objects (e.g., `Job.create`, `UserDocument.upload`) | **Medium** | DTOs (`src/*/dto/*.dtos.ts`) | Adopt **class‑validator** + **class‑transformer** globally; enable `whitelist: true` and `forbidNonWhitelisted: true`. For complex schemas, consider **Zod** or **joi**. |
+| 5 | **SQL Injection** | Use of raw queries (`Prisma.$queryRaw`) without proper parameterisation in admin/reporting endpoints | **High** | Any service using `$queryRaw` or `$executeRaw` (e.g., `src/report/report.service.ts`) | **Never** concatenate user input into SQL strings. Use Prisma’s typed API or, if raw is unavoidable, pass values via **parameter placeholders** (`?`) and let Prisma handle escaping. |
+| 6 | **Rate Limiting** | No global rate limiter; only ad‑hoc throttling on auth endpoints | **Medium** | Main module (`src/app.module.ts`) | Install `@nestjs/throttler` (or `express-rate-limit`) and configure: <br>• **Global**: 100 req/min per IP <br>• **Auth**: 5 req/min per IP (login) <br>• **Refresh**: 10 req/min per IP <br>• **API**: 30 req/min per authenticated user (via `UserId` guard). |
+| 7 | **CORS** | Wildcard origin (`*`) enabled in development and possibly leaked to production via env override | **Medium** | Main NestJS bootstrap (`main.ts`) | Replace `origin: true` with a **whitelist** of allowed origins (e.g., `https://sarkarscout.in`, `https://app.sarkarscout.in`). In production, set `credentials: true` only if cookies are used. |
+| 8 | **Secret Management** | JWT secret, DB credentials, and OAuth client secrets stored in plain `.env` committed to repo (or visible in Dockerfiles) | **High** | `.env`, `docker-compose.yml`, CI configs | • Add `.env` to `.gitignore`. <br>• Use **environment‑specific secret stores** (AWS Secrets Manager, HashiCorp Vault, or Kubernetes Secrets). <br>• In CI/CD, inject secrets as masked variables. <br>• Rotate OAuth client secrets quarterly. |
+| 9 | **Transport Security** | Missing `Helmet` middleware (no CSP, HSTS, X‑Frame‑Options, etc.) | **Low** | `main.ts` | Install `@nestjs/helmet` and enable: <br>• `helmet()` <br>• `hsts({ maxAge: 31536000, includeSubDomains: true })` <br>• `contentSecurityPolicy({ directives: { defaultSrc: ["'self'"], imgSrc: ["'self'", "data:", "https:"], scriptSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'"] } })` (adjust for Tailwind/JIT). |
+|10| **Session / Cookie Settings** | If cookies are used, missing `Secure; SameSite=Strict; HttpOnly` flags | **Medium** | Auth cookie setter (`auth.service.ts`) | Ensure cookies are set with: `Secure: true` (HTTPS only), `SameSite: 'Strict'`, `HttpOnly: true`. |
+|11| **Refresh Token Storage** | Refresh token stored in plain DB column without hashing | **Medium** | `User` entity (`refreshToken` column) | Store a **bcrypt/argon2** hash of the refresh token; compare hash on verification. |
+|12| **Error Handling** | Stack traces or DB error messages returned to client in 500 responses | **Low** | Global exception filter (`all-exceptions.filter.ts`) | Catch exceptions, log internally, and return a generic message (`"Internal server error"`). Do not expose Prisma or MySQL details. |
+
+---
+
+## 🔧 Detailed Remediation Guidance  
+
+### 1. JWT Authentication  
+| Problem | Fix |
+|---------|-----|
+| **Token storage in localStorage** – vulnerable to XSS. | Move to **HttpOnly, Secure, SameSite=Strict** cookies. If you must keep tokens in JS storage (e.g., for SPA refresh), implement a **strict Content‑Security‑Policy** and sanitize all user‑generated content. |
+| **No refresh‑token rotation** – stolen refresh token can be reused indefinitely. | On each refresh request: <br>1. Verify the token’s hash against stored hash.<br>2. Issue a **new** refresh token (hash & store).<br>3. **Delete/blacklist** the old token (Redis SET with TTL = old token’s expiry). |
+| **Missing audience/issuer validation** – tokens from other services could be accepted. | In `JwtStrategy.validate(payload)`, add: <br>`if (payload.iss !== process.env.JWT_ISSUER || !payload.aud.includes(process.env.JWT_AUDIENCE)) throw new UnauthorizedException();` |
+| **Short access token but no replay protection** – token can be used after password change. | Maintain a **token version** (e.g., `authVersion` column on User). Increment on password/email change; include `authVersion` in JWT payload and reject if mismatch. |
+
+### 2. Input Validation  
+* Use **class-validator** decorators on every DTO (`@IsString()`, `@IsEmail()`, `@IsOptional()`, `@IsInt({ min: 1 })`, etc.).  
+* Enable global validation pipe:  
+
+```ts
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    forbidUnknownValues: true,
+  })
+);
+```
+
+* For nested objects (e.g., `Job.create({ requirements: [...] })`), create **nested DTOs** and apply `@ValidateNested()` + `@Type(() => RequirementDto)`.  
+
+* Consider **Zod** for runtime schema validation if you prefer a functional approach; it integrates nicely with NestJS via `zod-to-ts` or custom pipes.
+
+### 3. SQL Injection Prevention  
+* **Never** use string interpolation with user data in `$queryRaw`.  
+* If raw SQL is unavoidable (e.g., complex reporting), use **parameterised queries**:  
+
+```ts
+const results = await prisma.$queryRaw`
+  SELECT * FROM jobs WHERE location = ${location} AND posted_at > ${since}
+`;
+```
+
+* Prefer Prisma’s **type‑safe query builder** (`prisma.job.findMany({ where: { location, postedAt: { gt: since } } })`).  
+* Add a **lint rule** (e.g., `eslint-plugin-security`) to flag `$queryRaw`/`$executeRaw` usage without a comment explaining safety.
+
+### 4. Rate Limiting  
+* Install `@nestjs/throttler`:  
+
+```bash
+npm i @nestjs/throttler
+```
+
+* Register globally:  
+
+```ts
+ThrottlerModule.forRoot([
+  {
+    ttl: 60,
+    limit: 100, // per IP
+  },
+]),
+```
+
+* Override for specific routes via `@Throttle({ default: false })` or custom limits:  
+
+```ts
+@Throttle({ short: { ttl: 60, limit: 5 } }) // login
+@Post('login')
+async login(@Body() dto: LoginDto) { … }
+```
+
+* For authenticated users, create a **custom guard** that extracts `userId` and uses it as the throttler key (prevents one user from exhausting IP‑based limits).  
+
+* Monitor throttler metrics via Redis (`throttler` store) and alert on spikes.
+
+### 5. CORS Hardening  
+* Replace the permissive setup:  
+
+```ts
+app.enableCors({
+  origin: [
+    'https://sarkarscout.in',
+    'https://app.sarkarscout.in',
+    // add staging/dev origins as needed
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+});
+```
+
+* In production, **disable** `origin: true` and **do not** allow `Access-Control-Allow-Origin: *` when `credentials: true`.  
+
+* Test with a tool like **curl** or **Postman** to confirm that requests from unauthorized origins are blocked (`403` or CORS error).
+
+### 6. Secret Management  
+| Item | Action |
+|------|--------|
+| `.env` file | Add to `.gitignore`. Provide a `.env.example` with placeholder values. |
+| Docker / Kubernetes | Use **secret mounts** (`docker run --env-file` is discouraged; prefer `--secret` or K8s `Secret` objects). |
+| CI/CD (GitHub Actions, GitLab CI) | Store secrets as **encrypted variables**; mask logs (`::add-mask::${{ secrets.JWT_SECRET }}`). |
+| Rotation | Implement a **secret rotation script** that updates JWT secret, DB password, and OAuth client secrets, then redeploys. Keep the old secret valid for a short grace period (e.g., 2 h) to avoid downtime. |
+| Auditing | Periodically run `git log -p -S "SECRET"` or `git-secrets` scan to ensure no secrets have been committed. |
+
+### 7. Additional Hardening (Low‑effort, high‑impact)  
+* **Helmet** – as noted, adds CSP, HSTS, XSS protection.  
+* **Response Headers** – remove `X-Powered-By` (`app.use helmet.hidePoweredBy()`).  
+* **Database** – enforce **SSL/TLS** for MySQL connections (`?sslMode=REQUIRED` in connection string).  
+* **Logging** – never log raw tokens, passwords, or PII. Use a structured logger (Winston/Pino) with redaction.  
+* **Dependency Scanning** – run `npm audit` and `npm outdated` regularly; consider **Dependabot** or **Snyk**.  
+* **Static Analysis** – integrate **ESLint security plugin** and **SonarQube** (or similar) into CI.  
+* **Pen‑Testing** – schedule quarterly external pen‑test focusing on auth flows, IDOR, and API abuse.
+
+---
+
+## ✅ Action Plan (Suggested Timeline)
+
+| Week | Activity |
+|------|----------|
+| **1** | - Add `.env` to `.gitignore`; create `.env.example`.<br>- Enable global `ValidationPipe` with whitelist/forbid.<br>- Install and configure `@nestjs/throttler` (global + auth‑specific limits). |
+| **2** | - Replace JWT storage with HttpOnly cookies; implement refresh‑token rotation + Redis blacklist.<br>- Add audience/issuer validation to `JwtStrategy`. |
+| **3** | - Audit all `$queryRaw`/`$executeRaw` calls; replace with Prisma query builder or parameterised placeholders.<br>- Add lint rule to prevent future raw‑SQL misuse. |
+| **4** | - Harden CORS (whitelist origins, disable credentials wildcard).<br>- Install `@nestjs/helmet` and configure CSP/HSTS. |
+| **5** | - Migrate refresh token column to store argon2 hash; update auth service accordingly.<br>- Implement secret injection via Docker/K8s secrets; remove plain `.env` from images. |
+| **6** | - Run dependency audit (`npm audit`, `snyk test`).<br>- Add global exception filter that strips stack traces.<br>- Conduct internal QA: verify login, refresh, JWT cookie behavior, rate‑limit responses, CORS preflight. |
+| **7+** | - Schedule external pen‑test.<br>- Set up secret rotation cron job.<br>- Document security headers and monitoring alerts (rate‑limit throttler, failed auth spikes). |
+
+---
+
+## 📚 References & Tools  
+
+| Topic | Resource |
+|-------|----------|
+| NestJS JWT & Guards | <https://docs.nestjs.com/security/authentication> |
+| class-validator | <https://github.com/typestack/class-validator> |
+| Zod validation | <https://zod.dev/> |
+| Prisma Raw Queries Safety | <https://www.prisma.io/docs/concepts/components/prisma-client/raw-database-access> |
+| @nestjs/throttler | <https://github.com/nrwl/nx/tree/master/packages/nest/throttler> |
+| Helmet for NestJS | <https://docs.nestjs.com/middleware#helmet-middleware> |
+| OWASP Authentication Cheat Sheet | <https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html> |
+| OWASP Input Validation Cheat Sheet | <https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html> |
+| OWASP Rate Limiting Cheat Sheet | <https://cheatsheetseries.owasp.org/cheatsheets/Rate_Limiting_Cheat_Sheet.html> |
+| Secret Management (AWS Secrets Manager) | <https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html> |
+| Docker Secrets | <https://docs.docker.com/engine/swarm/secrets/> |
+| Kubernetes Secrets | <https://kubernetes.io/docs/concepts/configuration/secret/> |
+
+---
+
+### 🎯 Bottom Line  
+
+By addressing the items above—especially moving JWT storage to secure cookies, enforcing strict input validation, eliminating raw SQL, implementing global rate limiting, locking down CORS, and managing secrets through a vault‑style system—RozgarScout will move from a **potentially vulnerable** state to a **defensible, production‑grade** security posture aligned with OWASP best practices.  
+
+Feel free to ask for deeper dive‑into any specific module (e.g., OAuth flow, document wallet file uploads, or bug‑report handling) if you need concrete code snippets. Happy securing!
