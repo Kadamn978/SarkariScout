@@ -20,15 +20,21 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [trackedJobs, setTrackedJobs] = useState<TrackedJob[]>([])
   const [deadlines, setDeadlines] = useState<DeadlineJob[]>([])
+  const [mockCount, setMockCount] = useState(0)
+  const [paperCount, setPaperCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       api.get('/jobs/user/tracked').catch(() => ({ data: [] })),
       api.get('/jobs/upcoming?days=14').catch(() => ({ data: [] })),
-    ]).then(([tracked, upcoming]) => {
+      api.get('/mock-tests?limit=100').catch(() => ({ data: [] })),
+      api.get('/papers?limit=100').catch(() => ({ data: [] })),
+    ]).then(([tracked, upcoming, mocks, papers]) => {
       setTrackedJobs(tracked.data)
       setDeadlines(upcoming.data)
+      setMockCount(Array.isArray(mocks.data) ? mocks.data.length : (mocks.data?.total || 0))
+      setPaperCount(Array.isArray(papers.data) ? papers.data.length : (papers.data?.total || 0))
     }).finally(() => setLoading(false))
   }, [])
 
@@ -75,11 +81,11 @@ export default function Dashboard() {
               <p className="text-sm text-gray-500 mt-1">Tracked Jobs</p>
             </TiltCard>
             <TiltCard className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-lg hover:border-purple-200 transition-all duration-300">
-              <p className="text-3xl font-black text-purple-600">11</p>
+              <p className="text-3xl font-black text-purple-600">{mockCount}</p>
               <p className="text-sm text-gray-500 mt-1">Mock Tests</p>
             </TiltCard>
             <TiltCard className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-lg hover:border-green-200 transition-all duration-300">
-              <p className="text-3xl font-black text-green-600">20</p>
+              <p className="text-3xl font-black text-green-600">{paperCount}</p>
               <p className="text-sm text-gray-500 mt-1">Papers</p>
             </TiltCard>
             <TiltCard className="bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-lg hover:border-orange-200 transition-all duration-300">

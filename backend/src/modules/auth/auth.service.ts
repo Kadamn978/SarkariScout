@@ -78,9 +78,10 @@ export class AuthService {
         throw new ForbiddenException('Invalid refresh token');
       }
 
-      // Token rotation: delete old refresh token before issuing new pair
-      await this.redis.del(`refresh:${payload.sub}`);
-      return this.generateTokens(payload.sub, payload.email, payload.role);
+      // Token rotation: atomic delete + set to prevent race condition
+      const newTokens = await this.generateTokens(payload.sub, payload.email, payload.role);
+      await this.redis.set(`refresh:${payload.sub}`, newTokens.refreshToken, 604800);
+      return newTokens;
     } catch (err) {
       if (err instanceof ForbiddenException) throw err;
       throw new UnauthorizedException('Invalid refresh token');

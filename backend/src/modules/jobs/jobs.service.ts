@@ -160,7 +160,10 @@ export class JobsService {
 
     return this.prisma.userJob.update({
       where: { id: tracker.id },
-      data: { stage: stage as TrackerStage },
+      data: {
+        stage: stage as TrackerStage,
+        ...(notes !== undefined && { notes }),
+      },
     });
   }
 

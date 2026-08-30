@@ -245,7 +245,7 @@ export default function Jobs() {
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm">Jobs by Qualification</h3>
               <div className="space-y-1">
                 {QUALIFICATIONS.map((q) => (
-                  <Link key={q} to={`/qualifications/${q.toLowerCase().replace(/\s+/g, '-')}`} className="block text-sm text-blue-600 hover:underline">{q} Pass</Link>
+                  <Link key={q} to={`/qualifications/${q.toLowerCase().replace(/\s+/g, '-')}`} className="block text-sm text-blue-600 hover:underline">{q}</Link>
                 ))}
               </div>
             </div>
