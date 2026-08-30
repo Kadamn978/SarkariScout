@@ -28,32 +28,23 @@ export class CrawlerController {
     return this.crawlerService.crawlAll();
   }
 
-  @Post('monitor-competitors')
+  @Post('discover-sources')
   @Roles('ADMIN')
   @Throttle({ default: { limit: 2, ttl: 300000 } })
-  async monitorCompetitors() {
-    return this.competitorMonitor.monitorAll();
+  async discoverOfficialSources() {
+    return this.competitorMonitor.discoverOfficialSources();
   }
 
-  @Post('monitor-competitor/:sourceId')
+  @Get('discovered-sources')
   @Roles('ADMIN')
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  async monitorCompetitor(@Param('sourceId') sourceId: string) {
-    const source = await this.crawlerService['prisma'].source.findUnique({ where: { id: sourceId } });
-    if (!source) return { error: 'Source not found' };
-    return this.competitorMonitor.monitorSite(sourceId, source.baseUrl, source.name);
+  async getDiscoveredSources() {
+    return this.competitorMonitor.getDiscoveredSourcesSummary();
   }
 
   @Get('stats')
   @Roles('ADMIN')
   async getStats() {
     return this.crawlerService.getSourceStats();
-  }
-
-  @Get('competitor-stats')
-  @Roles('ADMIN')
-  async getCompetitorStats() {
-    return this.competitorMonitor.getCompetitorStats();
   }
 
   @Get('history/:sourceId')

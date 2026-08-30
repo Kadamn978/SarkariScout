@@ -1,199 +1,168 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CrawlerService, CrawledJob } from './crawler.service';
 import { validateUrl, sanitizeError } from './url-validator';
-import { cleanHtml, extractOrgFromTitle } from './shared-utils';
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
-
-interface CompetitorConfig {
-  siteName: string;
-  baseUrl: string;
-  selectors: {
-    jobList: string;
-    title: string;
-    link: string;
-    org?: string;
-    date?: string;
-    vacancies?: string;
-  };
-}
 
 @Injectable()
 export class CompetitorMonitorService {
   private readonly logger = new Logger(CompetitorMonitorService.name);
 
-  constructor(
-    private prisma: PrismaService,
-    private crawlerService: CrawlerService,
-  ) {}
+  // Known official government domains to look for
+  private readonly OFFICIAL_DOMAINS = [
+    'gov.in', 'nic.in', 'nic.in', 'ssc.gov.in', 'upsc.gov.in',
+    'ibps.in', 'ibpsonline.ibps.in', 'rbi.org.in',
+    'licindia.in', 'sbi.co.in', 'bankofbaroda.in',
+    'gicre.in', 'newindia.co.in', 'orientalinsurance.org.in',
+    'uiic.co.in', 'nationalinsurance.nic.co.in', 'ecgc.in',
+    'irdai.gov.in', 'mpsc.gov.in', 'maharashtra.gov.in',
+    'mumbai.gov.in', 'ncog.gov.in',
+    'dsorder.com', 'ssc.nic.in', 'uppsc.up.nic.in',
+    'rpsc.rajasthan.gov.in', 'upsssc.gov.in',
+    'bpsc.bih.nic.in', 'mgp.gov.in',
+    'results.gov.in', 'nta.ac.in',
+    'crpf.gov.in', 'bsf.gov.in', 'cisf.gov.in', 'itbp.gov.in',
+    'indiapost.gov.in', 'indiapostgdsonline.gov.in',
+    'nhai.gov.in', 'ntpc.com', 'bhel.in', 'sail.co.in',
+    'ircon.org', 'rites.com', 'onGC.co.in',
+    'drdo.gov.in', 'isro.gov.in', 'barc.gov.in',
+    'cbse.gov.in', 'kvs.gov.in', 'nvs.edu.in',
+    'aiims.gov.in', 'mohfw.gov.in',
+    'employmentnews.gov.in',
+  ];
 
-  async monitorAll(): Promise<{ added: number; updated: number; skipped: number; errors: string[] }> {
+  // Known aggregator patterns to skip
+  private readonly AGGREGATOR_PATTERNS = [
+    /sarkariresult\.com/i, /freejobalert\.com/i,
+    /fresherslive\.com/i, /jagranjosh\.com/i,
+    /adda247\.com/i, /oliveboard\.com/i,
+    /prepp\.in/i, /gradeup\.in/i,
+    /testbook\.com/i, /practice Mock\.in/i,
+    /youtube\.com/i, /facebook\.com/i,
+    /telegram\.me/i, /t\.me/i,
+  ];
+
+  constructor(private prisma: PrismaService) {}
+
+  async discoverOfficialSources(): Promise<{
+    discovered: { url: string; name: string; source: string }[];
+    alreadyTracked: number;
+    newDomains: string[];
+  }> {
     const competitors = await this.prisma.source.findMany({
       where: { enabled: true, configJson: { contains: '"isCompetitor":true' } },
     });
 
-    let added = 0, updated = 0, skipped = 0;
-    const errors: string[] = [];
+    const allLinks = new Map<string, { url: string; name: string; source: string }>();
+    let alreadyTracked = 0;
 
     for (const comp of competitors) {
       try {
-        const result = await this.monitorSite(comp.id, comp.baseUrl, comp.name);
-        added += result.added;
-        updated += result.updated;
-        skipped += result.skipped;
-      } catch (e) {
-        const msg = sanitizeError(e);
-        errors.push(`${comp.name}: ${msg}`);
-        this.logger.error(`Competitor monitor failed for ${comp.name}: ${(e as Error).message}`);
-      }
-      // Rate limit between sites
-      await new Promise(r => setTimeout(r, 3000));
-    }
-
-    return { added, updated, skipped, errors };
-  }
-
-  async monitorSite(sourceId: string, url: string, siteName: string) {
-    this.logger.log(`Monitoring competitor: ${siteName} (${url})`);
-
-    const html = await this.fetchWithRetry(url);
-    if (!html) return { added: 0, updated: 0, skipped: 0 };
-
-    const jobs = this.parseCompetitorHtml(html, siteName, url);
-    this.logger.log(`Found ${jobs.length} jobs from ${siteName}`);
-
-    let added = 0, updated = 0, skipped = 0;
-
-    for (const job of jobs) {
-      try {
-        // Check if job already exists from any source
-        const existing = await this.findExistingJob(job);
-        if (existing) {
-          skipped++;
-          continue;
+        const links = await this.extractOfficialLinks(comp.baseUrl, comp.name);
+        for (const link of links) {
+          const domain = this.extractDomain(link.url);
+          const existing = await this.prisma.source.findFirst({
+            where: { baseUrl: { contains: domain } },
+          });
+          if (existing) {
+            alreadyTracked++;
+            continue;
+          }
+          if (!allLinks.has(link.url)) {
+            allLinks.set(link.url, link);
+          }
         }
-
-        // Upsert as new job linked to competitor source
-        const result = await this.crawlerService.upsertFromCrawledJob({
-          ...job,
-          sourceUrl: job.sourceUrl || url,
-        }, sourceId);
-
-        if (result === 'created') added++; else updated++;
       } catch (e) {
-        this.logger.warn(`Failed to process competitor job: ${(e as Error).message}`);
+        this.logger.error(`Failed to scan ${comp.name}: ${(e as Error).message}`);
       }
+      await new Promise(r => setTimeout(r, 2000));
     }
 
-    // Update source stats
-    await this.prisma.source.update({
-      where: { id: sourceId },
-      data: { lastRunAt: new Date(), lastRunStatus: 'ok', itemsPerRun: jobs.length },
-    });
+    const discovered = Array.from(allLinks.values());
+    const newDomains = [...new Set(discovered.map(d => this.extractDomain(d.url)))];
 
-    return { added, updated, skipped };
+    this.logger.log(`Discovered ${discovered.length} official links, ${newDomains.length} new domains, ${alreadyTracked} already tracked`);
+
+    return { discovered, alreadyTracked, newDomains };
   }
 
-  private async findExistingJob(job: CrawledJob): Promise<boolean> {
-    // Check by title similarity (fuzzy match)
-    const title = job.title.toLowerCase().trim();
-    const org = job.org?.toLowerCase().trim();
+  private async extractOfficialLinks(url: string, siteName: string): Promise<{ url: string; name: string; source: string }[]> {
+    const html = await this.fetchWithRetry(url);
+    if (!html) return [];
 
-    if (!title) return false;
-
-    // Try exact title match first
-    const exact = await this.prisma.job.findFirst({
-      where: {
-        title: { contains: title.substring(0, 50) },
-        status: 'OPEN',
-      },
-      select: { id: true },
-    });
-
-    if (exact) return true;
-
-    // Try org + partial title match
-    if (org) {
-      const orgMatch = await this.prisma.job.findFirst({
-        where: {
-          org: { contains: org.substring(0, 30) },
-          title: { contains: title.substring(0, 30) },
-          status: 'OPEN',
-        },
-        select: { id: true },
-      });
-      if (orgMatch) return true;
-    }
-
-    return false;
-  }
-
-  private parseCompetitorHtml(html: string, siteName: string, baseUrl: string): CrawledJob[] {
-    const jobs: CrawledJob[] = [];
-
-    // Generic link-based extraction
-    // Match: <a href="...">text containing recruitment/vacancy/job keywords</a>
+    const links: { url: string; name: string; source: string }[] = [];
     const linkPattern = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let match;
 
     while ((match = linkPattern.exec(html)) !== null) {
-      const url = match[1];
-      const text = cleanHtml(match[2]).trim();
+      const href = match[1];
+      const text = this.cleanHtml(match[2]).trim();
 
-      if (text.length < 15) continue;
-      if (!this.isJobRelated(text)) continue;
+      if (text.length < 10) continue;
 
-      const fullUrl = url.startsWith('http') ? url : new URL(url, baseUrl).href;
+      let fullUrl: string;
+      try {
+        fullUrl = href.startsWith('http') ? href : new URL(href, url).href;
+      } catch {
+        continue;
+      }
 
-      // Skip navigation/footer links
-      if (this.isNavigationLink(fullUrl)) continue;
+      // Skip aggregator sites
+      if (this.AGGREGATOR_PATTERNS.some(p => p.test(fullUrl))) continue;
 
-      const org = extractOrgFromTitle(text);
+      // Check if it links to an official government domain
+      const domain = this.extractDomain(fullUrl);
+      const isOfficial = this.OFFICIAL_DOMAINS.some(od => domain.endsWith(od) || domain.includes(od));
 
-      jobs.push({
-        sourceUrl: fullUrl,
-        org,
-        title: text,
-        postNames: [text],
-        state: 'ALL_IN',
-        category: 'GOVERNMENT',
-      });
+      if (isOfficial) {
+        links.push({ url: fullUrl, name: text, source: siteName });
+      }
     }
 
-    // Deduplicate by title
+    // Deduplicate
     const seen = new Set<string>();
-    return jobs.filter(j => {
-      const key = j.title.toLowerCase().substring(0, 60);
-      if (seen.has(key)) return false;
-      seen.add(key);
+    return links.filter(l => {
+      if (seen.has(l.url)) return false;
+      seen.add(l.url);
       return true;
     });
   }
 
-  private isJobRelated(text: string): boolean {
-    const keywords = [
-      /recruit/i, /vacanc/i, /examination/i, /constable/i, /inspector/i,
-      /clerk/i, /officer/i, /\bpo\b/i, /ibps/i, /ssc/i, /upsc/i, /rrb/i,
-      /notification/i, /apply/i, /online form/i, /last date/i,
-      /syllabus/i, /admit card/i, /result/i, /answer key/i,
-      /group [a-d]/i, /grade [a-d]/i, /level \d/i,
-      /sarkari/i, /naukri/i, /government/i, /psu/i, /bank/i,
-      /assistant/i, /engineer/i, /technician/i, /graduate/i,
-      / eligible/i, /qualification/i, /age limit/i,
-    ];
-    return keywords.some(kw => kw.test(text));
+  async getDiscoveredSourcesSummary() {
+    const competitors = await this.prisma.source.findMany({
+      where: { configJson: { contains: '"isCompetitor":true' } },
+      select: { id: true, name: true, baseUrl: true, lastRunAt: true },
+    });
+
+    const trackedOfficial = await this.prisma.source.count({
+      where: { configJson: { notContains: '"isCompetitor":true' } },
+    });
+
+    return {
+      competitors: competitors.length,
+      officialSources: trackedOfficial,
+      competitorList: competitors,
+    };
   }
 
-  private isNavigationLink(url: string): boolean {
-    const skip = [
-      /\/tag\//i, /\/category\//i, /\/page\//i, /\/author\//i,
-      /facebook\.com/i, /twitter\.com/i, /instagram\.com/i,
-      /youtube\.com/i, /linkedin\.com/i, /telegram\.me/i,
-      /javascript:/i, /mailto:/i, /tel:/i,
-      /\.pdf$/i, /\.jpg$/i, /\.png$/i,
-    ];
-    return skip.some(p => p.test(url));
+  private extractDomain(url: string): string {
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return '';
+    }
+  }
+
+  private cleanHtml(html: string): string {
+    return html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&#\d+;/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private async fetchWithRetry(url: string, retries = 3): Promise<string | null> {
@@ -206,12 +175,12 @@ export class CompetitorMonitorService {
         }
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000);
+        const timeout = setTimeout(() => controller.abort(), 15000);
 
         const response = await fetch(url, {
           headers: {
             'User-Agent': USER_AGENT,
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept': 'text/html,application/xhtml+xml',
             'Accept-Language': 'en-US,en;q=0.9',
           },
           signal: controller.signal,
@@ -220,9 +189,8 @@ export class CompetitorMonitorService {
         clearTimeout(timeout);
 
         if (!response.ok) {
-          this.logger.warn(`HTTP ${response.status} from ${url}`);
           if (attempt < retries) {
-            await new Promise(r => setTimeout(r, 3000 * attempt));
+            await new Promise(r => setTimeout(r, 2000 * attempt));
             continue;
           }
           return null;
@@ -230,37 +198,11 @@ export class CompetitorMonitorService {
 
         return await response.text();
       } catch (e) {
-        this.logger.warn(`Fetch attempt ${attempt} failed for ${url}: ${(e as Error).message}`);
         if (attempt < retries) {
-          await new Promise(r => setTimeout(r, 3000 * attempt));
+          await new Promise(r => setTimeout(r, 2000 * attempt));
         }
       }
     }
     return null;
-  }
-
-  async getCompetitorStats() {
-    const competitors = await this.prisma.source.findMany({
-      where: { configJson: { contains: '"isCompetitor":true' } },
-      select: {
-        id: true,
-        name: true,
-        baseUrl: true,
-        lastRunAt: true,
-        lastRunStatus: true,
-        itemsPerRun: true,
-      },
-    });
-
-    const stats = await Promise.all(
-      competitors.map(async (c) => {
-        const jobCount = await this.prisma.job.count({
-          where: { sourceId: c.id },
-        });
-        return { ...c, jobsFound: jobCount };
-      })
-    );
-
-    return stats;
   }
 }
