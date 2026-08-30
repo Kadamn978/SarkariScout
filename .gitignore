@@ -56,6 +56,7 @@ __pycache__/
 *.pyo
 .pytest_cache/
 *.egg-info/
+crewai/.env
 
 # Misc
 *.tgz
