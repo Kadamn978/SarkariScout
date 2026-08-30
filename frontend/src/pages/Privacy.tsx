@@ -142,7 +142,7 @@ export default function Privacy() {
               <ul className="list-disc pl-5 space-y-1.5">
                 <li>General questions: <a href="mailto:privacy@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">privacy@sarkariscout.in</a></li>
                 <li>Data protection officer: <a href="mailto:dpo@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">dpo@sarkariscout.in</a></li>
-                <li>Other stuff: <a href="mailto:support@sarkariscout.in" className="text-blue-600 dark:text-blue-400 hover:underline">support@sarkariscout.in</a></li>
+                <li>Other stuff: <a href="mailto:sarkariscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">sarkariscout+support@gmail.com</a></li>
               </ul>
             </section>
 

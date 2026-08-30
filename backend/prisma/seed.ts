@@ -7,7 +7,7 @@ async function main() {
   console.log('Seeding admin user, job sources and sample jobs...');
 
   // Create admin user
-  const adminEmail = 'admin@sarkariscout.in';
+  const adminEmail = 'sarkariscout+admin@gmail.com';
   const adminPassword = 'Admin@12345';
   const passwordHash = await argon2.hash(adminPassword);
 

@@ -206,7 +206,7 @@ export class EmailService {
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from: process.env.SMTP_FROM || `SarkariScout <${process.env.SMTP_USER || 'noreply@example.com'}>`,
+          from: process.env.SMTP_FROM || `SarkariScout <${process.env.SMTP_USER || 'sarkariscout+noreply@gmail.com'}>`,
           to: opts.to,
           subject: opts.subject,
           html: opts.html,

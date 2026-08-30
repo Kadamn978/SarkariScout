@@ -238,14 +238,14 @@ NCS_API_URL=https://api.ncs.gov.in
 ### Step 3: Verify Sender
 
 1. Go to **SMTP & API** → **Senders & IP**
-2. Add sender: `noreply@sarkariscout.in`
+2. Add sender: `sarkariscout+noreply@gmail.com`
 3. Verify the email (click link sent to that address)
 
 ### Step 4: Update .env (for production)
 
 ```
 BREVO_API_KEY=<your-brevo-api-key>
-BREVO_SENDER_EMAIL=noreply@sarkariscout.in
+BREVO_SENDER_EMAIL=sarkariscout+noreply@gmail.com
 ```
 
 **Note:** Brevo is for production. Keep Mailtrap for dev testing.
@@ -297,10 +297,10 @@ SMTP_HOST=sandbox.smtp.mailtrap.io
 SMTP_PORT=2525
 SMTP_USER=a79cfe5727090a
 SMTP_PASS=270b68f6b38964
-SMTP_FROM=SarkariScout <noreply@sarkariscout.in>
+SMTP_FROM=SarkariScout <sarkariscout+noreply@gmail.com>
 SMTP_SECURE=false
 BREVO_API_KEY=
-BREVO_SENDER_EMAIL=noreply@sarkariscout.in
+BREVO_SENDER_EMAIL=sarkariscout+noreply@gmail.com
 NCS_API_KEY=
 NCS_API_URL=https://api.ncs.gov.in
 ENCRYPTION_KEY=0123456789abcdef0123456789abcdef
