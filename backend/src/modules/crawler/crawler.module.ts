@@ -8,6 +8,9 @@ import { JobDeletionDetectorService } from './job-deletion-detector.service';
 import { RSSMonitorService } from './rss-monitor.service';
 import { FakeSiteDetectorService } from './fake-site-detector.service';
 import { CompetitorMonitorService } from './competitor-monitor.service';
+import { CompetitorPipeline } from './agents/competitor-pipeline.service';
+import { SourceManagerAgent } from './agents/source-manager.agent';
+import { JobValidatorAgent } from './agents/job-validator.agent';
 
 @Module({
   imports: [ChangesModule, EmailModule],
@@ -19,6 +22,9 @@ import { CompetitorMonitorService } from './competitor-monitor.service';
     RSSMonitorService,
     FakeSiteDetectorService,
     CompetitorMonitorService,
+    CompetitorPipeline,
+    SourceManagerAgent,
+    JobValidatorAgent,
   ],
   exports: [
     CrawlerService,
@@ -27,6 +33,7 @@ import { CompetitorMonitorService } from './competitor-monitor.service';
     RSSMonitorService,
     FakeSiteDetectorService,
     CompetitorMonitorService,
+    CompetitorPipeline,
   ],
 })
 export class CrawlerModule {}

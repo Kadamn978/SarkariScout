@@ -2,6 +2,7 @@ import { Controller, Post, Param, UseGuards, Get, Query } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { CrawlerService } from './crawler.service';
 import { CompetitorMonitorService } from './competitor-monitor.service';
+import { CompetitorPipeline } from './agents/competitor-pipeline.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -12,6 +13,7 @@ export class CrawlerController {
   constructor(
     private crawlerService: CrawlerService,
     private competitorMonitor: CompetitorMonitorService,
+    private competitorPipeline: CompetitorPipeline,
   ) {}
 
   @Post('crawl/:sourceId')
@@ -26,6 +28,19 @@ export class CrawlerController {
   @Throttle({ default: { limit: 2, ttl: 300000 } })
   async crawlAll() {
     return this.crawlerService.crawlAll();
+  }
+
+  @Post('competitor-pipeline')
+  @Roles('ADMIN')
+  @Throttle({ default: { limit: 1, ttl: 600000 } })
+  async runCompetitorPipeline() {
+    return this.competitorPipeline.run();
+  }
+
+  @Get('pipeline-stats')
+  @Roles('ADMIN')
+  async getPipelineStats() {
+    return this.competitorPipeline.getPipelineStats();
   }
 
   @Post('discover-sources')
