@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding admin user, job sources and sample jobs...');
 
-  // Create admin user
-  const adminEmail = 'sarkariscout+admin@gmail.com';
+  // Create admin user — use personal email, not generic admin@
+  const adminEmail = 'kadamn978+sarkariscout@gmail.com';
   const adminPassword = 'Admin@12345';
   const passwordHash = await argon2.hash(adminPassword);
 
@@ -25,7 +25,7 @@ async function main() {
   console.log('Admin user:', admin.email, '(password: Admin@12345)');
 
   // Create a test regular user
-  const testEmail = 'test@sarkariscout.in';
+  const testEmail = 'kadamn978+test@gmail.com';
   const testPassword = 'Test@12345';
   const testHash = await argon2.hash(testPassword);
 
