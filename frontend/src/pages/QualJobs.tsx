@@ -34,7 +34,7 @@ export default function QualJobs() {
   useSEO({
     title: `Government Jobs for ${qual?.replace(/-/g, ' ') || ''} Candidates`,
     description: `Browse government jobs for ${qual?.replace(/-/g, ' ') || ''} qualified candidates. Filter by state and category.`,
-    canonical: qual ? `https://sarkariscout.in/qualifications/${qual}` : undefined,
+    canonical: qual ? `https://rozgarscout.in/qualifications/${qual}` : undefined,
   })
 
   const [jobs, setJobs] = useState<Job[]>([])

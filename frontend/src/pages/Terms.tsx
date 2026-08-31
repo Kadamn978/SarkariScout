@@ -6,7 +6,7 @@ export default function Terms() {
   useSEO({
     title: 'Terms of Service',
     description: 'The rules for using RozgarScout. Plain language, no nonsense.',
-    canonical: 'https://sarkariscout.in/terms',
+    canonical: 'https://rozgarscout.in/terms',
     ogTitle: 'Terms of Service | RozgarScout',
     ogDescription: 'Terms for using RozgarScout.',
   })
@@ -135,13 +135,13 @@ export default function Terms() {
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">11. Disputes</h2>
               <p>These terms follow <strong>Indian law</strong>. If there's a dispute, it goes to the courts in India — no exceptions.</p>
-               <p className="mt-2">Before lawyering up, though, try talking to us first. Email <a href="mailto:sarkariscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">sarkariscout+support@gmail.com</a> and give us 30 days to work it out. Most things don't need a courtroom.</p>
+               <p className="mt-2">Before lawyering up, though, try talking to us first. Email <a href="mailto:rozgarscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">rozgarscout+support@gmail.com</a> and give us 30 days to work it out. Most things don't need a courtroom.</p>
               <p className="mt-2">Also, no class-action lawsuits. Any dispute is between you and us, individually.</p>
             </section>
 
             <section>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Questions?</h2>
-               <p>Reach out to us at <a href="mailto:sarkariscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">sarkariscout+support@gmail.com</a>. We usually get back within a week.</p>
+               <p>Reach out to us at <a href="mailto:rozgarscout+support@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">rozgarscout+support@gmail.com</a>. We usually get back within a week.</p>
             </section>
 
             <div className="border-t border-gray-100 dark:border-gray-800 pt-6 mt-8">

@@ -21,7 +21,7 @@ export default function ExamCalendar() {
   useSEO({
     title: 'Government Exam Calendar',
     description: 'View all upcoming government exam dates, application deadlines, admit card releases, and result declarations on a single calendar.',
-    canonical: 'https://sarkariscout.in/exam-calendar',
+    canonical: 'https://rozgarscout.in/exam-calendar',
     ogTitle: 'Exam Calendar | RozgarScout',
     ogDescription: 'Government exam calendar with all important dates in one view.',
   })

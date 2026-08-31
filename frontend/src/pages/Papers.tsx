@@ -14,7 +14,7 @@ export default function Papers() {
   useSEO({
     title: 'Previous Year Question Papers',
     description: 'Download previous year question papers for SSC, UPSC, IBPS, RRB, Engineering exams. Organized by exam family and year.',
-    canonical: 'https://sarkariscout.in/papers',
+    canonical: 'https://rozgarscout.in/papers',
     ogTitle: 'Previous Year Papers | RozgarScout',
     ogDescription: 'Free previous year question papers for government exams.',
   })

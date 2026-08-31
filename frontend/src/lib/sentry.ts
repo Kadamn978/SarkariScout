@@ -13,7 +13,7 @@ export function initSentry() {
       Sentry.browserTracingIntegration(),
     ],
     tracesSampleRate: 1.0,
-    tracePropagationTargets: ['localhost', /^https:\/\/sarkariscout\.in\/api/],
+    tracePropagationTargets: ['localhost', /^https:\/\/rozgarscout\.in\/api/],
   });
 }
 

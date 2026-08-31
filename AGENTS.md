@@ -1,7 +1,7 @@
-# AGENTS.md — SarkariScout Development Guide
+# AGENTS.md — RozgarScout Development Guide
 
 ## Project Overview
-SarkariScout is a government job notification aggregator for Indian aspirants.
+RozgarScout is a government job notification aggregator for Indian aspirants.
 - **Backend**: NestJS + TypeScript + Prisma ORM + MySQL + Redis
 - **Frontend**: React 18 + Vite 6 + Tailwind CSS v4 + React Router v6
 - **Testing**: Jest (backend), Vitest + Testing Library (frontend)

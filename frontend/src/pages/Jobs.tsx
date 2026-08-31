@@ -46,7 +46,7 @@ export default function Jobs() {
   useSEO({
     title: 'Latest Government Jobs',
     description: 'Browse latest government jobs from SSC, UPSC, IBPS, RRB, State PSCs. Filter by state, category, and qualification. Apply before deadlines.',
-    canonical: 'https://sarkariscout.in/jobs',
+    canonical: 'https://rozgarscout.in/jobs',
     ogTitle: 'Latest Government Jobs | RozgarScout',
     ogDescription: 'Browse and apply for latest government jobs. Filter by state, category, qualification.',
   })

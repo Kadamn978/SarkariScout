@@ -71,7 +71,7 @@ export default function JobDetail() {
   useSEO({
     title: job ? `${job.title} - ${job.org}` : 'Loading...',
     description: job ? `${job.title} at ${job.org}. ${job.totalVacancies || ''} vacancies. Apply before ${job.applyEnd || 'deadline'}.` : '',
-    canonical: job ? `https://sarkariscout.in/jobs/${job.id}` : undefined,
+    canonical: job ? `https://rozgarscout.in/jobs/${job.id}` : undefined,
     ogTitle: job ? `${job.title} | RozgarScout` : undefined,
     ogDescription: job ? `${job.totalVacancies || ''} vacancies at ${job.org}. Free apply link.` : undefined,
     jsonLd: job ? {
@@ -304,7 +304,7 @@ export default function JobDetail() {
             {/* Legal Disclaimer */}
             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 dark:bg-gray-900 dark:border-gray-800 mb-6">
               <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
-                <span className="font-semibold">*</span> Note: Always check the official website and official notification for any recent changes or updates. Data displayed here may contain inaccuracies. SarkariScout aggregates publicly available information and is not affiliated with any government body.
+                <span className="font-semibold">*</span> Note: Always check the official website and official notification for any recent changes or updates. Data displayed here may contain inaccuracies. RozgarScout aggregates publicly available information and is not affiliated with any government body.
               </p>
             </div>
 

@@ -141,18 +141,18 @@ export default function Landing() {
   useSEO({
     title: 'Government Job Alerts, Mock Tests & Previous Papers',
     description: 'Get personalized government job alerts for SSC, UPSC, IBPS, RRB & more. Free mock tests, previous year papers, and application tracker for Indian aspirants.',
-    canonical: 'https://sarkariscout.in',
+    canonical: 'https://rozgarscout.in',
     ogTitle: 'RozgarScout - Government Job Alerts & Preparation',
     ogDescription: 'Never miss a Sarkari Naukri. Free alerts, mock tests, and papers for SSC, UPSC, IBPS, RRB.',
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       'name': 'RozgarScout',
-      'url': 'https://sarkariscout.in',
+      'url': 'https://rozgarscout.in',
       'description': 'Government job alerts, mock tests, and previous year papers for SSC, UPSC, IBPS, RRB.',
       'potentialAction': {
         '@type': 'SearchAction',
-        'target': 'https://sarkariscout.in/jobs?search={search_term_string}',
+        'target': 'https://rozgarscout.in/jobs?search={search_term_string}',
         'query-input': 'required name=search_term_string',
       },
     },

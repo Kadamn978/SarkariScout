@@ -15,7 +15,7 @@ export default function MockTests() {
   useSEO({
     title: 'Free Mock Tests for Government Exams',
     description: 'Practice with free mock tests for SSC, UPSC, Banking, Railway, Engineering exams. Instant scoring, correct answers, and leaderboard ranking.',
-    canonical: 'https://sarkariscout.in/mock-tests',
+    canonical: 'https://rozgarscout.in/mock-tests',
     ogTitle: 'Free Mock Tests | RozgarScout',
     ogDescription: 'Free mock tests for SSC, UPSC, Banking, Railway exams with instant scoring.',
   })

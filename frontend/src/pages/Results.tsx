@@ -17,7 +17,7 @@ export default function Results() {
   useSEO({
     title: 'Government Exam Results',
     description: 'Check declared and upcoming government exam results for SSC, UPSC, IBPS, RRB, State PSCs. Never miss a result declaration.',
-    canonical: 'https://sarkariscout.in/results',
+    canonical: 'https://rozgarscout.in/results',
     ogTitle: 'Government Exam Results | RozgarScout',
     ogDescription: 'Declared and upcoming government exam results for all major exams.',
   })
