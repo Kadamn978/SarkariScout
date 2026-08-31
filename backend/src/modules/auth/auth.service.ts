@@ -44,7 +44,7 @@ export class AuthService {
     })
 
     // Return tokens but frontend must check emailVerifiedAt
-    return this.generateTokens(user.id, user.email, user.role)
+    return this.generateTokens(user.id, user.email, user.role, user.emailVerifiedAt)
   }
 
   async login(dto: LoginDto) {
@@ -82,7 +82,7 @@ export class AuthService {
       )
     }
 
-    return this.generateTokens(user.id, user.email, user.role)
+    return this.generateTokens(user.id, user.email, user.role, user.emailVerifiedAt)
   }
 
   async refreshTokens(refreshToken: string) {
@@ -103,7 +103,8 @@ export class AuthService {
       }
 
       // Token rotation: atomic delete + set to prevent race condition
-      const newTokens = await this.generateTokens(payload.sub, payload.email, payload.role)
+      const user = await this.prisma.user.findUnique({ where: { id: payload.sub }, select: { emailVerifiedAt: true } })
+      const newTokens = await this.generateTokens(payload.sub, payload.email, payload.role, user?.emailVerifiedAt)
       await this.redis.set(`refresh:${payload.sub}`, newTokens.refreshToken, 604800)
       return newTokens
     } catch (err) {
@@ -117,6 +118,10 @@ export class AuthService {
   }
 
   // --- Email Verification ---
+
+  async findUserByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } })
+  }
 
   async sendVerificationEmail(userId: string, email: string) {
     const token = randomUUID()
@@ -140,12 +145,23 @@ export class AuthService {
     const userId = await this.redis.get(`verify:${token}`)
     if (!userId) throw new GoneException('Invalid or expired verification token')
 
+    const user = await this.prisma.user.findUnique({ where: { id: userId } })
+    if (user?.emailVerifiedAt) {
+      await this.redis.del(`verify:${token}`)
+      return { message: 'Email already verified. You can log in.' }
+    }
+
     await this.prisma.user.update({
       where: { id: userId },
       data: { emailVerifiedAt: new Date() },
     })
 
     await this.redis.del(`verify:${token}`)
+
+    this.emailService.sendWelcomeEmail(userId).catch((err) => {
+      this.logger.warn(`Failed to send welcome email to ${user?.email}: ${err.message}`)
+    })
+
     return { message: 'Email verified successfully' }
   }
 
@@ -224,7 +240,7 @@ export class AuthService {
     return { id: user.id, email: user.email, role: user.role, name: user.name }
   }
 
-  private async generateTokens(userId: string, email: string, role: string) {
+  private async generateTokens(userId: string, email: string, role: string, emailVerifiedAt?: Date | null) {
     const accessToken = this.jwt.sign(
       { sub: userId, email, role, type: 'access' },
       { expiresIn: '15m' },
@@ -236,7 +252,7 @@ export class AuthService {
 
     await this.redis.set(`refresh:${userId}`, refreshToken, 604800)
 
-    return { accessToken, refreshToken, user: { id: userId, email, role } }
+    return { accessToken, refreshToken, user: { id: userId, email, role }, emailVerifiedAt: emailVerifiedAt || null }
   }
 
   private timingSafeCompare(a: string, b: string): boolean {

@@ -35,6 +35,7 @@ const mockRedis = {
 
 const mockEmail = {
   sendEmail: jest.fn().mockResolvedValue(undefined),
+  sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
 }
 
 describe('AuthService', () => {
@@ -288,6 +289,7 @@ describe('AuthService', () => {
   describe('verifyEmail', () => {
     it('should verify email with valid token', async () => {
       mockRedis.get.mockResolvedValue('user-1')
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'test@test.com', emailVerifiedAt: null })
       mockPrisma.user.update.mockResolvedValue({})
       mockRedis.del.mockResolvedValue(undefined)
 
@@ -299,6 +301,15 @@ describe('AuthService', () => {
       })
       expect(mockRedis.del).toHaveBeenCalledWith('verify:valid-token')
       expect(result.message).toBe('Email verified successfully')
+    })
+
+    it('should return already verified message if user already verified', async () => {
+      mockRedis.get.mockResolvedValue('user-1')
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'test@test.com', emailVerifiedAt: new Date() })
+      mockRedis.del.mockResolvedValue(undefined)
+
+      const result = await service.verifyEmail('valid-token')
+      expect(result.message).toBe('Email already verified. You can log in.')
     })
 
     it('should throw GoneException for invalid token', async () => {

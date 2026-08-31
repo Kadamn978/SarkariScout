@@ -7,13 +7,15 @@ export default function VerifyEmail() {
   const [searchParams] = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'waiting'>('loading')
   const [message, setMessage] = useState('')
+  const [email, setEmail] = useState('')
+  const [resending, setResending] = useState(false)
 
   useEffect(() => {
     const token = searchParams.get('token')
     if (!token) {
       // No token = user was redirected here after registration
       setStatus('waiting')
-      setMessage('Check your email and click the verification link to continue.')
+      setMessage('We sent you a verification email. Click the link in the email to verify your account.')
       return
     }
 
@@ -29,11 +31,18 @@ export default function VerifyEmail() {
   }, [searchParams])
 
   const handleResend = async () => {
+    if (!email) {
+      setMessage('Please enter your email address.')
+      return
+    }
+    setResending(true)
     try {
-      await api.post('/auth/resend-verification')
-      setMessage('New verification email sent! Check your inbox.')
+      await api.post('/auth/resend-verification', { email })
+      setMessage('New verification email sent! Check your inbox and spam folder.')
     } catch {
-      setMessage('Failed to resend. Please try again.')
+      setMessage('If your email exists, a verification link has been sent.')
+    } finally {
+      setResending(false)
     }
   }
 
@@ -50,18 +59,28 @@ export default function VerifyEmail() {
           )}
           {status === 'waiting' && (
             <>
-              <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               </div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Verify Your Email</h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">{message}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">Didn't receive the email? Check your spam folder.</p>
-              <button
-                onClick={handleResend}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
-              >
-                Resend Verification Email
-              </button>
+              <p className="text-gray-600 dark:text-gray-400 mb-2">{message}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Didn't receive it? Check your spam folder or resend below.</p>
+              <div className="flex flex-col gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
+                <button
+                  onClick={handleResend}
+                  disabled={resending}
+                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+                >
+                  {resending ? 'Sending...' : 'Resend Verification Email'}
+                </button>
+              </div>
               <div className="mt-4">
                 <Link to="/login" className="text-sm text-gray-500 hover:text-blue-600 transition-colors">
                   Back to Login
@@ -71,8 +90,8 @@ export default function VerifyEmail() {
           )}
           {status === 'success' && (
             <>
-              <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
               </div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Email Verified!</h1>
               <p className="text-gray-600 dark:text-gray-400 mb-6">{message}</p>
@@ -83,17 +102,27 @@ export default function VerifyEmail() {
           )}
           {status === 'error' && (
             <>
-              <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Verification Failed</h1>
               <p className="text-gray-600 dark:text-gray-400 mb-6">{message}</p>
-              <button
-                onClick={handleResend}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
-              >
-                Resend Verification Email
-              </button>
+              <div className="flex flex-col gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
+                <button
+                  onClick={handleResend}
+                  disabled={resending}
+                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+                >
+                  {resending ? 'Sending...' : 'Resend Verification Email'}
+                </button>
+              </div>
               <div className="mt-4">
                 <Link to="/login" className="text-sm text-gray-500 hover:text-blue-600 transition-colors">
                   Back to Login

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import PasswordInput from '../components/PasswordInput'
 
@@ -14,7 +14,6 @@ export default function Register() {
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string; terms?: string }>({})
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
-  const navigate = useNavigate()
 
   const validate = () => {
     const errs: typeof fieldErrors = {}
@@ -36,7 +35,6 @@ export default function Register() {
     setLoading(true)
     try {
       await register(email, password, name.trim())
-      navigate('/profile')
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed')
     } finally {

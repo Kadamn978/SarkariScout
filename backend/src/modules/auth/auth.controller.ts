@@ -102,13 +102,20 @@ export class AuthController {
   }
 
   @Post('resend-verification')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
-  async resendVerification(@Req() req: AuthRequest) {
-    const { sub, email } = req.user
-    await this.authService.sendVerificationEmail(sub, email)
-    return { message: 'Verification email sent' }
+  async resendVerification(@Body() body: { email?: string }) {
+    const email = body?.email
+    if (!email) {
+      return { message: 'If email exists, verification link sent' }
+    }
+
+    const user = await this.authService.findUserByEmail(email)
+    if (user && !user.emailVerifiedAt) {
+      await this.authService.sendVerificationEmail(user.id, user.email)
+    }
+    // Always return same message to prevent email enumeration
+    return { message: 'If email exists, verification link sent' }
   }
 
   @Post('forgot-password')

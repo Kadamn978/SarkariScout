@@ -163,19 +163,6 @@ export class EmailService {
     })
   }
 
-  async sendVerificationEmail(userId: string, email: string, token: string) {
-    await this.sendEmail({
-      to: email,
-      subject: 'Verify your RozgarScout account',
-      html: `
-        <h2>Email Verification</h2>
-        <p>Click the link below to verify your email:</p>
-        <p><a href="${this.baseUrl}/verify-email?token=${token}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px">Verify Email</a></p>
-        <p>This link expires in 24 hours.</p>
-      `,
-    })
-  }
-
   async sendPasswordResetEmail(email: string, token: string) {
     await this.sendEmail({
       to: email,
