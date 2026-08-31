@@ -1,14 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import { PrismaService } from '../../prisma/prisma.service';
-import * as crypto from 'crypto';
-import { escapeHtml, sanitizeEmailSubject, maskEmail } from '../crawler/url-validator';
+import { Injectable, Logger } from '@nestjs/common'
+import * as nodemailer from 'nodemailer'
+import { PrismaService } from '../../prisma/prisma.service'
+import * as crypto from 'crypto'
+import { escapeHtml, sanitizeEmailSubject, maskEmail } from '../crawler/url-validator'
 
 @Injectable()
 export class EmailService {
-  private readonly logger = new Logger(EmailService.name);
-  private transporter: nodemailer.Transporter | null = null;
-  private baseUrl: string;
+  private readonly logger = new Logger(EmailService.name)
+  private transporter: nodemailer.Transporter | null = null
+  private baseUrl: string
 
   constructor(private prisma: PrismaService) {
     if (process.env.SMTP_HOST) {
@@ -20,79 +20,92 @@ export class EmailService {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-      });
-      this.logger.log('SMTP transporter configured');
+      })
+      this.logger.log('SMTP transporter configured')
     } else {
-      this.logger.warn('No SMTP configured — emails will be logged only');
+      this.logger.warn('No SMTP configured — emails will be logged only')
     }
-    this.baseUrl = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173';
+    this.baseUrl = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://localhost:5173'
   }
 
   async sendDailyDigest() {
     const prefs = await this.prisma.emailPreference.findMany({
       where: { digestEnabled: true, unsubscribedAt: null },
       include: { user: { include: { profile: true } } },
-    });
+    })
 
     // Fetch all open jobs ONCE (not per user)
     const allJobs = await this.prisma.job.findMany({
       where: { status: 'OPEN', applyEnd: { gte: new Date() } },
       orderBy: { applyEnd: 'asc' },
       take: 500,
-      select: { id: true, title: true, org: true, state: true, totalVacancies: true, applyEnd: true },
-    });
+      select: {
+        id: true,
+        title: true,
+        org: true,
+        state: true,
+        totalVacancies: true,
+        applyEnd: true,
+      },
+    })
 
-    let sent = 0, failed = 0;
-    const notifications: { userId: string; subject: string }[] = [];
+    let sent = 0,
+      failed = 0
+    const notifications: { userId: string; subject: string }[] = []
 
     for (const pref of prefs) {
       try {
-        const user = pref.user;
-        const profile = user?.profile;
-        if (!profile) continue;
-        if (!user?.emailVerifiedAt) continue;
+        const user = pref.user
+        const profile = user?.profile
+        if (!profile) continue
+        if (!user?.emailVerifiedAt) continue
 
         // Filter jobs in memory instead of querying DB per user
         const matchingJobs = allJobs.filter((job) => {
-          if (job.state !== 'ALL_IN' && profile.state && job.state !== profile.state) return false;
-          return true;
-        });
+          if (job.state !== 'ALL_IN' && profile.state && job.state !== profile.state) return false
+          return true
+        })
 
-        if (matchingJobs.length === 0) continue;
+        if (matchingJobs.length === 0) continue
 
-        const userEmail = pref.user?.email;
-        if (!userEmail) continue;
+        const userEmail = pref.user?.email
+        if (!userEmail) continue
 
         const result = await this.sendEmail({
           to: userEmail,
-          subject: sanitizeEmailSubject(`RozgarScout Daily Digest: ${matchingJobs.length} new jobs for you`),
+          subject: sanitizeEmailSubject(
+            `RozgarScout Daily Digest: ${matchingJobs.length} new jobs for you`,
+          ),
           html: this.buildDigestHtml(matchingJobs, profile, pref.unsubscribeToken),
-        });
+        })
 
         if (result) {
-          sent++;
-          notifications.push({ userId: pref.userId, subject: `Daily Digest: ${matchingJobs.length} jobs` });
+          sent++
+          notifications.push({
+            userId: pref.userId,
+            subject: `Daily Digest: ${matchingJobs.length} jobs`,
+          })
         } else {
-          failed++;
+          failed++
         }
       } catch (e) {
-        this.logger.error(`Digest failed for user ${pref.userId}: ${(e as Error).message}`);
-        failed++;
+        this.logger.error(`Digest failed for user ${pref.userId}: ${(e as Error).message}`)
+        failed++
       }
     }
 
     // Batch insert notification logs
     if (notifications.length > 0) {
       await this.prisma.notificationLog.createMany({
-        data: notifications.map(n => ({
+        data: notifications.map((n) => ({
           userId: n.userId,
           type: 'DIGEST' as const,
           subject: n.subject,
         })),
-      });
+      })
     }
 
-    return { sent, failed, total: prefs.length };
+    return { sent, failed, total: prefs.length }
   }
 
   async sendInstantAlert(userId: string, jobId: string, changeType?: string) {
@@ -103,50 +116,51 @@ export class EmailService {
         include: { user: { include: { profile: true } } },
       }),
       this.prisma.job.findUnique({ where: { id: jobId } }),
-    ]);
+    ])
 
-    if (!pref || pref.unsubscribedAt) return false;
-    if (!pref.user?.profile?.notifyInstant && !pref.instantEnabled) return false;
-    if (!pref.user?.emailVerifiedAt) return false;
-    if (!pref.user?.email) return false;
-    if (!job) return false;
+    if (!pref || pref.unsubscribedAt) return false
+    if (!pref.user?.profile?.notifyInstant && !pref.instantEnabled) return false
+    if (!pref.user?.emailVerifiedAt) return false
+    if (!pref.user?.email) return false
+    if (!job) return false
 
     const subject = changeType
       ? sanitizeEmailSubject(`RozgarScout Alert: ${job.title} at ${job.org} — ${changeType}`)
-      : sanitizeEmailSubject(`RozgarScout: New matching job — ${job.title} at ${job.org}`);
+      : sanitizeEmailSubject(`RozgarScout: New matching job — ${job.title} at ${job.org}`)
 
-    const unsubToken = pref.unsubscribeToken || '';
+    const unsubToken = pref.unsubscribeToken || ''
 
     const result = await this.sendEmail({
       to: pref.user.email,
       subject,
       html: this.buildAlertHtml(job, changeType, unsubToken),
-    });
+    })
 
     if (result) {
       await this.prisma.notificationLog.create({
         data: {
-          userId, jobId,
+          userId,
+          jobId,
           type: changeType ? 'CHANGE_ALERT' : 'INSTANT',
           subject,
         },
-      });
+      })
     }
 
-    return result;
+    return result
   }
 
   async sendWelcomeEmail(userId: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return;
+    const user = await this.prisma.user.findUnique({ where: { id: userId } })
+    if (!user) return
 
-    const pref = await this.prisma.emailPreference.findUnique({ where: { userId } });
+    const pref = await this.prisma.emailPreference.findUnique({ where: { userId } })
 
     await this.sendEmail({
       to: user.email,
       subject: 'Welcome to RozgarScout!',
       html: this.buildWelcomeHtml(user.name || 'Candidate', pref?.unsubscribeToken || ''),
-    });
+    })
   }
 
   async sendVerificationEmail(userId: string, email: string, token: string) {
@@ -159,7 +173,7 @@ export class EmailService {
         <p><a href="${this.baseUrl}/verify-email?token=${token}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px">Verify Email</a></p>
         <p>This link expires in 24 hours.</p>
       `,
-    });
+    })
   }
 
   async sendPasswordResetEmail(email: string, token: string) {
@@ -173,7 +187,7 @@ export class EmailService {
         <p>This link expires in 1 hour.</p>
         <p>If you didn't request this, ignore this email.</p>
       `,
-    });
+    })
   }
 
   async sendJobDeletionNotice(email: string, name: string, jobTitle: string, org: string) {
@@ -197,37 +211,39 @@ export class EmailService {
         </ul>
         <p>We automatically track job listings and notify you when they change.</p>
       `,
-    });
+    })
   }
 
   async sendEmail(opts: { to: string; subject: string; html: string }): Promise<boolean> {
-    this.logger.log(`Email to ${maskEmail(opts.to)}: ${opts.subject}`);
+    this.logger.log(`Email to ${maskEmail(opts.to)}: ${opts.subject}`)
 
     if (this.transporter) {
       try {
         await this.transporter.sendMail({
-          from: process.env.SMTP_FROM || `RozgarScout <${process.env.SMTP_USER || 'rozgarscout+noreply@gmail.com'}>`,
+          from:
+            process.env.SMTP_FROM ||
+            `RozgarScout <${process.env.SMTP_USER || 'rozgarscout+noreply@gmail.com'}>`,
           to: opts.to,
           subject: opts.subject,
           html: opts.html,
-        });
-        this.logger.log(`Email sent to ${maskEmail(opts.to)}`);
-        return true;
+        })
+        this.logger.log(`Email sent to ${maskEmail(opts.to)}`)
+        return true
       } catch (err) {
-        this.logger.error(`Email send failed: ${(err as Error).message}`);
-        return false;
+        this.logger.error(`Email send failed: ${(err as Error).message}`)
+        return false
       }
     } else {
-      this.logger.log(`[DRY RUN] Email to ${maskEmail(opts.to)}: ${opts.subject}`);
-      return true;
+      this.logger.log(`[DRY RUN] Email to ${maskEmail(opts.to)}: ${opts.subject}`)
+      return true
     }
   }
 
   async unsubscribe(token: string): Promise<{ success: boolean; message: string }> {
     const pref = await this.prisma.emailPreference.findUnique({
       where: { unsubscribeToken: token },
-    });
-    if (!pref) return { success: false, message: 'Invalid unsubscribe link' };
+    })
+    if (!pref) return { success: false, message: 'Invalid unsubscribe link' }
 
     await this.prisma.emailPreference.update({
       where: { id: pref.id },
@@ -237,21 +253,24 @@ export class EmailService {
         weeklyEnabled: false,
         unsubscribedAt: new Date(),
       },
-    });
+    })
 
-    return { success: true, message: 'Successfully unsubscribed' };
+    return { success: true, message: 'Successfully unsubscribed' }
   }
 
   async getPreferences(userId: string) {
-    return this.prisma.emailPreference.findUnique({ where: { userId } });
+    return this.prisma.emailPreference.findUnique({ where: { userId } })
   }
 
-  async updatePreferences(userId: string, data: { digestEnabled?: boolean; instantEnabled?: boolean; weeklyEnabled?: boolean }) {
+  async updatePreferences(
+    userId: string,
+    data: { digestEnabled?: boolean; instantEnabled?: boolean; weeklyEnabled?: boolean },
+  ) {
     return this.prisma.emailPreference.upsert({
       where: { userId },
       update: data,
       create: { userId, ...data },
-    });
+    })
   }
 
   async getNotificationHistory(userId: string, limit = 20) {
@@ -260,11 +279,14 @@ export class EmailService {
       orderBy: { sentAt: 'desc' },
       take: limit,
       include: { job: { select: { title: true, org: true } } },
-    });
+    })
   }
 
   private buildDigestHtml(jobs: any[], profile: any, unsubToken: string): string {
-    const jobRows = jobs.slice(0, 20).map((j) => `
+    const jobRows = jobs
+      .slice(0, 20)
+      .map(
+        (j) => `
       <tr>
         <td style="padding:12px;border-bottom:1px solid #e5e7eb">
           <a href="${this.baseUrl}/jobs/${encodeURIComponent(j.id)}" style="color:#1d4ed8;font-weight:600;text-decoration:none;font-size:15px">${escapeHtml(j.title)}</a>
@@ -278,7 +300,9 @@ export class EmailService {
           </span>
         </td>
       </tr>
-    `).join('');
+    `,
+      )
+      .join('')
 
     return `
       <!DOCTYPE html>
@@ -306,7 +330,7 @@ export class EmailService {
         </div>
       </body>
       </html>
-    `;
+    `
   }
 
   private buildAlertHtml(job: any, changeType?: string, unsubToken?: string): string {
@@ -336,13 +360,17 @@ export class EmailService {
               <a href="${this.baseUrl}/jobs/${encodeURIComponent(job.id)}" style="color:#2563eb;text-decoration:none;font-size:14px">View Job Details on RozgarScout →</a>
             </div>
           </div>
-          ${unsubToken ? `<div style="padding:12px 20px;background:#f3f4f6;text-align:center">
+          ${
+            unsubToken
+              ? `<div style="padding:12px 20px;background:#f3f4f6;text-align:center">
             <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe</a>
-          </div>` : ''}
+          </div>`
+              : ''
+          }
         </div>
       </body>
       </html>
-    `;
+    `
   }
 
   async getNotificationLog(userId: string, limit = 50) {
@@ -361,7 +389,7 @@ export class EmailService {
         clickedAt: true,
         jobId: true,
       },
-    });
+    })
   }
 
   private buildWelcomeHtml(name: string, unsubToken: string): string {
@@ -393,6 +421,6 @@ export class EmailService {
         </div>
       </body>
       </html>
-    `;
+    `
   }
 }

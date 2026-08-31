@@ -1,65 +1,65 @@
-import { IsOptional, IsString, IsDateString, IsBoolean, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsDateString, IsBoolean, MaxLength } from 'class-validator'
 
 export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  educationLevel?: string;
+  educationLevel?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(1000)
-  degrees?: string;
+  degrees?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  state?: string;
+  state?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(50)
-  district?: string;
+  district?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(1000)
-  languages?: string;
+  languages?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(10)
-  category?: string;
+  category?: string
 
   @IsOptional()
   @IsDateString()
-  dob?: string;
+  dob?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(20)
-  gender?: string;
+  gender?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(1000)
-  examFamilies?: string;
+  examFamilies?: string
 
   @IsOptional()
   @IsString()
   @MaxLength(1000)
-  keywords?: string;
+  keywords?: string
 
   @IsOptional()
   @IsBoolean()
-  notifyInstant?: boolean;
+  notifyInstant?: boolean
 
   @IsOptional()
   @IsBoolean()
-  notifyDigest?: boolean;
+  notifyDigest?: boolean
 
   @IsOptional()
   @IsString()
   @MaxLength(5)
-  digestTime?: string;
+  digestTime?: string
 }

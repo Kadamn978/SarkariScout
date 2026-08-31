@@ -1,48 +1,48 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { ResolvedJob } from './source-resolver.agent';
+import { Injectable, Logger } from '@nestjs/common'
+import { PrismaService } from '../../../prisma/prisma.service'
+import { ResolvedJob } from './source-resolver.agent'
 
 @Injectable()
 export class SourceManagerAgent {
-  private readonly logger = new Logger(SourceManagerAgent.name);
+  private readonly logger = new Logger(SourceManagerAgent.name)
 
   constructor(private prisma: PrismaService) {}
 
   async addMissingSources(resolvedJobs: ResolvedJob[]): Promise<{
-    added: string[];
-    alreadyExists: string[];
-    unresolved: string[];
+    added: string[]
+    alreadyExists: string[]
+    unresolved: string[]
   }> {
-    const added: string[] = [];
-    const alreadyExists: string[] = [];
-    const unresolved: string[] = [];
+    const added: string[] = []
+    const alreadyExists: string[] = []
+    const unresolved: string[] = []
 
     // Group by official domain
-    const domainGroups = new Map<string, ResolvedJob[]>();
+    const domainGroups = new Map<string, ResolvedJob[]>()
     for (const job of resolvedJobs) {
       if (!job.officialDomain) {
-        unresolved.push(job.title);
-        continue;
+        unresolved.push(job.title)
+        continue
       }
 
       const existing = await this.prisma.source.findFirst({
         where: { baseUrl: { contains: job.officialDomain } },
-      });
+      })
 
       if (existing) {
-        alreadyExists.push(job.officialDomain);
-        continue;
+        alreadyExists.push(job.officialDomain)
+        continue
       }
 
-      const group = domainGroups.get(job.officialDomain) || [];
-      group.push(job);
-      domainGroups.set(job.officialDomain, group);
+      const group = domainGroups.get(job.officialDomain) || []
+      group.push(job)
+      domainGroups.set(job.officialDomain, group)
     }
 
     // Add missing sources
     for (const [domain, jobs] of domainGroups) {
-      const job = jobs[0]; // Use first job to determine source details
-      const sourceId = this.generateSourceId(domain);
+      const job = jobs[0] // Use first job to determine source details
+      const sourceId = this.generateSourceId(domain)
 
       try {
         await this.prisma.source.create({
@@ -61,18 +61,20 @@ export class SourceManagerAgent {
             rateLimitMs: 3000,
             retryCount: 3,
           },
-        });
+        })
 
-        added.push(domain);
-        this.logger.log(`Added new source: ${domain} (${sourceId})`);
+        added.push(domain)
+        this.logger.log(`Added new source: ${domain} (${sourceId})`)
       } catch (e) {
-        this.logger.error(`Failed to add source ${domain}: ${(e as Error).message}`);
+        this.logger.error(`Failed to add source ${domain}: ${(e as Error).message}`)
       }
     }
 
-    this.logger.log(`Source management: ${added.length} added, ${alreadyExists.length} exist, ${unresolved.length} unresolved`);
+    this.logger.log(
+      `Source management: ${added.length} added, ${alreadyExists.length} exist, ${unresolved.length} unresolved`,
+    )
 
-    return { added, alreadyExists, unresolved };
+    return { added, alreadyExists, unresolved }
   }
 
   private generateSourceId(domain: string): string {
@@ -81,7 +83,7 @@ export class SourceManagerAgent {
       .replace(/[^a-z0-9]/gi, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')
-      .substring(0, 50);
+      .substring(0, 50)
   }
 
   async getDiscoveredSources() {
@@ -95,6 +97,6 @@ export class SourceManagerAgent {
         lastRunAt: true,
         lastRunStatus: true,
       },
-    });
+    })
   }
 }

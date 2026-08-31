@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { MockTestsService } from './mock-tests.service';
-import { MockTestsController } from './mock-tests.controller';
+import { Module } from '@nestjs/common'
+import { MockTestsService } from './mock-tests.service'
+import { MockTestsController } from './mock-tests.controller'
 
 @Module({
   controllers: [MockTestsController],

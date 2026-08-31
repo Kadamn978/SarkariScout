@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Param, Body, UseGuards, Query } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
-import { PapersService } from './papers.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { Controller, Get, Post, Param, Body, UseGuards, Query } from '@nestjs/common'
+import { Throttle } from '@nestjs/throttler'
+import { PapersService } from './papers.service'
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import { Roles } from '../auth/roles.decorator'
+import { RolesGuard } from '../auth/roles.guard'
 
 @Controller('papers')
 export class PapersController {
@@ -18,43 +18,51 @@ export class PapersController {
     @Query('limit') limit?: string,
   ) {
     return this.papersService.findAll({
-      examFamily, qualification,
+      examFamily,
+      qualification,
       year: year ? parseInt(year) : undefined,
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 20,
-    });
+    })
   }
 
   @Get('families')
   async getExamFamilies() {
-    return this.papersService.getExamFamilies();
+    return this.papersService.getExamFamilies()
   }
 
   @Get('popular')
   async getPopular(@Query('limit') limit?: string) {
-    return this.papersService.getPopular(limit ? parseInt(limit) : 10);
+    return this.papersService.getPopular(limit ? parseInt(limit) : 10)
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.papersService.findOne(id);
+    return this.papersService.findOne(id)
   }
 
   @Post(':id/download')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async recordDownload(@Param('id') id: string) {
-    await this.papersService.incrementDownload(id);
-    return { success: true };
+    await this.papersService.incrementDownload(id)
+    return { success: true }
   }
 
   @Post('admin/create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createPaper(@Body() data: {
-    title: string; examFamily: string; year: number;
-    qualification?: string; fileUrl?: string; externalUrl?: string;
-    description?: string;
-  }) {
-    return this.papersService.createPaper(data);
+  async createPaper(
+    @Body()
+    data: {
+      title: string
+      examFamily: string
+      year: number
+      qualification?: string
+      fileUrl?: string
+      externalUrl?: string
+      description?: string
+    },
+  ) {
+    return this.papersService.createPaper(data)
   }
 }

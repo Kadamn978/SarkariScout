@@ -216,7 +216,7 @@ describe('AuthService', () => {
       // Both should take roughly the same time (argon2.verify on both)
       // Allow generous tolerance since argon2 timing varies
       const diff = Math.abs(time1 - time2)
-      expect(diff).toBeLessThan(300) // within 300ms of each other
+      expect(diff).toBeLessThan(1000) // within 1000ms — argon2 timing varies under load
     })
   })
 

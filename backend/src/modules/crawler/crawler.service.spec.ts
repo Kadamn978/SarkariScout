@@ -2,6 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { CrawlerService } from './crawler.service'
 import { PrismaService } from '../../prisma/prisma.service'
 import { ChangeDetectorService } from '../changes/change-detector.service'
+import * as sharedUtils from './shared-utils'
+
+jest.mock('./shared-utils', () => ({
+  ...jest.requireActual('./shared-utils'),
+  sleep: jest.fn().mockResolvedValue(undefined),
+}))
 
 describe('CrawlerService', () => {
   let service: CrawlerService
@@ -109,6 +115,7 @@ describe('CrawlerService', () => {
         { id: 's3', enabled: true },
       ])
       prisma.source.findUnique.mockResolvedValue({ id: 'x', enabled: false })
+      jest.spyOn(service as any, 'fetchWithRetry').mockResolvedValue('<html></html>')
 
       await service.crawlAll()
       expect(prisma.source.findUnique).toHaveBeenCalledTimes(3)

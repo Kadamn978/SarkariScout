@@ -1,16 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common'
 
 export interface URLVerificationResult {
-  url: string;
-  isOfficial: boolean;
-  officialDomain: string | null;
-  reason: string;
-  confidence: number; // 0-100
+  url: string
+  isOfficial: boolean
+  officialDomain: string | null
+  reason: string
+  confidence: number // 0-100
 }
 
 @Injectable()
 export class FakeSiteDetectorService {
-  private readonly logger = new Logger(FakeSiteDetectorService.name);
+  private readonly logger = new Logger(FakeSiteDetectorService.name)
 
   // Official government domains — verified list
   private readonly officialDomains: Record<string, string[]> = {
@@ -48,7 +48,7 @@ export class FakeSiteDetectorService {
     'rssb.rajasthan.gov.in': ['rssb.rajasthan.gov.in'],
     'employmentnews.gov.in': ['employmentnews.gov.in'],
     'ncs.gov.in': ['ncs.gov.in'],
-  };
+  }
 
   // Known fake/phishing domains (pattern matching)
   private readonly fakePatterns: RegExp[] = [
@@ -66,22 +66,32 @@ export class FakeSiteDetectorService {
     /jagranjosh/gi,
     /careerpower/gi,
     /sscxpress/gi,
-  ];
+  ]
 
   // Suspicious TLDs
   private readonly suspiciousTlds: string[] = [
-    '.xyz', '.top', '.club', '.online', '.site', '.info',
-    '.buzz', '.gq', '.ml', '.cf', '.tk', '.ga',
-  ];
+    '.xyz',
+    '.top',
+    '.club',
+    '.online',
+    '.site',
+    '.info',
+    '.buzz',
+    '.gq',
+    '.ml',
+    '.cf',
+    '.tk',
+    '.ga',
+  ]
 
   verifyURL(url: string, expectedSource?: string): URLVerificationResult {
     try {
-      const parsed = new URL(url);
-      const hostname = parsed.hostname.toLowerCase();
+      const parsed = new URL(url)
+      const hostname = parsed.hostname.toLowerCase()
 
       // Check 1: Is it a known official domain?
       if (expectedSource) {
-        const officialDomains = this.officialDomains[expectedSource] || [];
+        const officialDomains = this.officialDomains[expectedSource] || []
         if (officialDomains.some((d) => hostname === d || hostname.endsWith(`.${d}`))) {
           return {
             url,
@@ -89,7 +99,7 @@ export class FakeSiteDetectorService {
             officialDomain: expectedSource,
             reason: 'Matches known official domain',
             confidence: 100,
-          };
+          }
         }
       }
 
@@ -101,12 +111,12 @@ export class FakeSiteDetectorService {
           officialDomain: hostname,
           reason: 'Government domain (.gov.in / .nic.in)',
           confidence: 95,
-        };
+        }
       }
 
       // Check 3: Is it a known fake pattern?
       for (const pattern of this.fakePatterns) {
-        pattern.lastIndex = 0; // Reset regex state
+        pattern.lastIndex = 0 // Reset regex state
         if (pattern.test(hostname)) {
           return {
             url,
@@ -114,12 +124,12 @@ export class FakeSiteDetectorService {
             officialDomain: null,
             reason: `Matches known fake/aggregator pattern: ${pattern.source}`,
             confidence: 90,
-          };
+          }
         }
       }
 
       // Check 4: Suspicious TLD?
-      const tld = '.' + hostname.split('.').pop();
+      const tld = '.' + hostname.split('.').pop()
       if (this.suspiciousTlds.includes(tld)) {
         return {
           url,
@@ -127,11 +137,11 @@ export class FakeSiteDetectorService {
           officialDomain: null,
           reason: `Suspicious TLD: ${tld}`,
           confidence: 80,
-        };
+        }
       }
 
       // Check 5: Domain similarity attack (typosquatting)
-      const allOfficialDomains = Object.values(this.officialDomains).flat();
+      const allOfficialDomains = Object.values(this.officialDomains).flat()
       for (const official of allOfficialDomains) {
         if (this.isLevenshteinSimilar(hostname, official) && hostname !== official) {
           return {
@@ -140,13 +150,13 @@ export class FakeSiteDetectorService {
             officialDomain: official,
             reason: `Possible typosquatting of ${official}`,
             confidence: 75,
-          };
+          }
         }
       }
 
       // Check 6: Is it a .com version of a known .gov.in domain?
       for (const official of allOfficialDomains) {
-        const comVersion = official.replace('.gov.in', '').replace('.nic.in', '') + '.com';
+        const comVersion = official.replace('.gov.in', '').replace('.nic.in', '') + '.com'
         if (hostname === comVersion || hostname.endsWith('.' + comVersion)) {
           return {
             url,
@@ -154,7 +164,7 @@ export class FakeSiteDetectorService {
             officialDomain: official,
             reason: `Commercial version of government domain ${official}`,
             confidence: 85,
-          };
+          }
         }
       }
 
@@ -165,7 +175,7 @@ export class FakeSiteDetectorService {
         officialDomain: null,
         reason: 'Unknown domain — not in official whitelist',
         confidence: 50,
-      };
+      }
     } catch (e) {
       return {
         url,
@@ -173,61 +183,61 @@ export class FakeSiteDetectorService {
         officialDomain: null,
         reason: `Invalid URL: ${(e as Error).message}`,
         confidence: 0,
-      };
+      }
     }
   }
 
   async verifySourceUrl(sourceUrl: string, sourceBaseUrl: string): Promise<URLVerificationResult> {
     // First try with the source base URL context
-    const result = this.verifyURL(sourceUrl, sourceBaseUrl);
+    const result = this.verifyURL(sourceUrl, sourceBaseUrl)
 
-    if (result.isOfficial) return result;
+    if (result.isOfficial) return result
 
     // If not official, try fetching the page to verify
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000);
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
 
       const res = await fetch(sourceUrl, {
         method: 'HEAD',
         headers: { 'User-Agent': 'Mozilla/5.0' },
         signal: controller.signal,
         redirect: 'follow',
-      });
-      clearTimeout(timeout);
+      })
+      clearTimeout(timeout)
 
       // Check if redirected to an official domain
       if (res.url) {
-        const redirectResult = this.verifyURL(res.url, sourceBaseUrl);
+        const redirectResult = this.verifyURL(res.url, sourceBaseUrl)
         if (redirectResult.isOfficial) {
           return {
             ...redirectResult,
             reason: `Redirects to official domain: ${redirectResult.officialDomain}`,
             confidence: redirectResult.confidence,
-          };
+          }
         }
       }
     } catch (e) {
       // Can't verify via fetch — keep original result
     }
 
-    return result;
+    return result
   }
 
   getOfficialDomains(): Record<string, string[]> {
-    return { ...this.officialDomains };
+    return { ...this.officialDomains }
   }
 
   private isLevenshteinSimilar(a: string, b: string): boolean {
     // Simple check: if domains differ by 1-2 characters, it's suspicious
-    if (Math.abs(a.length - b.length) > 2) return false;
+    if (Math.abs(a.length - b.length) > 2) return false
 
-    let differences = 0;
-    const maxLen = Math.max(a.length, b.length);
+    let differences = 0
+    const maxLen = Math.max(a.length, b.length)
     for (let i = 0; i < maxLen; i++) {
-      if (a[i] !== b[i]) differences++;
-      if (differences > 2) return false;
+      if (a[i] !== b[i]) differences++
+      if (differences > 2) return false
     }
-    return differences > 0 && differences <= 2;
+    return differences > 0 && differences <= 2
   }
 }

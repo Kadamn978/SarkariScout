@@ -1,40 +1,52 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { MockQuestion } from '@prisma/client';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { MockQuestion } from '@prisma/client'
 
 @Injectable()
 export class MockTestsService {
-  private readonly logger = new Logger(MockTestsService.name);
+  private readonly logger = new Logger(MockTestsService.name)
   constructor(private prisma: PrismaService) {}
 
-  async findAll(filters?: { examFamily?: string; qualification?: string; page?: number; limit?: number }) {
-    const page = filters?.page || 1;
-    const limit = Math.min(filters?.limit || 20, 50);
-    const skip = (page - 1) * limit;
+  async findAll(filters?: {
+    examFamily?: string
+    qualification?: string
+    page?: number
+    limit?: number
+  }) {
+    const page = filters?.page || 1
+    const limit = Math.min(filters?.limit || 20, 50)
+    const skip = (page - 1) * limit
 
-    const where: Record<string, unknown> = { isPublished: true };
-    if (filters?.examFamily) where.examFamily = filters.examFamily;
-    if (filters?.qualification) where.qualification = filters.qualification;
+    const where: Record<string, unknown> = { isPublished: true }
+    if (filters?.examFamily) where.examFamily = filters.examFamily
+    if (filters?.qualification) where.qualification = filters.qualification
 
     const [tests, total] = await Promise.all([
       this.prisma.mockTest.findMany({
         where,
         select: {
-          id: true, title: true, description: true, examFamily: true,
-          qualification: true, totalQuestions: true, totalMarks: true,
-          durationMinutes: true, createdAt: true,
+          id: true,
+          title: true,
+          description: true,
+          examFamily: true,
+          qualification: true,
+          totalQuestions: true,
+          totalMarks: true,
+          durationMinutes: true,
+          createdAt: true,
           _count: { select: { attempts: true } },
         },
         orderBy: { createdAt: 'desc' },
-        skip, take: limit,
+        skip,
+        take: limit,
       }),
       this.prisma.mockTest.count({ where }),
-    ]);
+    ])
 
     return {
       tests: tests.map((t) => ({ ...t, attemptCount: t._count.attempts })),
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    };
+    }
   }
 
   async findOne(id: string) {
@@ -44,43 +56,48 @@ export class MockTestsService {
         questions: { orderBy: { sortOrder: 'asc' } },
         _count: { select: { attempts: true } },
       },
-    });
-    if (!test) throw new NotFoundException('Mock test not found');
-    return test;
+    })
+    if (!test) throw new NotFoundException('Mock test not found')
+    return test
   }
 
   async startAttempt(userId: string, testId: string) {
-    const test = await this.prisma.mockTest.findUnique({ where: { id: testId } });
-    if (!test || !test.isPublished) throw new NotFoundException('Test not found or not published');
+    const test = await this.prisma.mockTest.findUnique({ where: { id: testId } })
+    if (!test || !test.isPublished) throw new NotFoundException('Test not found or not published')
 
     const existingAttempt = await this.prisma.mockTestAttempt.findFirst({
       where: { userId, testId, score: null },
-    });
-    if (existingAttempt) return existingAttempt;
+    })
+    if (existingAttempt) return existingAttempt
 
     return this.prisma.mockTestAttempt.create({
       data: { testId, userId },
-    });
+    })
   }
 
-  async submitAttempt(userId: string, attemptId: string, answers: Record<string, string>, timeTakenSec: number) {
+  async submitAttempt(
+    userId: string,
+    attemptId: string,
+    answers: Record<string, string>,
+    timeTakenSec: number,
+  ) {
     const attempt = await this.prisma.mockTestAttempt.findUnique({
       where: { id: attemptId },
       include: { test: { include: { questions: true } } },
-    });
-    if (!attempt) throw new NotFoundException('Attempt not found');
-    if (attempt.userId !== userId) throw new NotFoundException('Unauthorized');
-    if (attempt.score !== null) throw new NotFoundException('Attempt already submitted');
+    })
+    if (!attempt) throw new NotFoundException('Attempt not found')
+    if (attempt.userId !== userId) throw new NotFoundException('Unauthorized')
+    if (attempt.score !== null) throw new NotFoundException('Attempt already submitted')
 
-    let correctCount = 0;
-    let totalScore = 0;
-    const questions = attempt.test.questions;
+    let correctCount = 0
+    let totalScore = 0
+    const questions = attempt.test.questions
 
     for (const q of questions) {
-      const userAnswer = answers[q.id];
+      const userAnswer = answers[q.id]
       if (userAnswer && userAnswer === q.correctOption) {
-        correctCount++;
-        totalScore += q.marks;
+        correctCount++
+        totalScore += q.marks
       }
     }
 
@@ -93,14 +110,16 @@ export class MockTestsService {
         timeTakenSec,
         answers: JSON.stringify(answers),
       },
-    });
+    })
 
     return {
       ...updated,
       totalQuestions: questions.length,
       totalMarks: questions.reduce((sum: number, q: MockQuestion) => sum + q.marks, 0),
-      percentage: Math.round((totalScore / questions.reduce((sum: number, q: MockQuestion) => sum + q.marks, 0)) * 100),
-    };
+      percentage: Math.round(
+        (totalScore / questions.reduce((sum: number, q: MockQuestion) => sum + q.marks, 0)) * 100,
+      ),
+    }
   }
 
   async getAttemptDetail(userId: string, attemptId: string) {
@@ -111,10 +130,10 @@ export class MockTestsService {
           include: { questions: { orderBy: { sortOrder: 'asc' } } },
         },
       },
-    });
-    if (!attempt || attempt.userId !== userId) throw new NotFoundException('Attempt not found');
+    })
+    if (!attempt || attempt.userId !== userId) throw new NotFoundException('Attempt not found')
 
-    const answers = attempt.answers ? JSON.parse(attempt.answers) : {};
+    const answers = attempt.answers ? JSON.parse(attempt.answers) : {}
     const questions = attempt.test.questions.map((q) => ({
       id: q.id,
       questionText: q.questionText,
@@ -127,9 +146,9 @@ export class MockTestsService {
       marks: q.marks,
       userAnswer: answers[q.id] || null,
       isCorrect: answers[q.id] === q.correctOption,
-    }));
+    }))
 
-    return { ...attempt, questions };
+    return { ...attempt, questions }
   }
 
   async getUserStats(userId: string) {
@@ -137,15 +156,16 @@ export class MockTestsService {
       where: { userId, score: { not: null } },
       include: { test: { select: { title: true, examFamily: true, totalMarks: true } } },
       orderBy: { createdAt: 'desc' },
-    });
+    })
 
-    const totalAttempts = attempts.length;
-    const avgScore = totalAttempts > 0
-      ? attempts.reduce((sum, a) => sum + (a.score || 0), 0) / totalAttempts
-      : 0;
-    const avgPercentage = totalAttempts > 0
-      ? attempts.reduce((sum, a) => sum + ((a.score || 0) / (a.test.totalMarks || 1)) * 100, 0) / totalAttempts
-      : 0;
+    const totalAttempts = attempts.length
+    const avgScore =
+      totalAttempts > 0 ? attempts.reduce((sum, a) => sum + (a.score || 0), 0) / totalAttempts : 0
+    const avgPercentage =
+      totalAttempts > 0
+        ? attempts.reduce((sum, a) => sum + ((a.score || 0) / (a.test.totalMarks || 1)) * 100, 0) /
+          totalAttempts
+        : 0
 
     return {
       totalAttempts,
@@ -162,7 +182,7 @@ export class MockTestsService {
         timeTakenSec: a.timeTakenSec,
         createdAt: a.createdAt,
       })),
-    };
+    }
   }
 
   async getLeaderboard(testId: string, limit = 20) {
@@ -171,26 +191,39 @@ export class MockTestsService {
       include: { user: { select: { name: true } } },
       orderBy: [{ score: 'desc' }, { timeTakenSec: 'asc' }],
       take: limit,
-    });
+    })
   }
 
   async createTest(data: {
-    title: string; description?: string; examFamily: string;
-    qualification?: string; totalQuestions: number; totalMarks: number;
-    durationMinutes: number;
+    title: string
+    description?: string
+    examFamily: string
+    qualification?: string
+    totalQuestions: number
+    totalMarks: number
+    durationMinutes: number
   }) {
-    return this.prisma.mockTest.create({ data });
+    return this.prisma.mockTest.create({ data })
   }
 
-  async addQuestion(testId: string, data: {
-    questionText: string; optionA: string; optionB: string;
-    optionC: string; optionD: string; correctOption: string;
-    explanation?: string; marks?: number; sortOrder?: number;
-  }) {
-    return this.prisma.mockQuestion.create({ data: { testId, ...data } });
+  async addQuestion(
+    testId: string,
+    data: {
+      questionText: string
+      optionA: string
+      optionB: string
+      optionC: string
+      optionD: string
+      correctOption: string
+      explanation?: string
+      marks?: number
+      sortOrder?: number
+    },
+  ) {
+    return this.prisma.mockQuestion.create({ data: { testId, ...data } })
   }
 
   async publishTest(id: string) {
-    return this.prisma.mockTest.update({ where: { id }, data: { isPublished: true } });
+    return this.prisma.mockTest.update({ where: { id }, data: { isPublished: true } })
   }
 }
