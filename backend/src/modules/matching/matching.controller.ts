@@ -1,7 +1,7 @@
-import { Controller, Get, Post, UseGuards, Req, Query, Body } from '@nestjs/common';
-import { MatchingService } from './matching.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AuthRequest } from '../auth/auth-request.interface';
+import { Controller, Get, Post, UseGuards, Req, Query, Body } from '@nestjs/common'
+import { MatchingService } from './matching.service'
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import { AuthRequest } from '../auth/auth-request.interface'
 
 @Controller('matching')
 export class MatchingController {
@@ -10,7 +10,7 @@ export class MatchingController {
   @Get('my-jobs')
   @UseGuards(JwtAuthGuard)
   async getMyMatches(@Req() req: AuthRequest) {
-    return this.matchingService.findMatchingJobs(req.user.sub);
+    return this.matchingService.findMatchingJobs(req.user.sub)
   }
 
   @Get('search')
@@ -23,27 +23,23 @@ export class MatchingController {
     @Query('limit') limit?: string,
   ) {
     return this.matchingService.findMatchingJobsPublic({
-      state, category, qualification, search,
+      state,
+      category,
+      qualification,
+      search,
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 20,
-    });
+    })
   }
 
   @Post('score')
   @UseGuards(JwtAuthGuard)
   async scoreJob(@Req() req: AuthRequest, @Body('jobId') jobId: string) {
-    const profile = await this.matchingService['prisma'].profile.findUnique({
-      where: { userId: req.user.sub },
-    });
-    const job = await this.matchingService['prisma'].job.findUnique({
-      where: { id: jobId },
-    });
-    if (!profile || !job) return { error: 'Profile or job not found' };
-    return this.matchingService.matchJob(profile, job);
+    return this.matchingService.scoreJobForUser(req.user.sub, jobId)
   }
 
   @Get('stats')
   async getStats() {
-    return this.matchingService.getJobMatchStats();
+    return this.matchingService.getJobMatchStats()
   }
 }
