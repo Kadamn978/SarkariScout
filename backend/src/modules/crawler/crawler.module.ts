@@ -1,16 +1,17 @@
-import { Module } from '@nestjs/common';
-import { CrawlerService } from './crawler.service';
-import { CrawlerController } from './crawler.controller';
-import { ChangesModule } from '../changes/changes.module';
-import { EmailModule } from '../email/email.module';
-import { AdaptiveSchedulerService } from './adaptive-scheduler.service';
-import { JobDeletionDetectorService } from './job-deletion-detector.service';
-import { RSSMonitorService } from './rss-monitor.service';
-import { FakeSiteDetectorService } from './fake-site-detector.service';
-import { CompetitorMonitorService } from './competitor-monitor.service';
-import { CompetitorPipeline } from './agents/competitor-pipeline.service';
-import { SourceManagerAgent } from './agents/source-manager.agent';
-import { JobValidatorAgent } from './agents/job-validator.agent';
+import { Module } from '@nestjs/common'
+import { CrawlerService } from './crawler.service'
+import { CrawlerController } from './crawler.controller'
+import { ChangesModule } from '../changes/changes.module'
+import { EmailModule } from '../email/email.module'
+import { AdaptiveSchedulerService } from './adaptive-scheduler.service'
+import { JobDeletionDetectorService } from './job-deletion-detector.service'
+import { RSSMonitorService } from './rss-monitor.service'
+import { FakeSiteDetectorService } from './fake-site-detector.service'
+import { CompetitorMonitorService } from './competitor-monitor.service'
+import { CompetitorPipeline } from './agents/competitor-pipeline.service'
+import { SourceManagerAgent } from './agents/source-manager.agent'
+import { JobValidatorAgent } from './agents/job-validator.agent'
+import { NotificationPdfService } from './notification-pdf.service'
 
 @Module({
   imports: [ChangesModule, EmailModule],
@@ -25,6 +26,7 @@ import { JobValidatorAgent } from './agents/job-validator.agent';
     CompetitorPipeline,
     SourceManagerAgent,
     JobValidatorAgent,
+    NotificationPdfService,
   ],
   exports: [
     CrawlerService,
@@ -34,6 +36,7 @@ import { JobValidatorAgent } from './agents/job-validator.agent';
     FakeSiteDetectorService,
     CompetitorMonitorService,
     CompetitorPipeline,
+    NotificationPdfService,
   ],
 })
 export class CrawlerModule {}

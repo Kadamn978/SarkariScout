@@ -19,6 +19,7 @@ interface Job {
   source: { name: string } | null; sourceUrl: string | null;
   postNames: string | null; examFamily: string | null;
   changes: { id: string; type: string; field: string; before: string | null; after: string; detectedAt: string }[];
+  notification?: { id: string; officialUrl: string; isPurged: boolean; uploadStatus: string } | null;
 }
 
 interface RelatedJob {
@@ -43,10 +44,16 @@ export default function JobDetail() {
     setLoading(true)
     window.scrollTo(0, 0)
     api.get(`/jobs/${id}`)
-      .then((res) => {
+      .then(async (res) => {
         setJob(res.data)
         if (user) checkTracking(id)
         loadRelated(res.data.category, res.data.state, id)
+        try {
+          const notifRes = await api.get(`/crawler/notification/${id}`)
+          if (notifRes.data) {
+            setJob(prev => prev ? { ...prev, notification: notifRes.data } : prev)
+          }
+        } catch { /* no notification available */ }
       })
       .catch(() => setError('Failed to load job details'))
       .finally(() => setLoading(false))
@@ -239,10 +246,21 @@ export default function JobDetail() {
                     Apply Now →
                   </a>
                 )}
+                {job.notification && !job.notification.isPurged && (
+                  <a href={`/api/crawler/notification-pdf/${job.notification.id}`} target="_blank" rel="noopener noreferrer"
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition text-sm">
+                    View Official Document →
+                  </a>
+                )}
+                {job.notification && job.notification.isPurged && (
+                  <span className="px-6 py-3 bg-gray-100 text-gray-400 rounded-lg text-sm cursor-not-allowed dark:bg-gray-800 dark:text-gray-600">
+                    Document Archived (90 days after result)
+                  </span>
+                )}
                 {job.officialNotificationUrl && (
                   <a href={job.officialNotificationUrl} target="_blank" rel="noopener noreferrer"
                     className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
-                    Official Notification
+                    Visit Official Website →
                   </a>
                 )}
                 {job.sourceUrl && (
@@ -282,6 +300,13 @@ export default function JobDetail() {
                 )
               })()}
             </article>
+
+            {/* Legal Disclaimer */}
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 dark:bg-gray-900 dark:border-gray-800 mb-6">
+              <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
+                <span className="font-semibold">*</span> Note: Always check the official website and official notification for any recent changes or updates. Data displayed here may contain inaccuracies. SarkariScout aggregates publicly available information and is not affiliated with any government body.
+              </p>
+            </div>
 
             {job.changes && job.changes.length > 0 && (
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 dark:bg-gray-900 dark:border-gray-800">

@@ -234,6 +234,7 @@ model Job {
   changes       JobChange[]
   trackers      UserJob[]
   notifications NotificationLog[]
+  notificationPdfs JobNotification[]
 
   @@index([status])
   @@index([rawHash])
@@ -566,4 +567,55 @@ model DailyStats {
 
   @@index([date])
   @@map("daily_stats")
+}
+
+enum CompetitorStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Competitor {
+  id                String           @id @default(uuid())
+  name              String
+  domain            String           @unique
+  officialDomain    String?
+  state             String           @default("ALL_IN")
+  category          String           @default("Central Job")
+  ranking           Int              @default(25)
+  lastScrapedAt     DateTime?
+  status            CompetitorStatus @default(ACTIVE)
+  pagesScraped      Int              @default(0)
+  jobsFound         Int              @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  notifications     JobNotification[]
+
+  @@index([state, ranking])
+  @@index([category])
+  @@index([status])
+  @@map("competitors")
+}
+
+model JobNotification {
+  id                String    @id @default(uuid())
+  jobId             String
+  job               Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  competitorId      String?
+  competitor        Competitor? @relation(fields: [competitorId], references: [id], onDelete: SetNull)
+  title             String
+  officialUrl       String
+  pdfData           Bytes?
+  pdfSizeBytes      Int?
+  pdfCompressed     Boolean   @default(false)
+  uploadStatus      String    @default("pending")
+  resultDeclaredAt  DateTime?
+  purgeAfterAt      DateTime?
+  isPurged          Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([jobId])
+  @@index([purgeAfterAt, isPurged])
+  @@map("job_notifications")
 }
