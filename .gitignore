@@ -85,3 +85,6 @@ safe-push.sh
 test-db.js
 
 dump.rdb
+
+# Skills submodules (managed by opencode, not project code)
+.opencode/skills/
