@@ -6,7 +6,7 @@ export default function About() {
   useSEO({
     title: 'About RozgarScout',
     description: 'RozgarScout aggregates government job notifications from 20+ official sources. Learn about our mission to help Indian aspirants never miss a deadline.',
-    canonical: 'https://rozgarscout.in/about',
+    canonical: 'https://sarkariscout.in/about',
     ogTitle: 'About RozgarScout',
     ogDescription: 'Government job aggregator monitoring 20+ official sources. Free alerts, mock tests, and papers.',
   })

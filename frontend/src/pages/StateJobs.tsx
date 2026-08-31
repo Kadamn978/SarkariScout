@@ -45,7 +45,7 @@ export default function StateJobs() {
   useSEO({
     title: `Government Jobs in ${state?.replace(/_/g, ' ') || ''}`,
     description: `Browse latest government jobs in ${state?.replace(/_/g, ' ') || ''}. Filter by category and qualification.`,
-    canonical: state ? `https://rozgarscout.in/state/${state}` : undefined,
+    canonical: state ? `https://sarkariscout.in/state/${state}` : undefined,
   })
 
   const [jobs, setJobs] = useState<Job[]>([])

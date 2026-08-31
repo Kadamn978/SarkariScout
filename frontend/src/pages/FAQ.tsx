@@ -24,7 +24,7 @@ export default function FAQ() {
   useSEO({
     title: 'Frequently Asked Questions',
     description: 'Answers to common questions about RozgarScout — government job alerts, mock tests, papers, and tracking.',
-    canonical: 'https://rozgarscout.in/faq',
+    canonical: 'https://sarkariscout.in/faq',
     ogTitle: 'FAQ | RozgarScout',
     ogDescription: 'Frequently asked questions about RozgarScout.',
     jsonLd: {
@@ -75,7 +75,7 @@ export default function FAQ() {
         <div className="mt-12 text-center bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Still have questions?</h2>
           <p className="text-gray-500 mb-4">Drop us a line</p>
-           <a href="mailto:rozgarscout+support@gmail.com"
+           <a href="mailto:sarkariscout+support@gmail.com"
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
             Contact Support
           </a>

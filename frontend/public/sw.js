@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rozgarscout-v1';
+const CACHE_NAME = 'sarkariscout-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

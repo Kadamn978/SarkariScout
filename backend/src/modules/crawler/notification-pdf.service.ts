@@ -81,14 +81,19 @@ export class NotificationPdfService {
   }
 
   async getPdfData(notificationId: string): Promise<Buffer | null> {
-    const notification = await this.prisma.jobNotification.findUnique({
-      where: { id: notificationId },
-    });
-    if (!notification || !notification.pdfData || notification.isPurged) return null;
-    if (notification.pdfCompressed) {
-      return await gunzip(Buffer.from(notification.pdfData));
+    try {
+      const notification = await this.prisma.jobNotification.findUnique({
+        where: { id: notificationId },
+      });
+      if (!notification || !notification.pdfData || notification.isPurged) return null;
+      if (notification.pdfCompressed) {
+        return await gunzip(Buffer.from(notification.pdfData));
+      }
+      return Buffer.from(notification.pdfData);
+    } catch (err) {
+      this.logger.error(`Failed to get PDF ${notificationId}: ${(err as Error).message}`);
+      return null;
     }
-    return Buffer.from(notification.pdfData);
   }
 
   async markResultDeclared(jobId: string): Promise<void> {

@@ -74,7 +74,7 @@ export class EmailService {
         const result = await this.sendEmail({
           to: userEmail,
           subject: sanitizeEmailSubject(
-            `RozgarScout Daily Digest: ${matchingJobs.length} new jobs for you`,
+            `SarkariScout Daily Digest: ${matchingJobs.length} new jobs for you`,
           ),
           html: this.buildDigestHtml(matchingJobs, profile, pref.unsubscribeToken),
         })
@@ -125,8 +125,8 @@ export class EmailService {
     if (!job) return false
 
     const subject = changeType
-      ? sanitizeEmailSubject(`RozgarScout Alert: ${job.title} at ${job.org} — ${changeType}`)
-      : sanitizeEmailSubject(`RozgarScout: New matching job — ${job.title} at ${job.org}`)
+      ? sanitizeEmailSubject(`SarkariScout Alert: ${job.title} at ${job.org} — ${changeType}`)
+      : sanitizeEmailSubject(`SarkariScout: New matching job — ${job.title} at ${job.org}`)
 
     const unsubToken = pref.unsubscribeToken || ''
 
@@ -158,7 +158,7 @@ export class EmailService {
 
     await this.sendEmail({
       to: user.email,
-      subject: 'Welcome to RozgarScout!',
+      subject: 'Welcome to SarkariScout!',
       html: this.buildWelcomeHtml(user.name || 'Candidate', pref?.unsubscribeToken || ''),
     })
   }
@@ -166,7 +166,7 @@ export class EmailService {
   async sendVerificationEmail(userId: string, email: string, token: string) {
     await this.sendEmail({
       to: email,
-      subject: 'Verify your RozgarScout account',
+      subject: 'Verify your SarkariScout account',
       html: `
         <h2>Email Verification</h2>
         <p>Click the link below to verify your email:</p>
@@ -179,7 +179,7 @@ export class EmailService {
   async sendPasswordResetEmail(email: string, token: string) {
     await this.sendEmail({
       to: email,
-      subject: 'Reset your RozgarScout password',
+      subject: 'Reset your SarkariScout password',
       html: `
         <h2>Password Reset</h2>
         <p>Click the link below to reset your password:</p>
@@ -222,7 +222,7 @@ export class EmailService {
         await this.transporter.sendMail({
           from:
             process.env.SMTP_FROM ||
-            `RozgarScout <${process.env.SMTP_USER || 'rozgarscout+noreply@gmail.com'}>`,
+            `SarkariScout <${process.env.SMTP_USER || 'rozgarscout+noreply@gmail.com'}>`,
           to: opts.to,
           subject: opts.subject,
           html: opts.html,
@@ -311,18 +311,18 @@ export class EmailService {
       <body style="font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#f9fafb">
         <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
           <div style="background:linear-gradient(135deg,#2563eb,#1e40af);padding:24px;text-align:center">
-            <h1 style="color:#fff;margin:0;font-size:22px">RozgarScout Daily Digest</h1>
+            <h1 style="color:#fff;margin:0;font-size:22px">SarkariScout Daily Digest</h1>
             <p style="color:#bfdbfe;margin:8px 0 0;font-size:14px">${jobs.length} jobs match your profile</p>
           </div>
           <div style="padding:20px">
             <table style="width:100%;border-collapse:collapse">${jobRows}</table>
           </div>
           <div style="padding:20px;background:#f0f9ff;text-align:center;border-top:2px solid #2563eb">
-            <p style="color:#374151;font-size:14px;margin:0 0 12px">Login to your RozgarScout dashboard for full details, eligibility check, and one-click apply.</p>
+            <p style="color:#374151;font-size:14px;margin:0 0 12px">Login to your SarkariScout dashboard for full details, eligibility check, and one-click apply.</p>
             <a href="${this.baseUrl}/dashboard" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Login to Dashboard</a>
           </div>
           <div style="padding:16px 20px;background:#f9fafb;text-align:center;border-top:1px solid #e5e7eb">
-            <a href="${this.baseUrl}/jobs" style="color:#2563eb;text-decoration:none;font-weight:600">Browse All Jobs on RozgarScout →</a>
+            <a href="${this.baseUrl}/jobs" style="color:#2563eb;text-decoration:none;font-weight:600">Browse All Jobs on SarkariScout →</a>
           </div>
           <div style="padding:12px 20px;background:#f3f4f6;text-align:center">
             <a href="${this.baseUrl}/unsubscribe?token=${unsubToken}" style="color:#9ca3af;font-size:11px;text-decoration:none">Unsubscribe</a>
@@ -353,11 +353,11 @@ export class EmailService {
               ${changeType ? `<tr><td style="padding:8px 0;color:#6b7280">Change</td><td style="color:#dc2626;font-weight:600">${escapeHtml(changeType)}</td></tr>` : ''}
             </table>
             <div style="margin-top:24px;text-align:center">
-              <p style="color:#374151;font-size:14px;margin:0 0 12px">Login to your RozgarScout dashboard to view full eligibility, deadline countdown, and one-click apply.</p>
+              <p style="color:#374151;font-size:14px;margin:0 0 12px">Login to your SarkariScout dashboard to view full eligibility, deadline countdown, and one-click apply.</p>
               <a href="${this.baseUrl}/dashboard" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Login to Dashboard</a>
             </div>
             <div style="margin-top:16px;text-align:center">
-              <a href="${this.baseUrl}/jobs/${encodeURIComponent(job.id)}" style="color:#2563eb;text-decoration:none;font-size:14px">View Job Details on RozgarScout →</a>
+              <a href="${this.baseUrl}/jobs/${encodeURIComponent(job.id)}" style="color:#2563eb;text-decoration:none;font-size:14px">View Job Details on SarkariScout →</a>
             </div>
           </div>
           ${
@@ -400,11 +400,11 @@ export class EmailService {
       <body style="font-family:system-ui,-apple-system,sans-serif;margin:0;padding:20px;background:#f9fafb">
         <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)">
           <div style="background:linear-gradient(135deg,#2563eb,#1e40af);padding:32px;text-align:center">
-            <h1 style="color:#fff;margin:0;font-size:24px">Welcome to RozgarScout!</h1>
+            <h1 style="color:#fff;margin:0;font-size:24px">Welcome to SarkariScout!</h1>
           </div>
           <div style="padding:32px">
             <p style="font-size:16px;color:#374151">Hi ${escapeHtml(name)},</p>
-            <p style="color:#6b7280;line-height:1.6">You're all set! RozgarScout will help you find the latest government job notifications, track deadlines, and get alerts for jobs that match your profile.</p>
+            <p style="color:#6b7280;line-height:1.6">You're all set! SarkariScout will help you find the latest government job notifications, track deadlines, and get alerts for jobs that match your profile.</p>
             <div style="text-align:center;margin:24px 0">
               <a href="${this.baseUrl}/login" style="display:inline-block;padding:14px 28px;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Login to Dashboard</a>
             </div>
