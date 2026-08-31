@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common'
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { ThrottlerModule } from '@nestjs/throttler'
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core'
 import { AuthModule } from './modules/auth/auth.module'
 import { UsersModule } from './modules/users/users.module'
 import { JobsModule } from './modules/jobs/jobs.module'
@@ -18,6 +19,8 @@ import { PapersModule } from './modules/papers/papers.module'
 import { AnalyticsModule } from './modules/analytics/analytics.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { RedisModule } from './common/redis/redis.module'
+import { TempEmailGuard } from './common/validation/temp-email.guard'
+import { FingerprintMiddleware } from './common/middleware/fingerprint.middleware'
 
 @Module({
   imports: [
@@ -41,5 +44,16 @@ import { RedisModule } from './common/redis/redis.module'
     PapersModule,
     AnalyticsModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TempEmailGuard)
+      .forRoutes({ path: 'auth/register', method: RequestMethod.POST })
+
+    consumer
+      .apply(FingerprintMiddleware)
+      .forRoutes('*')
+  }
+}

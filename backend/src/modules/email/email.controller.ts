@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Roles } from '../auth/roles.decorator'
 import { RolesGuard } from '../auth/roles.guard'
 import { AuthRequest } from '../auth/auth-request.interface'
+import { UpdateEmailPrefsDto } from './dto/email-prefs.dto'
 
 @Controller('email')
 export class EmailController {
@@ -26,13 +27,7 @@ export class EmailController {
   @UseGuards(JwtAuthGuard)
   async updatePreferences(
     @Req() req: AuthRequest,
-    @Body()
-    prefs: {
-      digestEnabled?: boolean
-      instantEnabled?: boolean
-      weeklyEnabled?: boolean
-      digestTime?: string
-    },
+    @Body() prefs: UpdateEmailPrefsDto,
   ) {
     return this.emailService.updatePreferences(req.user.sub, prefs)
   }

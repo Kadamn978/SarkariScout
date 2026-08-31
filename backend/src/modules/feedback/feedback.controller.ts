@@ -15,6 +15,7 @@ import { RolesGuard } from '../auth/roles.guard'
 import { Roles } from '../auth/roles.decorator'
 import { FeedbackService } from './feedback.service'
 import { BugStatus } from '@prisma/client'
+import { BugReportDto } from './dto/bug-report.dto'
 
 @Controller('feedback')
 export class FeedbackController {
@@ -24,7 +25,7 @@ export class FeedbackController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async reportBug(
     @Request() req: any,
-    @Body() body: { title: string; description: string; category?: string; priority?: string },
+    @Body() body: BugReportDto,
   ) {
     const userId = req?.user?.sub || null
     return this.feedbackService.createBugReport(

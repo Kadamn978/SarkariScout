@@ -40,8 +40,15 @@ const mockEmail = {
 
 describe('AuthService', () => {
   let service: AuthService
+  const originalFetch = global.fetch
 
   beforeEach(async () => {
+    // Mock HIBP API to prevent real network calls in tests
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve(''),
+    })
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -56,6 +63,10 @@ describe('AuthService', () => {
     jest.clearAllMocks()
   })
 
+  afterEach(() => {
+    global.fetch = originalFetch
+  })
+
   describe('register', () => {
     it('should create a user and return tokens', async () => {
       mockPrisma.user.findUnique.mockResolvedValue(null)
@@ -65,7 +76,7 @@ describe('AuthService', () => {
 
       const result = await service.register({
         email: 'test@test.com',
-        password: 'Test@1234!',
+        password: 'T3st!P@ssw0rd#2026Xz',
         name: 'Test',
       })
 
@@ -79,7 +90,7 @@ describe('AuthService', () => {
       mockPrisma.user.findUnique.mockResolvedValue({ id: '1', email: 'test@test.com' })
 
       await expect(
-        service.register({ email: 'test@test.com', password: 'Test@1234!', name: 'Test' }),
+        service.register({ email: 'test@test.com', password: 'T3st!P@ssw0rd#2026Xz', name: 'Test' }),
       ).rejects.toThrow(ConflictException)
     })
 
@@ -89,7 +100,7 @@ describe('AuthService', () => {
       mockJwt.sign.mockReturnValue('token')
       mockRedis.set.mockResolvedValue(undefined)
 
-      await service.register({ email: '  TEST@Test.COM  ', password: 'Test@1234!', name: 'Test' })
+      await service.register({ email: '  TEST@Test.COM  ', password: 'T3st!P@ssw0rd#2026Xz', name: 'Test' })
 
       expect(mockPrisma.user.create).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ email: 'test@test.com' }) }),
@@ -102,19 +113,19 @@ describe('AuthService', () => {
       mockJwt.sign.mockReturnValue('token')
       mockRedis.set.mockResolvedValue(undefined)
 
-      await service.register({ email: 'test@test.com', password: 'Test@1234!', name: 'Test' })
+      await service.register({ email: 'test@test.com', password: 'T3st!P@ssw0rd#2026Xz', name: 'Test' })
 
       const createCall = mockPrisma.user.create.mock.calls[0][0]
       const hash = createCall.data.passwordHash
-      expect(hash).not.toBe('Test@1234!')
-      const valid = await argon2.verify(hash, 'Test@1234!')
+      expect(hash).not.toBe('T3st!P@ssw0rd#2026Xz')
+      const valid = await argon2.verify(hash, 'T3st!P@ssw0rd#2026Xz')
       expect(valid).toBe(true)
     })
   })
 
   describe('login', () => {
     it('should return tokens on valid credentials', async () => {
-      const hash = await argon2.hash('Test@1234!')
+      const hash = await argon2.hash('T3st!P@ssw0rd#2026Xz')
       mockRedis.get.mockResolvedValue(null)
       mockPrisma.user.findUnique.mockResolvedValue({
         id: '1',
@@ -126,7 +137,7 @@ describe('AuthService', () => {
       mockJwt.sign.mockReturnValue('token')
       mockRedis.set.mockResolvedValue(undefined)
 
-      const result = await service.login({ email: 'test@test.com', password: 'Test@1234!' })
+      const result = await service.login({ email: 'test@test.com', password: 'T3st!P@ssw0rd#2026Xz' })
 
       expect(result.accessToken).toBe('token')
     })
@@ -139,7 +150,7 @@ describe('AuthService', () => {
 
       const start = Date.now()
       await expect(
-        service.login({ email: 'wrong@test.com', password: 'Test@1234!' }),
+        service.login({ email: 'wrong@test.com', password: 'T3st!P@ssw0rd#2026Xz' }),
       ).rejects.toThrow(UnauthorizedException)
       const elapsed = Date.now() - start
 
@@ -149,7 +160,7 @@ describe('AuthService', () => {
     })
 
     it('should throw UnauthorizedException on bad password', async () => {
-      const hash = await argon2.hash('CorrectPass@1!')
+      const hash = await argon2.hash('W0ng!P@ss#9876Xy')
       mockRedis.get.mockResolvedValue(null)
       mockPrisma.user.findUnique.mockResolvedValue({
         id: '1',
@@ -161,7 +172,7 @@ describe('AuthService', () => {
       mockRedis.expire.mockResolvedValue(undefined)
 
       await expect(
-        service.login({ email: 'test@test.com', password: 'WrongPass@1!' }),
+        service.login({ email: 'test@test.com', password: 'W0ng!P@ss#9876Xy' }),
       ).rejects.toThrow(UnauthorizedException)
     })
 
@@ -169,12 +180,12 @@ describe('AuthService', () => {
       mockRedis.get.mockResolvedValue('5')
 
       await expect(
-        service.login({ email: 'test@test.com', password: 'Test@1234!' }),
+        service.login({ email: 'test@test.com', password: 'T3st!P@ssw0rd#2026Xz' }),
       ).rejects.toThrow(UnauthorizedException)
     })
 
     it('should increment failed login counter', async () => {
-      const hash = await argon2.hash('CorrectPass@1!')
+      const hash = await argon2.hash('T3st!P@ssw0rd#2026Xz')
       mockRedis.get.mockResolvedValue(null)
       mockPrisma.user.findUnique.mockResolvedValue({
         id: '1',
@@ -185,14 +196,14 @@ describe('AuthService', () => {
       mockRedis.incr.mockResolvedValue(1)
       mockRedis.expire.mockResolvedValue(undefined)
 
-      await service.login({ email: 'test@test.com', password: 'WrongPass@1!' }).catch(() => {})
+      await service.login({ email: 'test@test.com', password: 'D1ff3r3nt!Pass#9999Q' }).catch(() => {})
 
       expect(mockRedis.incr).toHaveBeenCalledWith('lock:test@test.com')
       expect(mockRedis.expire).toHaveBeenCalledWith('lock:test@test.com', 900)
     })
 
     it('should have similar response time for bad email vs bad password', async () => {
-      const hash = await argon2.hash('CorrectPass@1!')
+      const hash = await argon2.hash('W0ng!P@ss#9876Xy')
       mockRedis.get.mockResolvedValue(null)
       mockRedis.incr.mockResolvedValue(1)
       mockRedis.expire.mockResolvedValue(undefined)
@@ -200,7 +211,7 @@ describe('AuthService', () => {
       // Bad email path
       mockPrisma.user.findUnique.mockResolvedValue(null)
       const start1 = Date.now()
-      await service.login({ email: 'bad@test.com', password: 'WrongPass@1!' }).catch(() => {})
+      await service.login({ email: 'bad@test.com', password: 'W0ng!P@ss#9876Xy' }).catch(() => {})
       const time1 = Date.now() - start1
 
       // Bad password path
@@ -211,7 +222,7 @@ describe('AuthService', () => {
         passwordHash: hash,
       })
       const start2 = Date.now()
-      await service.login({ email: 'test@test.com', password: 'WrongPass@1!' }).catch(() => {})
+      await service.login({ email: 'test@test.com', password: 'W0ng!P@ss#9876Xy' }).catch(() => {})
       const time2 = Date.now() - start2
 
       // Both should take roughly the same time (argon2.verify on both)

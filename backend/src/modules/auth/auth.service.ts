@@ -14,6 +14,8 @@ import { PrismaService } from '../../prisma/prisma.service'
 import { RedisService } from '../../common/redis/redis.service'
 import { EmailService } from '../email/email.service'
 import { RegisterDto, LoginDto } from './auth.dto'
+import { PasswordStrengthService } from '../../common/validation/password-strength'
+import { DISPOSABLE_EMAIL_DOMAINS } from '../../common/validation/disposable-emails'
 
 const DUMMY_HASH =
   '$argon2id$v=19$m=65536,t=3,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
@@ -22,14 +24,24 @@ const FRONTEND_URL = process.env.ALLOWED_ORIGINS?.split(',')[0] || 'http://local
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name)
+  private readonly passwordStrengthService: PasswordStrengthService
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
     private redis: RedisService,
     private emailService: EmailService,
-  ) {}
+  ) {
+    this.passwordStrengthService = new PasswordStrengthService()
+  }
 
   async register(dto: RegisterDto) {
+    const emailDomain = dto.email.toLowerCase().trim().split('@')[1]
+    if (emailDomain && DISPOSABLE_EMAIL_DOMAINS.has(emailDomain)) {
+      throw new ConflictException('Disposable email addresses are not allowed')
+    }
+
+    await this.passwordStrengthService.validatePassword(dto.password)
+
     const exists = await this.prisma.user.findUnique({ where: { email: dto.email } })
     if (exists) throw new ConflictException('Email already registered')
 
@@ -48,7 +60,8 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const lockKey = `lock:${dto.email.toLowerCase()}`
+    const identifier = dto.email.toLowerCase().trim()
+    const lockKey = `lock:${identifier}`
     const attempts = await this.redis.get(lockKey)
 
     if (attempts && parseInt(attempts) >= 5) {
@@ -56,7 +69,7 @@ export class AuthService {
     }
 
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email.toLowerCase().trim() },
+      where: { email: identifier },
     })
 
     // Timing-safe: always run argon2.verify to prevent email enumeration
@@ -65,7 +78,7 @@ export class AuthService {
     const valid = await argon2.verify(hashToVerify, passwordToVerify)
 
     if (!user || !valid) {
-      await this.handleFailedLogin(dto.email)
+      await this.handleFailedLogin(identifier)
       throw new UnauthorizedException('Invalid credentials')
     }
 
@@ -211,9 +224,30 @@ export class AuthService {
 
   private async handleFailedLogin(email: string) {
     const lockKey = `lock:${email.toLowerCase()}`
+    const failKey = `exp_fail:${email.toLowerCase()}`
     const attempts = await this.redis.incr(lockKey)
+    const failCount = await this.redis.incr(failKey)
+
     if (attempts === 1) {
       await this.redis.expire(lockKey, 900)
+    }
+    if (failCount === 1) {
+      await this.redis.expire(failKey, 86400)
+    }
+
+    // Exponential backoff thresholds
+    const lockoutThresholds = [
+      { failures: 5, lockoutMinutes: 15 },
+      { failures: 10, lockoutMinutes: 60 },
+      { failures: 15, lockoutMinutes: 1440 },
+    ]
+
+    for (let i = lockoutThresholds.length - 1; i >= 0; i--) {
+      if (failCount >= lockoutThresholds[i].failures) {
+        const lockoutMinutes = lockoutThresholds[i].lockoutMinutes
+        await this.redis.set(lockKey, failCount.toString(), lockoutMinutes * 60)
+        break
+      }
     }
   }
 

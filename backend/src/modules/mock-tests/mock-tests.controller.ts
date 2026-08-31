@@ -4,6 +4,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Roles } from '../auth/roles.decorator'
 import { RolesGuard } from '../auth/roles.guard'
 import { AuthRequest } from '../auth/auth-request.interface'
+import { CreateMockTestDto } from './dto/create-mock-test.dto'
+import { AddQuestionDto } from './dto/add-question.dto'
 
 @Controller('mock-tests')
 export class MockTestsController {
@@ -66,14 +68,14 @@ export class MockTestsController {
   @Post('admin/create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createTest(@Body() data: any) {
+  async createTest(@Body() data: CreateMockTestDto) {
     return this.mockTestsService.createTest(data)
   }
 
   @Post('admin/:testId/questions')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async addQuestion(@Param('testId') testId: string, @Body() data: any) {
+  async addQuestion(@Param('testId') testId: string, @Body() data: AddQuestionDto) {
     return this.mockTestsService.addQuestion(testId, data)
   }
 
