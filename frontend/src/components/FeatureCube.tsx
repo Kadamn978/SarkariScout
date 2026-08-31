@@ -23,9 +23,6 @@ export default function FeatureCube() {
         transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
       >
         {features.map((feat, i) => {
-          const angle = (i * 60) * (Math.PI / 180)
-          const _x = Math.sin(angle) * half
-          const _z = Math.cos(angle) * half
           // Position each face at its edge of the cube
           return (
             <div
