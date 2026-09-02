@@ -19,11 +19,6 @@ export default function Footer() {
       title: 'Jobs',
       links: [
         { to: '/jobs', label: 'All Jobs' },
-        { to: '/exam-calendar', label: 'Exam Calendar' },
-        { to: '/results', label: 'Results' },
-        { to: '/admit-cards', label: 'Admit Cards' },
-        { to: '/mock-tests', label: 'Mock Tests' },
-        { to: '/papers', label: 'Previous Year Papers' },
       ],
     },
     {
@@ -67,7 +62,7 @@ export default function Footer() {
           <ScrollReveal delay={0}>
             <div>
               <Link to="/" className="text-xl font-bold text-white tracking-tight inline-block mb-4">
-                Naukar<span className="text-blue-400">Scout</span>
+                Rozgar<span className="text-blue-400">Scout</span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed">Never miss a government job. Get personalized alerts for Sarkari Naukri.</p>
             </div>

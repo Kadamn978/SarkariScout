@@ -33,13 +33,12 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Navbar', () => {
   it('renders brand name', () => {
     render(<Navbar />, { wrapper: Wrapper })
-    expect(screen.getByText(/Naukar/)).toBeInTheDocument()
+    expect(screen.getByText(/Rozgar/)).toBeInTheDocument()
   })
 
   it('renders nav links', () => {
     render(<Navbar />, { wrapper: Wrapper })
     expect(screen.getByText('Jobs')).toBeInTheDocument()
-    expect(screen.getByText('Mock Tests')).toBeInTheDocument()
   })
 
   it('has mobile menu button with aria-label', () => {
@@ -71,8 +70,6 @@ describe('Footer', () => {
   it('renders job links', () => {
     render(<Footer />, { wrapper: Wrapper })
     expect(screen.getByText('All Jobs')).toBeInTheDocument()
-    expect(screen.getByText('Mock Tests')).toBeInTheDocument()
-    expect(screen.getByText('Previous Year Papers')).toBeInTheDocument()
   })
 
   it('renders account links', () => {

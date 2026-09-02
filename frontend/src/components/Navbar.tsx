@@ -57,17 +57,13 @@ export default function Navbar() {
           )}
           <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
             <Logo size={28} />
-            <span className="text-blue-600 dark:text-blue-400">Naukar<span className="text-purple-600 dark:text-purple-400">Scout</span></span>
+            <span className="text-blue-600 dark:text-blue-400">Rozgar<span className="text-purple-600 dark:text-purple-400">Scout</span></span>
           </Link>
         </div>
 
         {/* Desktop */}
         <div className="hidden sm:flex items-center gap-1">
           <NavLink to="/jobs">Jobs</NavLink>
-          <NavLink to="/exam-calendar">Calendar</NavLink>
-          <NavLink to="/results">Results</NavLink>
-          <NavLink to="/mock-tests">Mock Tests</NavLink>
-          <NavLink to="/papers">Papers</NavLink>
           <NavLink to="/faq">FAQ</NavLink>
           <NavLink to="/about">About</NavLink>
           {user ? (
@@ -130,11 +126,6 @@ export default function Navbar() {
       {menuOpen && (
         <div className="sm:hidden border-t border-gray-100 dark:border-gray-800 px-4 py-3 space-y-1 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
           <Link to="/jobs" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Jobs</Link>
-          <Link to="/exam-calendar" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Exam Calendar</Link>
-          <Link to="/results" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Results</Link>
-          <Link to="/admit-cards" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Admit Cards</Link>
-          <Link to="/mock-tests" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Mock Tests</Link>
-          <Link to="/papers" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>Previous Papers</Link>
           <Link to="/faq" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>FAQ</Link>
           <Link to="/about" className="block py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium" onClick={() => setMenuOpen(false)}>About</Link>
           <hr className="my-2 border-gray-100 dark:border-gray-800" />

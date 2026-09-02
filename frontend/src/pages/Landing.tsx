@@ -44,8 +44,6 @@ const FEATURES = [
   { icon: 'bell', title: 'Smart Alerts', desc: 'Personalized notifications based on your education, state, and category.', gradient: 'from-blue-500 to-cyan-500' },
   { icon: 'globe', title: '30+ Sources', desc: 'SSC, UPSC, Railways, IBPS, State PSCs — all monitored 24/7.', gradient: 'from-purple-500 to-pink-500' },
   { icon: 'clock', title: 'Deadline Tracker', desc: 'Never miss an application deadline. Get alerts before time runs out.', gradient: 'from-orange-500 to-red-500' },
-  { icon: 'edit', title: 'Mock Tests', desc: 'Practice with real exam patterns. Score yourself and track improvement.', gradient: 'from-green-500 to-emerald-500' },
-  { icon: 'file', title: 'Previous Papers', desc: 'Download previous year question papers for all major exams.', gradient: 'from-indigo-500 to-violet-500' },
   { icon: 'clipboard', title: 'Application Tracker', desc: 'Track every job you apply for — from Interest to Applied to Exam to Result. Get notified of deadline changes and status updates.', gradient: 'from-pink-500 to-rose-500' },
 ]
 
@@ -185,7 +183,7 @@ export default function Landing() {
             <span>RozgarScout</span>
           </Link>
           <div className="hidden lg:flex items-center gap-1">
-            {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers'].map((l) => (
+            {['Jobs', 'FAQ', 'About'].map((l) => (
               <Link key={l} to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}
                 className="px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 rounded-lg hover:bg-blue-50/50 transition-all duration-300">
                 {l}
@@ -246,7 +244,7 @@ export default function Landing() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              {['Jobs', 'Calendar', 'Results', 'Admit Cards', 'Mock Tests', 'Papers', 'FAQ', 'About'].map((l, i) => (
+              {['Jobs', 'FAQ', 'About'].map((l, i) => (
                 <motion.div
                   key={l}
                   initial={{ opacity: 0, x: 20 }}
@@ -432,7 +430,6 @@ export default function Landing() {
               { icon: 'lightning', title: 'Real-Time Updates', desc: 'We detect corrigendum, date extensions, and vacancy changes within hours.', highlight: 'Others show stale data. We catch every update.' },
               { icon: 'chart', title: 'Application Tracker', desc: 'Update the status of jobs you applied for — from Interest to Selection. We send you deadline alerts and change notifications so you never miss an update.', highlight: 'Track what matters. Get notified of changes.' },
               { icon: 'calendar', title: 'All Dates in One View', desc: 'Exam calendar, admit cards, results — every important date on a single timeline.', highlight: 'Others scatter dates. We consolidate them.' },
-              { icon: 'target', title: 'Exam-Ready Practice', desc: 'Mock tests scored instantly. Previous papers organized by exam. Track your progress over time.', highlight: 'Others link to PDFs. We simulate the exam.' },
               { icon: 'ban', title: 'Zero Noise, Zero Spam', desc: 'No pop-ups, no fake urgency, no affiliate clutter. Clean. Focused. Free.', highlight: 'Others monetize your attention. We respect it.' },
             ].map((item, i) => (
               <ScrollReveal key={i} delay={i * 80}>
@@ -573,19 +570,15 @@ export default function Landing() {
             </div>
           </ScrollReveal>
           <div className="flex flex-wrap justify-center gap-3">
-            <ScrollReveal>
-              <Link to="/jobs"
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover-lift">
-                All India
+            <Link to="/jobs"
+              className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 hover-lift">
+              All India
+            </Link>
+            {INDIAN_STATES.map((state) => (
+              <Link key={state} to={`/state/${state.toLowerCase().replace(/\s+/g, '-')}`}
+                className="px-5 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-300 hover-lift">
+                {state}
               </Link>
-            </ScrollReveal>
-            {INDIAN_STATES.map((state, i) => (
-              <ScrollReveal key={state} delay={i * 40} direction="none">
-                <Link to={`/state/${state.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="px-5 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-400 transition-all duration-300 hover-lift">
-                  {state}
-                </Link>
-              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -625,11 +618,8 @@ export default function Landing() {
               <ul className="space-y-2.5 text-sm">
                 {[
                   { label: 'Jobs', path: '/jobs' },
-                  { label: 'Exam Calendar', path: '/exam-calendar' },
-                  { label: 'Results', path: '/results' },
-                  { label: 'Admit Cards', path: '/admit-cards' },
-                  { label: 'Mock Tests', path: '/mock-tests' },
-                  { label: 'Previous Year Papers', path: '/papers' },
+                  { label: 'FAQ', path: '/faq' },
+                  { label: 'About', path: '/about' },
                 ].map((l) => (
                   <li key={l.path}><Link to={l.path} className="hover:text-white transition-colors duration-300">{l.label}</Link></li>
                 ))}
