@@ -13,6 +13,7 @@ export default function CustomCursor() {
 
     let mouseX = 0, mouseY = 0
     let cursorX = 0, cursorY = 0
+    let rafId = 0
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX
@@ -24,7 +25,7 @@ export default function CustomCursor() {
       cursorX += (mouseX - cursorX) * 0.12
       cursorY += (mouseY - cursorY) * 0.12
       cursor.style.transform = `translate(${cursorX - 16}px, ${cursorY - 16}px)`
-      requestAnimationFrame(animate)
+      rafId = requestAnimationFrame(animate)
     }
 
     const onMouseOver = (e: MouseEvent) => {
@@ -37,9 +38,10 @@ export default function CustomCursor() {
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseover', onMouseOver)
-    requestAnimationFrame(animate)
+    rafId = requestAnimationFrame(animate)
 
     return () => {
+      cancelAnimationFrame(rafId)
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseover', onMouseOver)
     }

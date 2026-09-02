@@ -95,7 +95,7 @@ export default function StateJobs() {
                   <Link
                     key={job.id}
                     to={`/jobs/${job.id}`}
-                    className="block p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all dark:bg-gray-900 dark:border-gray-800">
+                    className="block p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all dark:bg-gray-900 dark:border-gray-800">
                       <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{job.title}</h2>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">{job.org}</p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">

@@ -46,14 +46,14 @@ export default function BugReport() {
         <p className="text-gray-600 dark:text-gray-400 mb-6">Found something wrong? Let us know and we'll fix it.</p>
 
         {success ? (
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-sm text-center">
+          <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm text-center">
             <div className="text-4xl mb-4">✅</div>
             <h2 className="text-xl font-semibold dark:text-white mb-2">Thank you!</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">Your bug report has been submitted. We'll look into it and fix it.</p>
             <Link to="/" className="text-blue-600 hover:underline">Back to Home</Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
+          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
             {error && <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800 rounded-lg">{error}</div>}
 
             <div>

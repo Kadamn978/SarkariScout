@@ -46,7 +46,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
-      <main className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-900 rounded-lg shadow dark:shadow-gray-800" role="main">
+      <main className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-900 rounded-xl shadow dark:shadow-gray-800" role="main">
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Login to RozgarScout</h1>
         {error && <div role="alert" className="p-3 mb-4 text-sm text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg">{error}</div>}
 

@@ -16,7 +16,7 @@ export default function ResetPassword() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <Navbar />
         <main className="max-w-md mx-auto py-12 px-4">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-sm text-center">
+          <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm text-center">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Invalid Reset Link</h1>
             <p className="text-gray-600 dark:text-gray-400 mb-4">No reset token found. Please request a new one.</p>
             <Link to="/forgot-password" className="text-blue-600 hover:underline">Request new link</Link>
@@ -54,7 +54,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-md mx-auto py-12 px-4">
-        <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Reset Password</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">Enter your new password below.</p>
 

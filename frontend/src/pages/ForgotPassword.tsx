@@ -25,7 +25,7 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-md mx-auto py-12 px-4">
-        <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Forgot Password</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">Enter your email and we'll send you a reset link.</p>
 

@@ -135,7 +135,7 @@ export default function Documents() {
         {error && <div className="p-3 mb-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">{error}</div>}
         {success && <div className="p-3 mb-4 text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">{success}</div>}
 
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 mb-6">
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 mb-6">
           <h2 className="font-semibold mb-4 dark:text-white">Upload New Document</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
@@ -189,7 +189,7 @@ export default function Documents() {
         ) : (
           <div className="space-y-6">
             {grouped.map((group) => (
-              <div key={group.value} className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+              <div key={group.value} className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
                 <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                   <h3 className="font-medium text-gray-900 dark:text-white">{group.icon} {group.label}</h3>
                 </div>

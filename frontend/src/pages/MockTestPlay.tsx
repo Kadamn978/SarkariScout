@@ -225,12 +225,12 @@ export default function MockTestPlay() {
             Previous
           </button>
 
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
             {test.questions.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentQ(i)}
-                className={`w-8 h-8 rounded-full text-xs font-medium transition ${
+                className={`w-8 h-8 rounded-full text-xs font-medium transition shrink-0 ${
                   i === currentQ ? 'bg-blue-600 text-white' :
                   answers[test.questions[i].id] ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}

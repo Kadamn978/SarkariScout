@@ -242,32 +242,34 @@ export default function ExamCalendar() {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
-            <div className="grid grid-cols-7">
-              {DAY_NAMES.map((d) => (
-                <div key={d} className="p-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7">
-              {calendarDays.map((day, idx) => (
-                <button key={idx} onClick={() => day.events.length > 0 && setModalDate(day.events)}
-                  className={`relative min-h-[72px] p-1.5 border-b border-r border-gray-50 dark:border-gray-800 text-left transition
-                    ${day.isCurrentMonth ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-950'}
-                    ${day.events.length > 0 ? 'cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/20' : ''}
-                    ${isSameDay(day.date, new Date()) ? 'ring-2 ring-blue-500 ring-inset' : ''}
-                  `}>
-                  <span className={`text-xs font-medium ${day.isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600'}`}>
-                    {day.date.getDate()}
-                  </span>
-                  {day.events.length > 0 && (
-                    <div className="mt-1 flex flex-wrap gap-0.5">
-                      {day.events.slice(0, 3).map((e, i) => (
-                        <span key={i} className={`w-1.5 h-1.5 rounded-full ${e.colorClass}`} />
-                      ))}
-                      {day.events.length > 3 && <span className="text-[9px] text-gray-500 dark:text-gray-400">+{day.events.length - 3}</span>}
-                    </div>
-                  )}
-                </button>
-              ))}
+            <div className="overflow-x-auto">
+              <div className="grid grid-cols-7 min-w-[350px]">
+                {DAY_NAMES.map((d) => (
+                  <div key={d} className="p-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">{d}</div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 min-w-[350px]">
+                {calendarDays.map((day, idx) => (
+                  <button key={idx} onClick={() => day.events.length > 0 && setModalDate(day.events)}
+                    className={`relative min-h-[48px] sm:min-h-[72px] p-1.5 border-b border-r border-gray-50 dark:border-gray-800 text-left transition
+                      ${day.isCurrentMonth ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-950'}
+                      ${day.events.length > 0 ? 'cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/20' : ''}
+                      ${isSameDay(day.date, new Date()) ? 'ring-2 ring-blue-500 ring-inset' : ''}
+                    `}>
+                    <span className={`text-xs font-medium ${day.isCurrentMonth ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-600'}`}>
+                      {day.date.getDate()}
+                    </span>
+                    {day.events.length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-0.5">
+                        {day.events.slice(0, 3).map((e, i) => (
+                          <span key={i} className={`w-1.5 h-1.5 rounded-full ${e.colorClass}`} />
+                        ))}
+                        {day.events.length > 3 && <span className="text-[9px] text-gray-500 dark:text-gray-400">+{day.events.length - 3}</span>}
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
