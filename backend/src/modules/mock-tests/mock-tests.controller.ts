@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, Body, UseGuards, Req, Query } from '@nestjs/common'
+import { Controller, Get, Post, Put, Param, Body, UseGuards, Req, Query, ParseUUIDPipe } from '@nestjs/common'
 import { MockTestsService } from './mock-tests.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Roles } from '../auth/roles.decorator'
@@ -6,6 +6,7 @@ import { RolesGuard } from '../auth/roles.guard'
 import { AuthRequest } from '../auth/auth-request.interface'
 import { CreateMockTestDto } from './dto/create-mock-test.dto'
 import { AddQuestionDto } from './dto/add-question.dto'
+import { SubmitAttemptDto } from './dto/submit-attempt.dto'
 
 @Controller('mock-tests')
 export class MockTestsController {
@@ -27,13 +28,13 @@ export class MockTestsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.mockTestsService.findOne(id)
   }
 
   @Post(':id/start')
   @UseGuards(JwtAuthGuard)
-  async startAttempt(@Req() req: AuthRequest, @Param('id') testId: string) {
+  async startAttempt(@Req() req: AuthRequest, @Param('id', ParseUUIDPipe) testId: string) {
     return this.mockTestsService.startAttempt(req.user.sub, testId)
   }
 
@@ -42,10 +43,9 @@ export class MockTestsController {
   async submitAttempt(
     @Req() req: AuthRequest,
     @Param('attemptId') attemptId: string,
-    @Body('answers') answers: Record<string, string>,
-    @Body('timeTakenSec') timeTakenSec: number,
+    @Body() dto: SubmitAttemptDto,
   ) {
-    return this.mockTestsService.submitAttempt(req.user.sub, attemptId, answers, timeTakenSec)
+    return this.mockTestsService.submitAttempt(req.user.sub, attemptId, dto.answers, dto.timeTakenSec)
   }
 
   @Get('attempts/:attemptId')
@@ -61,7 +61,7 @@ export class MockTestsController {
   }
 
   @Get(':id/leaderboard')
-  async getLeaderboard(@Param('id') testId: string, @Query('limit') limit?: string) {
+  async getLeaderboard(@Param('id', ParseUUIDPipe) testId: string, @Query('limit') limit?: string) {
     return this.mockTestsService.getLeaderboard(testId, limit ? parseInt(limit) : 20)
   }
 
@@ -75,14 +75,14 @@ export class MockTestsController {
   @Post('admin/:testId/questions')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async addQuestion(@Param('testId') testId: string, @Body() data: AddQuestionDto) {
+  async addQuestion(@Param('testId', ParseUUIDPipe) testId: string, @Body() data: AddQuestionDto) {
     return this.mockTestsService.addQuestion(testId, data)
   }
 
   @Put('admin/:id/publish')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async publishTest(@Param('id') id: string) {
+  async publishTest(@Param('id', ParseUUIDPipe) id: string) {
     return this.mockTestsService.publishTest(id)
   }
 }

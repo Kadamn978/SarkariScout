@@ -69,6 +69,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading) return <Loading />
   if (!user) return <Navigate to="/login" replace />
+  if (!user.emailVerifiedAt) return <Navigate to="/verify-email" replace />
   return <>{children}</>
 }
 

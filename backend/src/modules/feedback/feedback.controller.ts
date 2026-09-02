@@ -5,6 +5,7 @@ import {
   Patch,
   Body,
   Param,
+  ParseUUIDPipe,
   UseGuards,
   Request,
   Query,
@@ -14,8 +15,9 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { RolesGuard } from '../auth/roles.guard'
 import { Roles } from '../auth/roles.decorator'
 import { FeedbackService } from './feedback.service'
-import { BugStatus } from '@prisma/client'
 import { BugReportDto } from './dto/bug-report.dto'
+import { UpdateBugStatusDto } from './dto/update-bug-status.dto'
+import { BugStatus } from '@prisma/client'
 
 @Controller('feedback')
 export class FeedbackController {
@@ -54,9 +56,9 @@ export class FeedbackController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async updateBugStatus(
-    @Param('id') id: string,
-    @Body() body: { status: BugStatus; adminNotes?: string },
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateBugStatusDto,
   ) {
-    return this.feedbackService.updateBugStatus(id, body.status, body.adminNotes)
+    return this.feedbackService.updateBugStatus(id, dto.status, dto.adminNotes)
   }
 }

@@ -32,7 +32,7 @@ api.interceptors.response.use(
 
       try {
         // Refresh via HttpOnly cookie — no token in body needed
-        const res = await axios.post('/api/auth/refresh', {}, { withCredentials: true })
+        const res = await axios.post(`${api.defaults.baseURL}/auth/refresh`, {}, { withCredentials: true })
         processQueue(null, res.data.accessToken)
         return api(originalRequest)
       } catch (refreshErr) {

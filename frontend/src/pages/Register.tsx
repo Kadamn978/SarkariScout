@@ -43,7 +43,7 @@ export default function Register() {
   }
 
   const handleGoogleLogin = () => {
-    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    const backendUrl = import.meta.env.VITE_API_URL
     window.location.href = `${backendUrl}/auth/google`
   }
 

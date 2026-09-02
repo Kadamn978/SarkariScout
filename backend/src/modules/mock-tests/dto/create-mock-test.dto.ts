@@ -1,10 +1,12 @@
 import {
   IsString,
+  IsNumber,
   IsNotEmpty,
   IsOptional,
   IsEnum,
   MaxLength,
   MinLength,
+  Min,
 } from 'class-validator'
 
 export enum MockTestExamFamily {
@@ -44,15 +46,15 @@ export class CreateMockTestDto {
   @IsOptional()
   qualification?: MockTestQualification
 
-  @IsString()
-  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
   totalQuestions: number
 
-  @IsString()
-  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
   totalMarks: number
 
-  @IsString()
-  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
   durationMinutes: number
 }

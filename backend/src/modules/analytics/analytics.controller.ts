@@ -5,6 +5,7 @@ import { Request } from 'express'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Roles } from '../auth/roles.decorator'
 import { RolesGuard } from '../auth/roles.guard'
+import { TrackEventDto } from './dto/track-event.dto'
 
 @Controller('analytics')
 export class AnalyticsController {
@@ -13,15 +14,13 @@ export class AnalyticsController {
   @Post('track')
   @Throttle({ default: { limit: 30, ttl: 60000 } })
   async track(
-    @Body() body: { path: string; visitorId?: string; sessionId?: string },
+    @Body() dto: TrackEventDto,
     @Req() req: Request,
   ) {
     return this.analyticsService.trackPageView({
-      path: body.path,
-      visitorId: body.visitorId,
-      userAgent: req.headers['user-agent'],
-      referrer: req.headers.referer,
-      sessionId: body.sessionId,
+      path: dto.path,
+      userAgent: dto.userAgent || req.headers['user-agent'],
+      referrer: dto.referrer || req.headers.referer,
     })
   }
 

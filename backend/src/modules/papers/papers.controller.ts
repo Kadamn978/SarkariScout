@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Param, Body, UseGuards, Query } from '@nestjs/common'
+import { Controller, Get, Post, Param, Body, UseGuards, Query, ParseUUIDPipe } from '@nestjs/common'
 import { Throttle } from '@nestjs/throttler'
 import { PapersService } from './papers.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Roles } from '../auth/roles.decorator'
 import { RolesGuard } from '../auth/roles.guard'
+import { CreatePaperDto } from './dto/create-paper.dto'
 
 @Controller('papers')
 export class PapersController {
@@ -37,13 +38,13 @@ export class PapersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.papersService.findOne(id)
   }
 
   @Post(':id/download')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async recordDownload(@Param('id') id: string) {
+  async recordDownload(@Param('id', ParseUUIDPipe) id: string) {
     await this.papersService.incrementDownload(id)
     return { success: true }
   }
@@ -51,18 +52,7 @@ export class PapersController {
   @Post('admin/create')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createPaper(
-    @Body()
-    data: {
-      title: string
-      examFamily: string
-      year: number
-      qualification?: string
-      fileUrl?: string
-      externalUrl?: string
-      description?: string
-    },
-  ) {
-    return this.papersService.createPaper(data)
+  async createPaper(@Body() dto: CreatePaperDto) {
+    return this.papersService.createPaper(dto)
   }
 }

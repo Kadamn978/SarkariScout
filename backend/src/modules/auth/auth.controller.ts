@@ -21,6 +21,7 @@ import {
   VerifyEmailDto,
   ResetPasswordDto,
 } from './auth.dto'
+import { ResendVerificationDto } from './dto/resend-verification.dto'
 import { JwtAuthGuard } from './jwt-auth.guard'
 import { AuthRequest } from './auth-request.interface'
 
@@ -104,8 +105,8 @@ export class AuthController {
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 3, ttl: 3600000 } })
-  async resendVerification(@Body() body: { email?: string }) {
-    const email = body?.email
+  async resendVerification(@Body() dto: ResendVerificationDto) {
+    const email = dto.email
     if (!email) {
       return { message: 'If email exists, verification link sent' }
     }

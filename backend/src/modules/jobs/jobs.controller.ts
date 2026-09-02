@@ -5,6 +5,7 @@ import {
   Put,
   Delete,
   Param,
+  ParseUUIDPipe,
   Query,
   UseGuards,
   Req,
@@ -13,6 +14,7 @@ import {
 import { JobsService } from './jobs.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { AuthRequest } from '../auth/auth-request.interface'
+import { UpdateTrackerDto } from './dto/update-tracker.dto'
 
 @Controller('jobs')
 export class JobsController {
@@ -50,7 +52,7 @@ export class JobsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.jobsService.findOne(id)
   }
 
@@ -58,7 +60,7 @@ export class JobsController {
   @UseGuards(JwtAuthGuard)
   async trackJob(
     @Req() req: AuthRequest,
-    @Param('id') jobId: string,
+    @Param('id', ParseUUIDPipe) jobId: string,
     @Body('stage') stage?: string,
   ) {
     return this.jobsService.trackJob(req.user.sub, jobId, stage)
@@ -66,7 +68,7 @@ export class JobsController {
 
   @Delete(':id/track')
   @UseGuards(JwtAuthGuard)
-  async untrackJob(@Req() req: AuthRequest, @Param('id') jobId: string) {
+  async untrackJob(@Req() req: AuthRequest, @Param('id', ParseUUIDPipe) jobId: string) {
     return this.jobsService.untrackJob(req.user.sub, jobId)
   }
 
@@ -74,11 +76,10 @@ export class JobsController {
   @UseGuards(JwtAuthGuard)
   async updateTracker(
     @Req() req: AuthRequest,
-    @Param('id') jobId: string,
-    @Body('stage') stage: string,
-    @Body('notes') notes?: string,
+    @Param('id', ParseUUIDPipe) jobId: string,
+    @Body() dto: UpdateTrackerDto,
   ) {
-    return this.jobsService.updateTrackerStage(req.user.sub, jobId, stage, notes)
+    return this.jobsService.updateTrackerStage(req.user.sub, jobId, dto.stage, dto.notes)
   }
 
   @Get('user/tracked')

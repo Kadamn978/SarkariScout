@@ -5,6 +5,7 @@ import {
   Delete,
   Body,
   Param,
+  ParseUUIDPipe,
   UseGuards,
   Request,
   UploadedFile,
@@ -15,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { DocumentsService } from './documents.service'
 import { DocumentType } from '@prisma/client'
+import { UploadDocumentDto } from '../users/dto/upload-document.dto'
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -46,19 +48,18 @@ export class DocumentsController {
   async upload(
     @Request() req: any,
     @UploadedFile() file: Express.Multer.File,
-    @Body('type') type: DocumentType,
-    @Body('name') name: string,
+    @Body() dto: UploadDocumentDto,
   ) {
-    return this.documentsService.uploadDocument(req.user.sub, file, type, name)
+    return this.documentsService.uploadDocument(req.user.sub, file, dto.type as DocumentType, dto.name)
   }
 
   @Post(':id/default')
-  async setDefault(@Request() req: any, @Param('id') id: string) {
+  async setDefault(@Request() req: any, @Param('id', ParseUUIDPipe) id: string) {
     return this.documentsService.setDefault(req.user.sub, id)
   }
 
   @Delete(':id')
-  async delete(@Request() req: any, @Param('id') id: string) {
+  async delete(@Request() req: any, @Param('id', ParseUUIDPipe) id: string) {
     return this.documentsService.deleteDocument(req.user.sub, id)
   }
 }

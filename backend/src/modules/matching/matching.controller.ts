@@ -2,6 +2,7 @@ import { Controller, Get, Post, UseGuards, Req, Query, Body } from '@nestjs/comm
 import { MatchingService } from './matching.service'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { AuthRequest } from '../auth/auth-request.interface'
+import { TrackJobDto } from './dto/track-job.dto'
 
 @Controller('matching')
 export class MatchingController {
@@ -34,8 +35,8 @@ export class MatchingController {
 
   @Post('score')
   @UseGuards(JwtAuthGuard)
-  async scoreJob(@Req() req: AuthRequest, @Body('jobId') jobId: string) {
-    return this.matchingService.scoreJobForUser(req.user.sub, jobId)
+  async scoreJob(@Req() req: AuthRequest, @Body() dto: TrackJobDto) {
+    return this.matchingService.scoreJobForUser(req.user.sub, dto.jobId)
   }
 
   @Get('stats')
