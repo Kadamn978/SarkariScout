@@ -119,7 +119,7 @@ export default function ExamCalendar() {
       <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Exam Calendar</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold dark:text-white">Exam Calendar</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">All important dates for government exams in one place</p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">

@@ -53,27 +53,27 @@ export default function Progress() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-4xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
         <ScrollReveal>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Your Progress</h1>
-          <p className="text-gray-500 mb-8">Track your government job preparation journey</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">Track your government job preparation journey</p>
         </ScrollReveal>
 
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">{[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white p-6 rounded-3xl animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-16 mb-2" />
-              <div className="h-3 bg-gray-100 rounded w-20" />
+            <div key={i} className="bg-white dark:bg-gray-900 p-6 rounded-3xl animate-pulse">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-2" />
+              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-20" />
             </div>
           ))}</div>
         ) : progress && (
           <>
             {/* Pipeline */}
             <ScrollReveal>
-              <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-8">
-                <h2 className="font-semibold text-gray-900 mb-6">Application Pipeline</h2>
+              <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-gray-800 mb-8">
+                <h2 className="font-semibold text-gray-900 dark:text-white mb-6">Application Pipeline</h2>
                 <div className="flex items-center justify-between gap-2 sm:gap-4">
                   {stages.map((s) => (
                     <div key={s.label} className="flex-1 text-center">
@@ -81,16 +81,16 @@ export default function Progress() {
                         <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl ${s.color} bg-opacity-10 flex items-center justify-center text-2xl sm:text-3xl`}>
                           {s.icon}
                         </div>
-                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-xs font-bold text-gray-900">
+                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-xs font-bold text-gray-900 dark:text-white">
                           <AnimatedCounter target={s.value} />
                         </span>
                       </div>
-                      <p className="text-xs sm:text-sm text-gray-600 font-medium">{s.label}</p>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">{s.label}</p>
                     </div>
                   ))}
                 </div>
                 {/* Pipeline bar */}
-                <div className="mt-6 flex h-3 rounded-full overflow-hidden bg-gray-100">
+                <div className="mt-6 flex h-3 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                   {stages.map((s, i) => {
                     const total = stages.reduce((a, b) => a + b.value, 0) || 1
                     const width = (s.value / total) * 100
@@ -111,12 +111,12 @@ export default function Progress() {
                 { label: 'Days Active', value: progress.daysActive, suffix: '', color: 'text-orange-600', icon: '🔥' },
               ].map((s, i) => (
                 <ScrollReveal key={i} delay={i * 80}>
-                  <TiltCard className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+                  <TiltCard className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800">
                     <span className="text-2xl mb-2 block">{s.icon}</span>
                     <p className={`text-2xl sm:text-3xl font-black ${s.color}`}>
                       <AnimatedCounter target={s.value} suffix={s.suffix} />
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{s.label}</p>
                   </TiltCard>
                 </ScrollReveal>
               ))}
@@ -149,17 +149,17 @@ export default function Progress() {
             {/* Quick Actions */}
             <ScrollReveal>
               <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <Link to="/mock-tests" className="p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-lg hover:border-purple-200 transition-all text-center hover-lift">
+                <Link to="/mock-tests" className="p-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-800 transition-all text-center hover-lift">
                   <span className="text-2xl block mb-2">📝</span>
-                  <p className="font-semibold text-gray-900 text-sm">Take a Test</p>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Take a Test</p>
                 </Link>
-                <Link to="/papers" className="p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-lg hover:border-green-200 transition-all text-center hover-lift">
+                <Link to="/papers" className="p-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg hover:border-green-200 dark:hover:border-green-800 transition-all text-center hover-lift">
                   <span className="text-2xl block mb-2">📄</span>
-                  <p className="font-semibold text-gray-900 text-sm">Practice Papers</p>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Practice Papers</p>
                 </Link>
-                <Link to="/jobs" className="p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all text-center hover-lift col-span-2 sm:col-span-1">
+                <Link to="/jobs" className="p-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all text-center hover-lift col-span-2 sm:col-span-1">
                   <span className="text-2xl block mb-2">🔍</span>
-                  <p className="font-semibold text-gray-900 text-sm">Browse Jobs</p>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">Browse Jobs</p>
                 </Link>
               </div>
             </ScrollReveal>

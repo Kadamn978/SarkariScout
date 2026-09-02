@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { useTheme } from '../contexts/ThemeContext'
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import api from '../lib/api'
 import { useSEO } from '../hooks/useSEO'
 import MagneticButton from '../components/MagneticButton'
@@ -11,7 +9,8 @@ import ScrollReveal from '../components/ScrollReveal'
 import TextScramble from '../components/TextScramble'
 import FeatureCube from '../components/FeatureCube'
 import Icon from '../components/Icon'
-import Logo from '../components/Logo'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 interface Job {
   id: string; title: string; org: string; state: string;
@@ -121,13 +120,10 @@ function HeroParticles() {
 }
 
 export default function Landing() {
-  const { user } = useAuth()
-  const { dark, toggle } = useTheme()
   const [latestJobs, setLatestJobs] = useState<Job[]>([])
   const [expiringJobs, setExpiringJobs] = useState<Job[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [menuOpen, setMenuOpen] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll()
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.95])
@@ -174,113 +170,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 overflow-hidden">
-      {/* Animated Nav */}
-      <motion.nav initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 glass">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2 text-xl sm:text-2xl font-bold gradient-text">
-            <Logo size={28} />
-            <span>RozgarScout</span>
-          </Link>
-          <div className="hidden lg:flex items-center gap-1">
-            {['Jobs', 'FAQ', 'About'].map((l) => (
-              <Link key={l} to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}
-                className="px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 rounded-lg hover:bg-blue-50/50 transition-all duration-300">
-                {l}
-              </Link>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
-            {user ? (
-              <MagneticButton className="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 shadow-lg shadow-blue-500/25">
-                <Link to="/dashboard">Dashboard</Link>
-              </MagneticButton>
-            ) : (
-              <>
-                <Link to="/login" className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 px-3 py-2 hidden sm:block">Login</Link>
-                <MagneticButton className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40">
-                  <Link to="/register">Get Started</Link>
-                </MagneticButton>
-              </>
-            )}
-            <button onClick={toggle} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition" aria-label="Toggle dark mode">
-              {dark ? (
-                <svg className="w-5 h-5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              )}
-            </button>
-            <button
-              className="lg:hidden p-2 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-              onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
-              aria-expanded={menuOpen}
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                {menuOpen ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
-              </svg>
-            </button>
-          </div>
-        </div>
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0, x: '100%' }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="lg:hidden fixed inset-y-0 right-0 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl z-50 px-6 py-20 space-y-1 border-l border-gray-200/50 dark:border-gray-700/50"
-            >
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                aria-label="Close menu"
-              >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-              {['Jobs', 'FAQ', 'About'].map((l, i) => (
-                <motion.div
-                  key={l}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Link to={`/${l.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="block py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium text-lg border-b border-gray-100 dark:border-gray-800"
-                    onClick={() => setMenuOpen(false)}>
-                    {l}
-                  </Link>
-                </motion.div>
-              ))}
-              <div className="pt-4 space-y-2">
-                {user ? (
-                  <Link to="/dashboard" className="block py-3 text-blue-600 font-semibold text-lg" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-                ) : (
-                  <>
-                    <Link to="/login" className="block py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium text-lg" onClick={() => setMenuOpen(false)}>Login</Link>
-                    <Link to="/register" className="block py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg text-center rounded-xl" onClick={() => setMenuOpen(false)}>Register Free</Link>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          )}
-          {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-              onClick={() => setMenuOpen(false)}
-            />
-          )}
-        </AnimatePresence>
-      </motion.nav>
+      <Navbar />
 
       {/* HERO — Awwwards Level */}
       <motion.section ref={heroRef} style={{ scale: heroScale, opacity: heroOpacity }}
@@ -605,56 +495,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-950 text-gray-400">
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="col-span-2 md:col-span-1">
-               <Link to="/" className="text-xl font-bold gradient-text">RozgarScout</Link>
-              <p className="text-sm mt-3 leading-relaxed">Never miss a government job. Free alerts, mock tests, and papers for every aspirant.</p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Quick Links</h4>
-              <ul className="space-y-2.5 text-sm">
-                {[
-                  { label: 'Jobs', path: '/jobs' },
-                  { label: 'FAQ', path: '/faq' },
-                  { label: 'About', path: '/about' },
-                ].map((l) => (
-                  <li key={l.path}><Link to={l.path} className="hover:text-white transition-colors duration-300">{l.label}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Categories</h4>
-              <ul className="space-y-2.5 text-sm">
-                {['Government', 'Banking', 'Railway', 'Engineering', 'Defence', 'IT'].map((c) => (
-                  <li key={c}><Link to={`/jobs?category=${c.toUpperCase()}`} className="hover:text-white transition-colors duration-300">{c}</Link></li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4 text-sm">Company</h4>
-              <ul className="space-y-2.5 text-sm">
-                <li><Link to="/about" className="hover:text-white transition-colors duration-300">About</Link></li>
-                <li><Link to="/faq" className="hover:text-white transition-colors duration-300">FAQ</Link></li>
-                <li><Link to="/privacy" className="hover:text-white transition-colors duration-300">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-white transition-colors duration-300">Terms</Link></li>
-                <li><Link to="/bug-report" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition-colors duration-300">Report Bug</Link></li>
-                <li><Link to="/contact" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition-colors duration-300">Contact</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800/50 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-500">&copy; {new Date().getFullYear()} RozgarScout. All rights reserved.</p>
-            <div className="flex gap-6 text-sm text-gray-400">
-              <Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Privacy</Link>
-              <Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Terms</Link>
-              <Link to="/contact" onClick={() => window.scrollTo(0, 0)} className="hover:text-white transition">Contact</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

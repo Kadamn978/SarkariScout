@@ -45,12 +45,12 @@ export default function FAQ() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-3xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
-        <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-          <Link to="/" className="hover:text-blue-600">Home</Link><span>/</span><span className="text-gray-900">FAQ</span>
+        <nav className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
+          <Link to="/" className="hover:text-blue-600">Home</Link><span>/</span><span className="text-gray-900 dark:text-white">FAQ</span>
         </nav>
 
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Frequently Asked Questions</h1>
-        <p className="text-gray-500 mb-8">The things people ask about most</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-8">The things people ask about most</p>
 
         <div className="space-y-3">
           {FAQ_ITEMS.map((item, i) => (
@@ -74,7 +74,7 @@ export default function FAQ() {
 
         <div className="mt-12 text-center bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Still have questions?</h2>
-          <p className="text-gray-500 mb-4">Drop us a line</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">Drop us a line</p>
            <a href="mailto:rozgarscout+support@gmail.com"
             className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
             Contact Support

@@ -142,7 +142,7 @@ export default function Jobs() {
           <span>/</span>
           <span className="text-gray-900 dark:text-white">Jobs</span>
         </nav>
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4">Latest Government Jobs</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 dark:text-white">Latest Government Jobs</h1>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">

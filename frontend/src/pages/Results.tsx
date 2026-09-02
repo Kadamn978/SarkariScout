@@ -62,7 +62,7 @@ export default function Results() {
       <Navbar />
       <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6">
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">Results</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold dark:text-white">Results</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Declared and upcoming exam results</p>
         </div>
 

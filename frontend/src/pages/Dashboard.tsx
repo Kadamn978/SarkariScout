@@ -180,7 +180,7 @@ export default function Dashboard() {
           <div className="space-y-6">
             {/* Expiring Deadlines */}
             <div>
-              <h2 className="text-lg font-semibold mb-4">Expiring Deadlines</h2>
+              <h2 className="text-lg font-semibold mb-4 dark:text-white">Expiring Deadlines</h2>
               {deadlines.length === 0 ? (
                 <div className="bg-white dark:bg-gray-900 p-4 rounded-xl text-center border border-gray-100 dark:border-gray-800">
                   <p className="text-sm text-gray-400">No upcoming deadlines</p>
