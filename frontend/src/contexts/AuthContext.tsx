@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 
@@ -25,6 +25,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+
+  // Listen for auth failure events from the API interceptor
+  const handleAuthFailure = useCallback(() => {
+    setUser(null)
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('auth:failure', handleAuthFailure)
+    return () => window.removeEventListener('auth:failure', handleAuthFailure)
+  }, [handleAuthFailure])
 
   useEffect(() => {
     api.get('/users/me')

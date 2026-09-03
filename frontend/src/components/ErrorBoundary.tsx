@@ -1,4 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react'
+import { captureException } from '../lib/sentry'
 
 interface Props { children: ReactNode; fallback?: ReactNode }
 interface State { hasError: boolean }
@@ -14,8 +15,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (import.meta.env.DEV) {
       console.error('[ErrorBoundary]', error, info.componentStack)
     }
-    // TODO: Send to Sentry when initialized
-    // Sentry.captureException(error, { extra: { componentStack: info.componentStack } })
+    captureException(error, { componentStack: info.componentStack || undefined })
   }
 
   handleTryAgain = () => {

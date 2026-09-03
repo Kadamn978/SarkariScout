@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [pre-dev, test, release, main]
+    branches: [pre-dev, test, 'release/**', main]
   pull_request:
-    branches: [pre-dev, test, release, main]
+    branches: [pre-dev, test, 'release/**', main]
 
 jobs:
-  frontend-tests:
-    name: Frontend Tests
+  frontend-checks:
+    name: Frontend — Tests + Typecheck + Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,14 +27,22 @@ jobs:
       - name: TypeScript Check
         run: npx tsc --noEmit
 
-      - name: Run Tests
+      - name: Unit Tests
         run: npm test
 
-      - name: Build
+      - name: Production Build
         run: npm run build
 
+      - name: Upload build artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 3
+
   backend-checks:
-    name: Backend Checks
+    name: Backend — Typecheck + Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,5 +64,13 @@ jobs:
       - name: TypeScript Check
         run: npx tsc --noEmit
 
-      - name: Build
+      - name: Production Build
         run: npx tsc -p tsconfig.build.json
+
+      - name: Upload build artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: backend/dist/
+          retention-days: 3

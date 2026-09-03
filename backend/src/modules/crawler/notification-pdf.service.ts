@@ -11,14 +11,23 @@ export class NotificationPdfService {
   private readonly logger = new Logger(NotificationPdfService.name);
   private readonly USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
   private readonly MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB limit
+  private readonly enabled: boolean;
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {
+    this.enabled = process.env.ENABLE_PDF_STORAGE !== 'false';
+    if (!this.enabled) {
+      this.logger.log('PDF storage disabled (ENABLE_PDF_STORAGE=false)');
+    }
+  }
 
   async downloadAndStorePdf(
     jobId: string,
     pdfUrl: string,
     competitorId?: string,
   ): Promise<{ success: boolean; size?: number; error?: string }> {
+    if (!this.enabled) {
+      return { success: true, size: 0 };
+    }
     try {
       const existing = await this.prisma.jobNotification.findFirst({
         where: { jobId, isPurged: false },

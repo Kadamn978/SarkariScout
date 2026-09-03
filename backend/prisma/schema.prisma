@@ -106,6 +106,8 @@ model User {
   email           String    @unique
   passwordHash    String
   name            String?
+  avatar          String?
+  googleId        String?   @unique
   role            Role      @default(USER)
   emailVerifiedAt DateTime?
   createdAt       DateTime  @default(now())

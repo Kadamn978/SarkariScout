@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import { useSEO } from '../hooks/useSEO'
+import { openExternalUrl } from '../lib/url-utils'
 
 interface Paper {
   id: string; title: string; examFamily: string; year: number;
@@ -67,9 +68,9 @@ export default function Papers() {
       // Download tracking failed — continue with download anyway
     }
     if (paper.fileUrl) {
-      window.open(paper.fileUrl, '_blank')
+      openExternalUrl(paper.fileUrl)
     } else if (paper.externalUrl) {
-      window.open(paper.externalUrl, '_blank')
+      openExternalUrl(paper.externalUrl)
     }
   }
 

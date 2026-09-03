@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
+import { sanitizeUrl } from '../lib/url-utils'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
@@ -241,7 +242,7 @@ export default function JobDetail() {
 
               <div className="flex flex-wrap gap-3 mt-6">
                 {job.applyUrl && (
-                  <a href={job.applyUrl} target="_blank" rel="noopener noreferrer"
+                  <a href={sanitizeUrl(job.applyUrl)} target="_blank" rel="noopener noreferrer"
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-sm">
                     Apply Now →
                   </a>
@@ -258,13 +259,13 @@ export default function JobDetail() {
                   </span>
                 )}
                 {job.officialNotificationUrl && (
-                  <a href={job.officialNotificationUrl} target="_blank" rel="noopener noreferrer"
+                  <a href={sanitizeUrl(job.officialNotificationUrl)} target="_blank" rel="noopener noreferrer"
                     className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
                     Visit Official Website →
                   </a>
                 )}
                 {job.sourceUrl && (
-                  <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer"
+                  <a href={sanitizeUrl(job.sourceUrl)} target="_blank" rel="noopener noreferrer"
                     className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
                     View on {job.source?.name || 'Source'}
                   </a>
@@ -292,7 +293,7 @@ export default function JobDetail() {
                 return (
                   <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100 dark:bg-blue-900/20 dark:border-blue-900/30">
                     <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">Official Website</p>
-                    <a href={officialSite.url} target="_blank" rel="noopener noreferrer"
+                    <a href={sanitizeUrl(officialSite.url)} target="_blank" rel="noopener noreferrer"
                       className="text-sm font-semibold text-blue-700 dark:text-blue-300 hover:underline">
                       {officialSite.name} →
                     </a>

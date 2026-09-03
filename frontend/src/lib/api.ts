@@ -37,6 +37,8 @@ api.interceptors.response.use(
         return api(originalRequest)
       } catch (refreshErr) {
         processQueue(refreshErr, null)
+        // Dispatch event so AuthContext can clear user state
+        window.dispatchEvent(new Event('auth:failure'))
         // Cookies cleared by backend logout; redirect to login
         window.location.href = '/login'
         return Promise.reject(refreshErr)

@@ -16,12 +16,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus()
       const res = exception.getResponse()
-      message =
+      const rawMessage =
         typeof res === 'string'
           ? res
           : typeof res === 'object' && res !== null && 'message' in res
             ? String((res as Record<string, unknown>).message)
             : message
+
+      // Sanitize error messages in production — don't leak internal details
+      const isProd = process.env.NODE_ENV === 'production'
+      if (isProd && status >= 500) {
+        message = 'Internal server error'
+      } else if (isProd && status === 400) {
+        // Don't expose parser details or validation internals
+        message = 'Bad request'
+      } else {
+        message = rawMessage
+      }
     } else if (exception instanceof Error) {
       const isProd = process.env.NODE_ENV === 'production'
       message = isProd ? 'Internal server error' : exception.message

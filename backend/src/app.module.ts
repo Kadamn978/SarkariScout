@@ -21,6 +21,7 @@ import { PrismaModule } from './prisma/prisma.module'
 import { RedisModule } from './common/redis/redis.module'
 import { TempEmailGuard } from './common/validation/temp-email.guard'
 import { FingerprintMiddleware } from './common/middleware/fingerprint.middleware'
+import { CsrfMiddleware } from './common/middleware/csrf.middleware'
 
 @Module({
   imports: [
@@ -54,6 +55,10 @@ export class AppModule implements NestModule {
 
     consumer
       .apply(FingerprintMiddleware)
+      .forRoutes('*')
+
+    consumer
+      .apply(CsrfMiddleware)
       .forRoutes('*')
   }
 }

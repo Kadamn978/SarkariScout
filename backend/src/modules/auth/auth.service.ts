@@ -259,24 +259,46 @@ export class AuthService {
     name: string
     avatar?: string
   }) {
-    let user = await this.prisma.user.findUnique({ where: { email: profile.email } })
+    // First try to find by googleId (returning user via Google)
+    let user = await this.prisma.user.findUnique({ where: { googleId: profile.googleId } })
 
-    if (!user) {
-      const dummyHash = await argon2.hash(randomUUID(), { memoryCost: 65536, timeCost: 3 })
-      user = await this.prisma.user.create({
+    if (user) {
+      return { id: user.id, email: user.email, role: user.role, name: user.name }
+    }
+
+    // Try to find by email (user registered with password, now linking Google)
+    user = await this.prisma.user.findUnique({ where: { email: profile.email } })
+
+    if (user) {
+      // Link Google account to existing user
+      await this.prisma.user.update({
+        where: { id: user.id },
         data: {
-          email: profile.email.toLowerCase(),
-          passwordHash: dummyHash,
-          name: profile.name,
-          emailVerifiedAt: new Date(),
+          googleId: profile.googleId,
+          avatar: profile.avatar || user.avatar,
+          emailVerifiedAt: user.emailVerifiedAt || new Date(),
         },
       })
+      return { id: user.id, email: user.email, role: user.role, name: user.name }
     }
+
+    // Create new user via Google
+    const dummyHash = await argon2.hash(randomUUID(), { memoryCost: 65536, timeCost: 3 })
+    user = await this.prisma.user.create({
+      data: {
+        email: profile.email.toLowerCase(),
+        passwordHash: dummyHash,
+        name: profile.name,
+        avatar: profile.avatar,
+        googleId: profile.googleId,
+        emailVerifiedAt: new Date(),
+      },
+    })
 
     return { id: user.id, email: user.email, role: user.role, name: user.name }
   }
 
-  private async generateTokens(userId: string, email: string, role: string, emailVerifiedAt?: Date | null) {
+  async generateTokens(userId: string, email: string, role: string, emailVerifiedAt?: Date | null) {
     const accessToken = this.jwt.sign(
       { sub: userId, email, role, type: 'access' },
       { expiresIn: '15m' },

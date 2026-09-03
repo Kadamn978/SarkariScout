@@ -1,21 +1,14 @@
 import { Controller, Get, UseGuards, Request, Res, Logger } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { Response } from 'express'
-import { JwtService } from '@nestjs/jwt'
-import { PrismaService } from '../../prisma/prisma.service'
-import { RedisService } from '../../common/redis/redis.service'
+import { AuthService } from './auth.service'
 
-const isProd = process.env.NODE_ENV === 'production'
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined
 
 @Controller('auth')
 export class GoogleAuthController {
   private readonly logger = new Logger(GoogleAuthController.name)
-  constructor(
-    private jwt: JwtService,
-    private prisma: PrismaService,
-    private redis: RedisService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
@@ -25,24 +18,12 @@ export class GoogleAuthController {
   @UseGuards(AuthGuard('google'))
   async googleCallback(@Request() req: any, @Res() res: Response) {
     try {
-      const { id, email, name } = req.user
+      const { id, email, role } = req.user
 
-      const user = await this.prisma.user.findUnique({ where: { email } })
-      const role = user?.role || 'USER'
-      const userId = user?.id || id
+      const tokens = await this.authService.generateTokens(id, email, role)
 
-      const accessToken = this.jwt.sign(
-        { sub: userId, email, role, type: 'access' },
-        { expiresIn: '15m' },
-      )
-      const refreshToken = this.jwt.sign(
-        { sub: userId, email, role, type: 'refresh' },
-        { expiresIn: '7d' },
-      )
-
-      await this.redis.set(`refresh:${userId}`, refreshToken, 604800)
-
-      res.cookie('access_token', accessToken, {
+      const isProd = process.env.NODE_ENV === 'production'
+      res.cookie('access_token', tokens.accessToken, {
         httpOnly: true,
         secure: isProd,
         sameSite: 'strict',
@@ -50,7 +31,7 @@ export class GoogleAuthController {
         path: '/',
         domain: COOKIE_DOMAIN,
       })
-      res.cookie('refresh_token', refreshToken, {
+      res.cookie('refresh_token', tokens.refreshToken, {
         httpOnly: true,
         secure: isProd,
         sameSite: 'strict',

@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Deploy
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   deploy-preview:
-    name: Deploy Preview
+    name: Deploy Frontend (Vercel Preview)
     needs: ci
     if: github.ref == 'refs/heads/pre-dev' || github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
@@ -25,8 +25,24 @@ jobs:
           working-directory: frontend
           vercel-args: '--pre'
 
+  deploy-railway:
+    name: Deploy Backend (Railway)
+    needs: ci
+    if: github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        run: railway up --service rozgar-pilot-backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
   deploy-production:
-    name: Deploy Production
+    name: Deploy Frontend (Vercel Production)
     needs: ci
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -40,3 +56,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: frontend
           vercel-args: '--prod'
+
+  # Production deployment is HALTED until custom domain (rozgarscout.in) is purchased.
+  # Railway production deploys are manual via CLI until then.
