@@ -28,8 +28,33 @@ RozgarScout is a government job notification aggregator for Indian aspirants.
 - Always mock external services (email, Redis, HTTP) in unit tests
 - E2E tests go in `e2e/` directory (currently empty — needs Playwright setup)
 
+## Branch Structure & Deployment Flow
+```
+pre-dev  →  test  →  release  →  main (production)
+ (dev)    (staging)  (release)   (prod)
+```
+
+| Branch      | Purpose                    | Vercel          | Auto-deploy |
+|-------------|----------------------------|-----------------|-------------|
+| `pre-dev`   | Active development         | Preview URL     | Yes         |
+| `test`      | QA / staging               | Preview URL     | Yes         |
+| `release`   | Release candidates         | Preview URL     | Manual      |
+| `main`      | Production                 | rozgar-pilot.vercel.app | Yes |
+
+### Workflow
+1. **Develop** on `pre-dev` — push triggers CI (tests + typecheck + build)
+2. **Merge to `test`** — QA validates on test preview URL
+3. **Merge to `release`** — release candidate ready
+4. **Merge to `main`** — deploys to production
+
+### CI/CD Pipeline
+- **GitHub Actions**: `.github/workflows/ci.yml` + `.github/workflows/deploy.yml`
+- Tests run on EVERY push to pre-dev/test/release/main
+- Vercel deploys ONLY after CI passes
+- Frontend: vitest + tsc + vite build
+- Backend: prisma generate + tsc + tsc build
+
 ## Git Conventions
-- Branch: `pre-dev` (staging), `main` (production)
 - Commit messages: `<type>: <description>` (feat, fix, chore, docs, refactor, test)
 - Never commit secrets, .env files, or hardcoded credentials
 - Pre-commit: run lint + typecheck before committing
