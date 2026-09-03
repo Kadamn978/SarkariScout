@@ -10,7 +10,7 @@ import { CrawlerModule } from './modules/crawler/crawler.module'
 import { MatchingModule } from './modules/matching/matching.module'
 import { EmailModule } from './modules/email/email.module'
 import { ChangesModule } from './modules/changes/changes.module'
-import { LogsModule } from './modules/logs/logs.module'
+import { LogsModule } from './modules/audit-logs/logs.module'
 import { CronModule } from './modules/cron/cron.module'
 import { DocumentsModule } from './modules/documents/documents.module'
 import { FeedbackModule } from './modules/feedback/feedback.module'
@@ -25,7 +25,7 @@ import { FingerprintMiddleware } from './common/middleware/fingerprint.middlewar
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     PrismaModule,
     RedisModule,
     AuthModule,

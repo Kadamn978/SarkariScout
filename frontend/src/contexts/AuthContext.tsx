@@ -55,9 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.post('/auth/register', { email, password, name })
     const userData = res.data.user
     setUser({ ...userData, emailVerifiedAt: res.data.emailVerifiedAt || null })
-
-    // Always redirect to verify page after registration
-    navigate('/verify-email', { replace: true })
   }
 
   const logout = async () => {

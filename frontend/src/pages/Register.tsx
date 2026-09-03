@@ -11,6 +11,7 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string; terms?: string }>({})
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
@@ -35,8 +36,9 @@ export default function Register() {
     setLoading(true)
     try {
       await register(email, password, name.trim())
+      setSuccess(true)
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed')
+      setError(err.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -50,8 +52,21 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
       <main className="w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-900 rounded-xl shadow dark:shadow-gray-800" role="main">
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Create Account</h1>
-        {error && <div role="alert" className="p-3 mb-4 text-sm text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg">{error}</div>}
+        {success ? (
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Account Created!</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">We&apos;ve sent a verification link to <span className="font-medium text-gray-900 dark:text-white">{email}</span>. Please check your inbox.</p>
+            <Link to="/" className="inline-block w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium text-center">Go to Homepage</Link>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Create Account</h1>
+            {error && <div role="alert" className="p-3 mb-4 text-sm text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg break-words">{error}</div>}
 
         <button
           onClick={handleGoogleLogin}
@@ -135,6 +150,8 @@ export default function Register() {
         <p className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
           Already have an account? <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Login</Link>
         </p>
+          </>
+        )}
       </main>
     </div>
   )
