@@ -1,36 +1,19 @@
-FROM node:20-alpine AS builder
-
+FROM node:22-alpine AS builder
 WORKDIR /app
-
 COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
-
+RUN npm ci --legacy-peer-deps
 COPY prisma ./prisma/
 RUN npx prisma generate
-
-COPY tsconfig.json tsconfig.build.json nest-cli.json ./
+COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src/
+RUN npx tsc --project tsconfig.build.json
 
-RUN npm run build
-
-# Production
-FROM node:20-alpine AS production
-
+FROM node:22-alpine
 WORKDIR /app
-
-RUN addgroup -g 1001 -S sarkari && adduser -S sarkari -u 1001
-
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev --legacy-peer-deps
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/package.json ./
-
-RUN npm install --omit=dev --ignore-scripts 2>/dev/null || cp -r /app/node_modules . || true
-COPY --from=builder /app/node_modules ./node_modules
-
-RUN mkdir -p logs && chown -R sarkari:sarkari /app
-
-USER sarkari
-
+COPY prisma ./prisma/
 EXPOSE 3000
-
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/main"]
