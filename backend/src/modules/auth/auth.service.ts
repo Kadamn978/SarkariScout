@@ -115,10 +115,12 @@ export class AuthService {
         throw new ForbiddenException('Invalid refresh token')
       }
 
-      // Token rotation: atomic delete + set to prevent race condition
+      // Token rotation: delete old token FIRST to prevent race condition
+      // If attacker replays the token, it's already deleted
+      await this.redis.del(`refresh:${payload.sub}`)
+
       const user = await this.prisma.user.findUnique({ where: { id: payload.sub }, select: { emailVerifiedAt: true } })
       const newTokens = await this.generateTokens(payload.sub, payload.email, payload.role, user?.emailVerifiedAt)
-      await this.redis.set(`refresh:${payload.sub}`, newTokens.refreshToken, 604800)
       return newTokens
     } catch (err) {
       if (err instanceof ForbiddenException) throw err
