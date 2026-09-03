@@ -9,21 +9,9 @@ jobs:
     name: Run Tests
     uses: ./.github/workflows/ci.yml
 
-  deploy-preview:
-    name: Deploy Frontend (Vercel Preview)
-    needs: ci
-    if: github.ref == 'refs/heads/pre-dev' || github.ref == 'refs/heads/test'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: frontend
-          vercel-args: '--pre'
+  # Vercel auto-deploys via GitHub integration (no CI step needed)
+  # pre-dev → preview, test → preview, main → production
+  # No manual Vercel deploy steps — the GitHub-Vercel app handles it
 
   deploy-railway:
     name: Deploy Backend (Railway)
@@ -40,22 +28,3 @@ jobs:
         run: railway up --service rozgar-pilot-backend
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-  deploy-production:
-    name: Deploy Frontend (Vercel Production)
-    needs: ci
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: frontend
-          vercel-args: '--prod'
-
-  # Production deployment is HALTED until custom domain (rozgarscout.in) is purchased.
-  # Railway production deploys are manual via CLI until then.
